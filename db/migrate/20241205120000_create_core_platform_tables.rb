@@ -27,7 +27,6 @@ class CreateCorePlatformTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :users, :tenant_id
     add_index :users, [:tenant_id, :email], unique: true
 
     create_table :roles, id: :bigint do |t|
@@ -40,7 +39,6 @@ class CreateCorePlatformTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :roles, :tenant_id
     add_index :roles, [:tenant_id, :key], unique: true
 
     create_table :user_roles, id: :bigint do |t|
