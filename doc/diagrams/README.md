@@ -149,3 +149,4 @@ AI でコードを生成するときは、対象の図を 必ず参照させる�
 必ず docs/diagrams/20_common_business/customers_tags_memos_er.md の ER 図に従ってください。」
 
 これにより モデル・マイグレーション・コントローラ・画面 が一貫した設計となる。
+
