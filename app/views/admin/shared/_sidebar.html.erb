@@ -1,0 +1,36 @@
+<aside class="hidden md:flex w-64 flex-col border-r border-slate-200 bg-white">
+  <div class="h-14 flex items-center px-4 border-b border-slate-200">
+    <div class="flex items-center gap-2">
+      <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white text-lg font-bold">
+        D
+      </div>
+      <span class="text-sm font-semibold text-slate-800">darwin 管理</span>
+    </div>
+  </div>
+
+  <!-- ナビメニュー -->
+  <nav class="flex-1 py-4">
+    <ul class="space-y-1 px-3">
+      <li>
+        <%= link_to admin_tenants_path,
+            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenants_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+          📁 テナント管理
+        <% end %>
+      </li>
+
+      <li>
+        <%= link_to "#",
+            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
+          👥 ユーザー管理（例）
+        <% end %>
+      </li>
+
+      <li>
+        <%= link_to "#",
+            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
+          📊 アクセスログ（例）
+        <% end %>
+      </li>
+    </ul>
+  </nav>
+</aside>

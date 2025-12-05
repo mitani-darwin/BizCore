@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title><%= content_for?(:title) ? yield(:title) : "管理コンソール" %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Optional: Tailwind カスタム設定 (色・フォントなど) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  "#e6f9fb",
+              100: "#caf5f7",
+              500: "#00bcd4",
+              600: "#0097a7",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+  <div class="flex min-h-screen">
+
+    <!-- ===================================================== -->
+    <!-- Sidebar -->
+    <!-- ===================================================== -->
+    <%= render "admin/shared/sidebar" %>
+
+    <!-- ===================================================== -->
+    <!-- Main content -->
+    <!-- ===================================================== -->
+    <div class="flex flex-1 flex-col">
+
+      <!-- Top Bar -->
+      <<%= render "admin/shared/topbar" %>
+
+      <!-- Page Content -->
+      <main class="flex-1 py-6">
+        <%= yield %>
+      </main>
+
+      <!-- Footer -->
+      <footer class="border-t border-slate-200 bg-white py-3 text-center text-[11px] text-slate-400">
+        © <%= Time.current.year %> darwin — Management Console
+      </footer>
+
+    </div>
+  </div>
+</body>
+</html>
