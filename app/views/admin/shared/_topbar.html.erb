@@ -10,14 +10,16 @@
 
       <!-- 管理者メールアドレス -->
       <span class="text-xs text-slate-500">
-        <%= current_admin_user&.email || "admin@example.com" %>
+        <%= current_admin_user&.email || "info@darin-chiba.jp" %>
       </span>
 
       <!-- ログアウト -->
+<%#
       <%= link_to "ログアウト",
                   destroy_admin_session_path,
                   method: :delete,
                   class: "rounded-full border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50" %>
+
+
     </div>
-  </div>
 </header>
