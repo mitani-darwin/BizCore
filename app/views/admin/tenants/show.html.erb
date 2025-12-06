@@ -81,7 +81,7 @@
         <h2 class="text-sm font-semibold text-slate-900">操作</h2>
         <div class="mt-3 space-y-2">
           <%= link_to "一覧に戻る", admin_tenants_path, class: "block rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 text-center" %>
-          <%= link_to "編集（未実装）", "#", class: "block rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-400 text-center cursor-not-allowed", aria: { disabled: true } %>
+          <%= link_to "編集する", edit_admin_tenant_path(@tenant), class: "block rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 text-center" %>
         </div>
       </section>
     </div>
