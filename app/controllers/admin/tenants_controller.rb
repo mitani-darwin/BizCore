@@ -1,6 +1,6 @@
 module Admin
   class TenantsController < ApplicationController
-    before_action :set_tenant, only: %i[show]
+    before_action :set_tenant, only: %i[show edit update]
 
     def new
       @tenant = Tenant.new
@@ -9,12 +9,23 @@ module Admin
     def show
     end
 
+    def edit
+    end
+
     def create
       @tenant = Tenant.new(tenant_params)
       if @tenant.save
         redirect_to admin_tenants_path, notice: "テナントを作成しました。"
       else
         render :new, status: :unprocessable_entity
+      end
+    end
+
+    def update
+      if @tenant.update(tenant_params)
+        redirect_to admin_tenant_path(@tenant), notice: "テナントを更新しました。"
+      else
+        render :edit, status: :unprocessable_entity
       end
     end
 
