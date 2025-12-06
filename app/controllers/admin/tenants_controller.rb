@@ -1,7 +1,12 @@
 module Admin
   class TenantsController < ApplicationController
+    before_action :set_tenant, only: %i[show]
+
     def new
       @tenant = Tenant.new
+    end
+
+    def show
     end
 
     def create
@@ -48,6 +53,10 @@ module Admin
       else
         scope.order(updated_at: :desc)
       end
+    end
+
+    def set_tenant
+      @tenant = Tenant.find(params[:id])
     end
 
     def tenant_params
