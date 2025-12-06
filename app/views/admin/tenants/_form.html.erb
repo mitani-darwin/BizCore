@@ -10,26 +10,26 @@
     </div>
   <% end %>
 
-  <p class="text-xs text-slate-500">＊ は必須項目です。</p>
+  <p class="text-xs text-slate-500">※ は必須項目を示します。入力漏れがあると保存できません。</p>
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :name, class: "block text-sm font-medium text-slate-700" do %>
-        テナント名 <span class="ml-1 text-rose-500">＊</span>
+        テナント名 <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
       <%= f.label :code, class: "block text-sm font-medium text-slate-700" do %>
-        コード <span class="ml-1 text-rose-500">＊</span>
+        コード <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) tenant_001" %>
     </div>
 
     <div>
       <%= f.label :subdomain, class: "block text-sm font-medium text-slate-700" do %>
-        サブドメイン <span class="ml-1 text-rose-500">＊</span>
+        サブドメイン <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.text_field :subdomain, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) acme" %>
       <p class="mt-1 text-xs text-slate-500">例: acme.example.com</p>
@@ -37,14 +37,14 @@
 
     <div>
       <%= f.label :billing_email, class: "block text-sm font-medium text-slate-700" do %>
-        請求先メールアドレス <span class="ml-1 text-rose-500">＊</span>
+        請求先メールアドレス <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.email_field :billing_email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
       <%= f.label :plan, class: "block text-sm font-medium text-slate-700" do %>
-        プラン <span class="ml-1 text-rose-500">＊</span>
+        プラン <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.select :plan,
           options_for_select(
@@ -62,7 +62,7 @@
 
     <div>
       <%= f.label :status, class: "block text-sm font-medium text-slate-700" do %>
-        ステータス <span class="ml-1 text-rose-500">＊</span>
+        ステータス <span class="ml-1 text-rose-500">※</span>
       <% end %>
       <%= f.select :status,
           options_for_select(
