@@ -1,0 +1,70 @@
+<%= form_with model: [:admin, tenant], local: true, class: "space-y-4" do |f| %>
+  <% if tenant.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% tenant.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :name, "テナント名", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+
+    <div>
+      <%= f.label :code, "コード", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) tenant_001" %>
+    </div>
+
+    <div>
+      <%= f.label :subdomain, "サブドメイン", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.text_field :subdomain, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) acme" %>
+      <p class="mt-1 text-xs text-slate-500">例: acme.example.com</p>
+    </div>
+
+    <div>
+      <%= f.label :billing_email, "請求先メールアドレス", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.email_field :billing_email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+
+    <div>
+      <%= f.label :plan, "プラン", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.select :plan,
+          options_for_select(
+            [
+              ["フリー", "free"],
+              ["スタンダード", "standard"],
+              ["エンタープライズ", "enterprise"]
+            ],
+            tenant.plan
+          ),
+          {},
+          class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+
+    <div>
+      <%= f.label :status, "ステータス", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.select :status,
+          options_for_select(
+            [
+              ["有効", "active"],
+              ["トライアル", "trial"],
+              ["一時停止", "suspended"]
+            ],
+            tenant.status
+          ),
+          {},
+          class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit "保存する", class: "inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700" %>
+    <%= link_to "キャンセル", admin_tenants_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>
