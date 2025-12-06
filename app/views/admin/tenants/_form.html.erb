@@ -17,7 +17,13 @@
       <%= f.label :name, class: "block text-sm font-medium text-slate-700" do %>
         テナント名 <span class="ml-1 text-rose-500">※</span>
       <% end %>
-      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.text_field :name,
+          class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 disabled:bg-slate-50 disabled:text-slate-500",
+          required: true,
+          readonly: tenant.persisted? %>
+      <% if tenant.persisted? %>
+        <p class="mt-1 text-xs text-slate-500">作成後はテナント名を変更できません。</p>
+      <% end %>
     </div>
 
     <div>
