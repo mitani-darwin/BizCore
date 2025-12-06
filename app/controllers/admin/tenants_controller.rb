@@ -1,5 +1,18 @@
 module Admin
   class TenantsController < ApplicationController
+    def new
+      @tenant = Tenant.new
+    end
+
+    def create
+      @tenant = Tenant.new(tenant_params)
+      if @tenant.save
+        redirect_to admin_tenants_path, notice: "テナントを作成しました。"
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+
     def index
       @tenants = Tenant.all
       @tenants = apply_filters(@tenants)
@@ -35,6 +48,17 @@ module Admin
       else
         scope.order(updated_at: :desc)
       end
+    end
+
+    def tenant_params
+      params.require(:tenant).permit(
+        :name,
+        :code,
+        :subdomain,
+        :plan,
+        :status,
+        :billing_email
+      )
     end
   end
 end
