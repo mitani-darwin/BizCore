@@ -19,9 +19,15 @@
       </li>
 
       <li>
-        <%= link_to "#",
-            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
-          👥 ユーザー管理（例）
+        <% if current_tenant.present? %>
+          <%= link_to admin_tenant_roles_path(current_tenant),
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenant_roles_path(current_tenant)) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            🛡️ ロール一覧
+          <% end %>
+        <% else %>
+          <span class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-400">
+            🛡️ ロール一覧（テナント未選択）
+          </span>
         <% end %>
       </li>
 
