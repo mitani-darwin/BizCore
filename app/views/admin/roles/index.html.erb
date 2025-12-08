@@ -3,9 +3,23 @@
 <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
   <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h1 class="text-xl font-semibold text-slate-900">ロール一覧（<%= @tenant.name %>）</h1>
+      <h1 class="text-xl font-semibold text-slate-900">
+        ロール一覧（
+        <button
+          type="button"
+          id="tenant-name-suggest"
+          data-tenant-name="<%= @tenant.name %>"
+          class="underline decoration-dotted decoration-slate-400 underline-offset-4 text-sky-700 hover:text-sky-800"
+        >
+          <%= @tenant.name %>
+        </button>
+        ）
+      </h1>
       <p class="mt-1 text-sm text-slate-500">
         このテナントで利用できるロールの一覧です。キーは重複しないように管理してください。
+      </p>
+      <p class="mt-1 text-xs text-slate-500">
+        テナント名をクリックすると、検索欄にセットしてサジェスト検索を実行します。
       </p>
     </div>
     <div class="flex flex-col items-start gap-2 sm:items-end">
@@ -18,7 +32,7 @@
         </span>
       </div>
 
-      <%= form_with url: admin_tenant_roles_path(@tenant), method: :get, local: true, class: "grid w-full grid-cols-1 gap-2 text-xs sm:grid-cols-5" do |f| %>
+      <%= form_with url: admin_tenant_roles_path(@tenant), method: :get, local: true, id: "tenant-search-form", class: "grid w-full grid-cols-1 gap-2 text-xs sm:grid-cols-5" do |f| %>
         <div class="sm:col-span-2">
           <%= f.label :tenant_name, "テナント名", class: "text-slate-600" %>
           <%= f.search_field :tenant_name,
@@ -119,3 +133,18 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const suggestButton = document.getElementById("tenant-name-suggest");
+    const form = document.getElementById("tenant-search-form");
+    const nameField = document.getElementById("tenant_name");
+
+    if (!suggestButton || !form || !nameField) return;
+
+    suggestButton.addEventListener("click", () => {
+      nameField.value = suggestButton.dataset.tenantName || "";
+      form.requestSubmit();
+    });
+  });
+</script>
