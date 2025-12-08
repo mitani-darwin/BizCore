@@ -79,7 +79,11 @@
                   <p class="text-sm font-semibold text-slate-900"><%= tenant.name %></p>
                   <p class="text-[11px] text-slate-500"><%= tenant.code %> / <%= tenant.subdomain %></p>
                 </div>
-                <%= link_to "ロールを見る", admin_tenant_roles_path(tenant), class: "rounded border border-slate-200 px-2 py-1 text-[11px] text-slate-700 hover:bg-slate-100" %>
+                <%= button_to "ロールを見る",
+                    admin_tenant_roles_path(tenant),
+                    method: :get,
+                    form_class: "m-0",
+                    class: "rounded border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100" %>
               </div>
             </li>
           <% end %>
@@ -93,9 +97,11 @@
   <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
     <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-xs text-slate-500">
       <span>全 <%= @roles.size %> 件</span>
-      <%= link_to "テナント詳細へ戻る",
-                  admin_tenant_path(@tenant),
-                  class: "inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" %>
+      <%= button_to "ロール追加",
+          admin_tenant_path(@tenant),
+          method: :get,
+          form_class: "m-0",
+          class: "inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" %>
     </div>
 
     <div class="overflow-x-auto">
