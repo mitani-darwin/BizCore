@@ -35,10 +35,11 @@
       <%= form_with url: admin_tenant_roles_path(@tenant), method: :get, local: true, id: "tenant-search-form", class: "grid w-full grid-cols-1 gap-2 text-xs sm:grid-cols-5" do |f| %>
         <div class="sm:col-span-2">
           <%= f.label :tenant_name, "テナント名", class: "text-slate-600" %>
-          <%= f.search_field :tenant_name,
-              value: @tenant_search_name,
-              placeholder: "例: 株式会社○○",
+          <%= f.select :tenant_name,
+              options_for_select(@tenant_options.map { |t| [t.name, t.name] }, @tenant_search_name.presence || @tenant.name),
+              { include_blank: "選択してください" },
               class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+          <p class="mt-1 text-[11px] text-slate-500">リストにない場合は他の条件（コード/サブドメイン）で検索してください。</p>
         </div>
         <div>
           <%= f.label :tenant_code, "コード", class: "text-slate-600" %>
