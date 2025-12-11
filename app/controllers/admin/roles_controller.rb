@@ -7,7 +7,7 @@ module Admin
       @tenant_search_name = params[:tenant_name].to_s.strip
       @tenant_search_code = params[:tenant_code].to_s.strip
       @tenant_search_subdomain = params[:tenant_subdomain].to_s.strip
-      @tenant_options = Tenant.order(:name).limit(100)
+      @tenant_options = Tenant.order(:id).limit(100)
       @tenant_search_results = search_tenants(@tenant_search_name, @tenant_search_code, @tenant_search_subdomain)
     end
 

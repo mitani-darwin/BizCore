@@ -78,7 +78,7 @@ erDiagram
     datetime updated_at
   }
 
-    TENANT_USER_ROLES {
+  TENANT_USER_ROLES {
     bigint id PK
     bigint tenant_user_id FK
     bigint role_id FK
