@@ -1,6 +1,6 @@
 module Admin
   class TenantsController < ApplicationController
-    before_action :set_tenant, only: %i[show edit update]
+    before_action :set_tenant, only: %i[show edit update destroy]
 
     def new
       @tenant = Tenant.new
@@ -27,6 +27,11 @@ module Admin
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def destroy
+      @tenant.destroy!
+      redirect_to admin_tenants_path, notice: "テナントを削除しました。"
     end
 
     def index
