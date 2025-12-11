@@ -11,6 +11,8 @@ class Tenant < ApplicationRecord
   attribute :started_on, :date
   attribute :last_access_at, :datetime
 
+  after_create :create_default_admin_role
+
   def primary_domain
     value = read_attribute(:primary_domain)
     return value if value.present?
@@ -24,5 +26,16 @@ class Tenant < ApplicationRecord
 
   def last_access_at
     read_attribute(:last_access_at) || updated_at
+  end
+
+  private
+
+  def create_default_admin_role
+    roles.create!(
+      name: "管理者",
+      key: "admin",
+      description: "管理者",
+      built_in: true
+    )
   end
 end
