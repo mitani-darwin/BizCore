@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   namespace :admin do
     resources :tenants do
-      resources :roles, only: :index
+      resources :roles, only: [:index, :create]
     end
     root to: "tenants#index"
   end

@@ -86,62 +86,64 @@
     </div>
   <% end %>
 
-  <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-    <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-xs text-slate-500">
-      <span>全 <%= @roles.size %> 件</span>
-      <div class="flex items-center gap-2">
-        <button
-          type="button"
-          id="add-role-row"
-          class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          ロール追加
-        </button>
-        <button
-          type="button"
-          class="inline-flex items-center justify-center rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700"
-          style="min-width: 86px; text-align: center"
-        >
-          保存
-        </button>
+  <%= form_with url: admin_tenant_roles_path(@tenant), method: :post, local: true, id: "roles-save-form" do %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-xs text-slate-500">
+        <span>全 <%= @roles.size %> 件</span>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="add-role-row"
+            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            ロール追加
+          </button>
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700"
+            style="min-width: 86px; text-align: center"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-500">
+            <tr>
+              <th class="px-3 py-2 font-medium">ロール名</th>
+              <th class="px-3 py-2 font-medium">キー</th>
+              <th class="px-3 py-2 font-medium">説明</th>
+              <th class="px-3 py-2 font-medium text-center">組み込み</th>
+              <th class="px-3 py-2 font-medium text-right">作成日</th>
+            </tr>
+          </thead>
+          <tbody id="roles-table-body" class="divide-y divide-slate-100">
+            <% @roles.each do |role| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-3 py-2 align-middle">
+                  <span class="text-sm font-semibold text-slate-900"><%= role.name %></span>
+                </td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-700"><%= role.key %></td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-600"><%= role.description.presence || "—" %></td>
+                <td class="px-3 py-2 align-middle text-center">
+                  <% if role.built_in? %>
+                    <span class="inline-flex items-center rounded-full bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-white">Yes</span>
+                  <% else %>
+                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">No</span>
+                  <% end %>
+                </td>
+                <td class="px-3 py-2 align-middle text-right text-[11px] text-slate-600">
+                  <%= role.created_at&.strftime("%Y-%m-%d") %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-left text-xs">
-        <thead class="bg-slate-50 text-slate-500">
-          <tr>
-            <th class="px-3 py-2 font-medium">ロール名</th>
-            <th class="px-3 py-2 font-medium">キー</th>
-            <th class="px-3 py-2 font-medium">説明</th>
-            <th class="px-3 py-2 font-medium text-center">組み込み</th>
-            <th class="px-3 py-2 font-medium text-right">作成日</th>
-          </tr>
-        </thead>
-        <tbody id="roles-table-body" class="divide-y divide-slate-100">
-          <% @roles.each do |role| %>
-            <tr class="hover:bg-slate-50">
-              <td class="px-3 py-2 align-middle">
-                <span class="text-sm font-semibold text-slate-900"><%= role.name %></span>
-              </td>
-              <td class="px-3 py-2 align-middle text-[11px] text-slate-700"><%= role.key %></td>
-              <td class="px-3 py-2 align-middle text-[11px] text-slate-600"><%= role.description.presence || "—" %></td>
-              <td class="px-3 py-2 align-middle text-center">
-                <% if role.built_in? %>
-                  <span class="inline-flex items-center rounded-full bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-white">Yes</span>
-                <% else %>
-                  <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">No</span>
-                <% end %>
-              </td>
-              <td class="px-3 py-2 align-middle text-right text-[11px] text-slate-600">
-                <%= role.created_at&.strftime("%Y-%m-%d") %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <% end %>
 </div>
 
 <template id="role-row-template">
@@ -150,6 +152,7 @@
       <input
         data-role-name-input
         type="text"
+        name="roles[][name]"
         class="w-full rounded border border-slate-200 px-2 py-1 text-sm font-semibold text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
         value="新規ロール（未保存）"
       />
@@ -158,6 +161,7 @@
       <input
         data-role-key-input
         type="text"
+        name="roles[][key]"
         class="w-full rounded border border-slate-200 px-2 py-1 text-[11px] text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
         value="new_role"
       />
@@ -166,6 +170,7 @@
       <input
         data-role-description-input
         type="text"
+        name="roles[][description]"
         class="w-full rounded border border-slate-200 px-2 py-1 text-[11px] text-slate-600 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
         placeholder="説明を入力"
       />
