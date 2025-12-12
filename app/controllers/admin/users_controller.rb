@@ -8,9 +8,10 @@ module Admin
       @tenant_search_name = params[:tenant_name].to_s.strip
       @tenant_search_code = params[:tenant_code].to_s.strip
       @tenant_search_subdomain = params[:tenant_subdomain].to_s.strip
-      @selected_tenant = detect_selected_tenant
+      @selected_tenant = detect_selected_tenant || tenant_by_id_param
+      preload_search_fields_from_selected_tenant
       @selected_tenant_id = @selected_tenant&.id
-      @users = User.includes(:tenant, :roles).order(updated_at: :desc)
+      @users = User.includes(:tenant, :roles).order(id: :asc)
       @users = filter_by_tenant(@users)
     end
 
@@ -24,10 +25,11 @@ module Admin
 
     def create
       @user = User.new(user_params)
+      @user.initial_flag = true
       assign_roles(@user)
 
       if @user.save
-        redirect_to admin_users_path, notice: "ユーザを作成しました。"
+        redirect_to admin_users_path(tenant_id: @user.tenant_id), notice: "ユーザを作成しました。"
       else
         render :new, status: :unprocessable_entity
       end
@@ -60,10 +62,26 @@ module Admin
       scope.first
     end
 
+    def tenant_by_id_param
+      return nil if params[:tenant_id].blank?
+      Tenant.find_by(id: params[:tenant_id])
+    end
+
+    def preload_search_fields_from_selected_tenant
+      return if @selected_tenant.blank?
+      return unless @tenant_search_name.blank? && @tenant_search_code.blank? && @tenant_search_subdomain.blank?
+
+      @tenant_search_name = @selected_tenant.name
+      @tenant_search_code = @selected_tenant.code
+      @tenant_search_subdomain = @selected_tenant.subdomain
+    end
+
     def set_selected_tenant
-      tenant_id = params[:tenant_id].presence || @user&.tenant_id
+      tenant_id = params[:tenant_id].presence || params.dig(:user, :tenant_id).presence || @user&.tenant_id
       @selected_tenant = tenant_id.present? ? Tenant.find_by(id: tenant_id) : nil
-      @user.tenant_id ||= @selected_tenant&.id if defined?(@user) && @user.present?
+      if defined?(@user) && @user.present? && @selected_tenant.present?
+        @user.tenant_id ||= @selected_tenant.id
+      end
     end
 
     def set_role_options
@@ -89,11 +107,13 @@ module Admin
         :tenant_id,
         :name,
         :email,
+        :line_id,
         :password,
         :password_confirmation,
         :is_owner,
         :locale,
-        :time_zone
+        :time_zone,
+        role_ids: []
       )
     end
   end
