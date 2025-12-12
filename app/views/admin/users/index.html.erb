@@ -1,0 +1,143 @@
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">ユーザ一覧</h1>
+      <p class="mt-1 text-xs text-slate-500">
+        全テナントに所属するユーザの基本情報を確認できます。
+      </p>
+    </div>
+  </div>
+
+  <section class="mb-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:px-5">
+    <%= form_with url: admin_users_path, method: :get, local: true,
+                  class: "flex flex-col gap-3" do |f| %>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+        <div class="w-full">
+          <label class="mb-1 block text-[11px] font-medium text-slate-600">テナント名</label>
+          <%= f.select :tenant_name,
+              options_for_select(
+                [["テナント名: すべて", ""]] + @tenant_options.map { |t| [t.name, t.name] },
+                @tenant_search_name
+              ),
+              {},
+              class: "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+
+        <div class="w-full">
+          <label class="mb-1 block text-[11px] font-medium text-slate-600">テナントコード</label>
+          <%= f.select :tenant_code,
+              options_for_select(
+                [["コード: すべて", ""]] + @tenant_options.map { |t| [t.code, t.code] },
+                @tenant_search_code
+              ),
+              {},
+              class: "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+
+        <div class="w-full">
+          <label class="mb-1 block text-[11px] font-medium text-slate-600">サブドメイン</label>
+          <%= f.select :tenant_subdomain,
+              options_for_select(
+                [["サブドメイン: すべて", ""]] + @tenant_options.map { |t| [t.subdomain, t.subdomain] },
+                @tenant_search_subdomain
+              ),
+              {},
+              class: "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:justify-end">
+        <%= f.submit "検索",
+            class: "inline-flex items-center rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700" %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-slate-100 px-4 py-2 text-xs text-slate-500">
+      <% total_count = @users.respond_to?(:total_count) ? @users.total_count : @users.size %>
+      <span>全 <%= total_count %> 件</span>
+    </div>
+
+    <div class="hidden sm:block">
+      <table class="min-w-full text-left text-xs">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="px-3 py-2 font-medium">名前</th>
+            <th class="px-3 py-2 font-medium">メール</th>
+            <th class="px-3 py-2 font-medium">テナント</th>
+            <th class="px-3 py-2 font-medium">ロール</th>
+            <th class="px-3 py-2 font-medium">最終ログイン</th>
+            <th class="px-3 py-2 font-medium">オーナー</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% if @users.any? %>
+            <% @users.each do |user| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-3 py-2 align-middle">
+                  <span class="text-xs font-semibold text-slate-900"><%= user.name %></span>
+                </td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
+                  <%= mail_to user.email, user.email, class: "text-sky-700 hover:underline" %>
+                </td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
+                  <%= user.tenant&.name || "-" %>
+                </td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
+                  <% role_names = user.roles.map(&:name).presence || ["-"] %>
+                  <%= role_names.join(", ") %>
+                </td>
+                <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
+                  <%= user.last_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "未ログイン" %>
+                </td>
+                <td class="px-3 py-2 align-middle">
+                  <% owner_label = user.is_owner? ? "Owner" : "User" %>
+                  <% badge_class = user.is_owner? ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600" %>
+                  <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium <%= badge_class %>"><%= owner_label %></span>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-3 py-8 text-center text-xs text-slate-500">
+                まだユーザが登録されていません。
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sm:hidden">
+      <% if @users.any? %>
+        <ul class="divide-y divide-slate-100">
+          <% @users.each do |user| %>
+            <li class="px-4 py-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-slate-900"><%= user.name %></p>
+                  <p class="text-[11px] text-slate-600"><%= user.email %></p>
+                </div>
+                <% badge_class = user.is_owner? ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600" %>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium <%= badge_class %>">
+                  <%= user.is_owner? ? "Owner" : "User" %>
+                </span>
+              </div>
+              <div class="mt-2 text-[11px] text-slate-600">
+                <p>テナント: <%= user.tenant&.name || "-" %></p>
+                <% role_names = user.roles.map(&:name).presence || ["-"] %>
+                <p>ロール: <%= role_names.join(", ") %></p>
+                <p>最終ログイン: <%= user.last_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "未ログイン" %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="px-4 py-8 text-center text-xs text-slate-500">
+          まだユーザが登録されていません。
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

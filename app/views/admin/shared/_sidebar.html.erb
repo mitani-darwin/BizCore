@@ -32,6 +32,13 @@
       </li>
 
       <li>
+        <%= link_to admin_users_path,
+            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_users_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+          👥 ユーザ一覧
+        <% end %>
+      </li>
+
+      <li>
         <%= link_to "#",
             class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
           📊 アクセスログ（例）
