@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_12_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2024_12_07_000000) do
   create_table "permissions", force: :cascade do |t|
     t.string "action", null: false
     t.datetime "created_at", null: false
@@ -44,6 +44,17 @@ ActiveRecord::Schema[8.1].define(version: 2024_12_05_120000) do
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "key"], name: "index_roles_on_tenant_id_and_key", unique: true
     t.index ["tenant_id"], name: "index_roles_on_tenant_id"
+  end
+
+  create_table "tenant_user_roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "primary_flag", default: false, null: false
+    t.bigint "role_id", null: false
+    t.bigint "tenant_user_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_tenant_user_roles_on_role_id"
+    t.index ["tenant_user_id", "role_id"], name: "index_tenant_user_roles_on_tenant_user_id_and_role_id", unique: true
+    t.index ["tenant_user_id"], name: "index_tenant_user_roles_on_tenant_user_id"
   end
 
   create_table "tenants", force: :cascade do |t|
@@ -90,6 +101,8 @@ ActiveRecord::Schema[8.1].define(version: 2024_12_05_120000) do
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "roles", "tenants"
+  add_foreign_key "tenant_user_roles", "roles"
+  add_foreign_key "tenant_user_roles", "users", column: "tenant_user_id"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "tenants"

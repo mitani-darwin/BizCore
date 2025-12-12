@@ -78,6 +78,15 @@ erDiagram
     datetime updated_at
   }
 
+  TENANT_USER_ROLES {
+    bigint id PK
+    bigint tenant_user_id FK
+    bigint role_id FK
+    boolean primary_flag "メインロールかどうか（任意）"
+    datetime created_at
+    datetime updated_at
+  }
+
   %% マルチテナント構造
   TENANTS ||--o{ USERS : has_many
   TENANTS ||--o{ ROLES : has_many
