@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2024_12_07_000000) do
+ActiveRecord::Schema[8.1].define(version: 2024_12_13_000002) do
   create_table "permissions", force: :cascade do |t|
     t.string "action", null: false
     t.datetime "created_at", null: false
@@ -86,8 +86,10 @@ ActiveRecord::Schema[8.1].define(version: 2024_12_07_000000) do
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "email", null: false
+    t.boolean "initial_flag", default: true, null: false
     t.boolean "is_owner", default: false, null: false
     t.datetime "last_sign_in_at"
+    t.string "line_id"
     t.string "locale"
     t.string "name", null: false
     t.string "password_digest", null: false
@@ -95,6 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2024_12_07_000000) do
     t.string "time_zone"
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "email"], name: "index_users_on_tenant_id_and_email", unique: true
+    t.index ["tenant_id", "line_id"], name: "index_users_on_tenant_id_and_line_id"
     t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
