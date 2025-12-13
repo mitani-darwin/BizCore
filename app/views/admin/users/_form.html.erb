@@ -70,12 +70,11 @@
       <div>
         <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
           メールアドレス
-          <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">いずれか必須</span>
+          <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700">必須</span>
         </label>
         <%= f.email_field :email,
             class: "w-full rounded-lg border #{email_errors.present? ? 'border-rose-300 bg-rose-50 focus:border-rose-400 focus:ring-rose-400' : 'border-slate-200 bg-white focus:border-sky-500 focus:ring-sky-500'} px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1",
             placeholder: "user@example.com" %>
-        <p class="mt-1 text-[10px] text-slate-500">メールアドレスまたはLINE IDのどちらかを入力してください。</p>
       </div>
 
       <div>
@@ -87,6 +86,26 @@
             class: "w-full rounded-lg border #{line_errors.present? ? 'border-rose-300 bg-rose-50 focus:border-rose-400 focus:ring-rose-400' : 'border-slate-200 bg-white focus:border-sky-500 focus:ring-sky-500'} px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1",
             placeholder: "line_user_id" %>
         <p class="mt-1 text-[10px] text-slate-500">メールアドレスまたはLINE IDのどちらかを入力してください。</p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
+          パスワード
+          <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700">必須</span>
+        </label>
+        <%= f.password_field :password,
+            class: "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-500 focus:ring-sky-500",
+            autocomplete: "new-password",
+            placeholder: @user.persisted? ? "変更しない場合は空のまま" : "8文字以上推奨" %>
+        <p class="mt-1 text-[10px] text-slate-500">更新時は空欄なら現行のパスワードを維持します。</p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-[11px] font-medium text-slate-600">パスワード（確認）</label>
+        <%= f.password_field :password_confirmation,
+            class: "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-500 focus:ring-sky-500",
+            autocomplete: "new-password",
+            placeholder: "確認のため再入力" %>
       </div>
 
       <%= f.hidden_field :time_zone, value: @user.time_zone.presence || "Asia/Tokyo" %>

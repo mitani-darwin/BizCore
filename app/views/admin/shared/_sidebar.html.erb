@@ -11,6 +11,15 @@
   <!-- ナビメニュー -->
   <nav class="flex-1 py-4">
     <ul class="space-y-1 px-3">
+      <% if policy([:admin, :dashboard]).access? %>
+        <li>
+          <%= link_to admin_root_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_root_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            🏠 ダッシュボード
+          <% end %>
+        </li>
+      <% end %>
+
       <li>
         <%= link_to admin_tenants_path,
             class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenants_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
@@ -30,6 +39,21 @@
           </span>
         <% end %>
       </li>
+
+      <% if policy([:admin, :authorization]).manage? %>
+        <li>
+          <%= link_to admin_authorization_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_authorization_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            🔒 権限管理
+          <% end %>
+        </li>
+        <li>
+          <%= link_to admin_permissions_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_permissions_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            🧩 権限定義
+          <% end %>
+        </li>
+      <% end %>
 
       <li>
         <%= link_to admin_users_path,

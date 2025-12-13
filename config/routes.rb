@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users, skip: [:registrations]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -10,11 +11,21 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
+  authenticated :user do
+    root to: "admin/dashboard#index", as: :authenticated_root
+  end
+
+  unauthenticated do
+    root to: "devise/sessions#new"
+  end
+
   namespace :admin do
+    resource :authorization, only: [:show, :update], controller: "authorizations"
     resources :tenants do
       resources :roles, only: [:index, :create]
     end
+    resources :permissions, only: [:index, :create, :update, :destroy]
     resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
-    root to: "tenants#index"
+    root to: "dashboard#index"
   end
 end

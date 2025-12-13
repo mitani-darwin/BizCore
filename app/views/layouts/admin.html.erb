@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title><%= content_for?(:title) ? yield(:title) : "管理コンソール" %></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,14 +42,24 @@
     <!-- ===================================================== -->
     <!-- Main content -->
     <!-- ===================================================== -->
-    <div class="flex flex-1 flex-col">
+    <div class="flex flex-1 flex-col bg-slate-50">
 
       <!-- Top Bar -->
-      <<%= render "admin/shared/topbar" %>
+      <%= render "admin/shared/topbar" %>
 
       <!-- Page Content -->
       <main class="flex-1 py-6">
-        <%= yield %>
+        <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4">
+          <% flash.each do |key, value| %>
+            <% next if value.blank? %>
+            <% tone = key.to_s == "alert" ? "rose" : "emerald" %>
+            <div class="rounded-lg border border-<%= tone %>-200 bg-<%= tone %>-50 px-4 py-3 text-sm text-<%= tone %>-800">
+              <%= value %>
+            </div>
+          <% end %>
+
+          <%= yield %>
+        </div>
       </main>
 
       <!-- Footer -->

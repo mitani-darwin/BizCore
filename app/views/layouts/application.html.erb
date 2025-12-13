@@ -23,7 +23,14 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-slate-50">
+    <% flash.each do |key, value| %>
+      <% next if value.blank? %>
+      <div class="m-4 rounded border <%= key.to_s == 'alert' ? 'border-rose-200 bg-rose-50 text-rose-800' : 'border-emerald-200 bg-emerald-50 text-emerald-800' %> px-3 py-2 text-sm">
+        <%= value %>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

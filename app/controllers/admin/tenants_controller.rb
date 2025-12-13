@@ -3,16 +3,20 @@ module Admin
     before_action :set_tenant, only: %i[show edit update destroy]
 
     def new
+      authorize Tenant, :create?
       @tenant = Tenant.new
     end
 
     def show
+      authorize @tenant, :show?
     end
 
     def edit
+      authorize @tenant, :update?
     end
 
     def create
+      authorize Tenant, :create?
       @tenant = Tenant.new(tenant_params)
       if @tenant.save
         redirect_to admin_tenants_path, notice: "テナントを作成しました。"
@@ -22,6 +26,7 @@ module Admin
     end
 
     def update
+      authorize @tenant, :update?
       if @tenant.update(tenant_params)
         redirect_to admin_tenant_path(@tenant), notice: "テナントを更新しました。"
       else
@@ -30,12 +35,15 @@ module Admin
     end
 
     def destroy
+      authorize @tenant, :destroy?
       @tenant.destroy!
       redirect_to admin_tenants_path, notice: "テナントを削除しました。"
     end
 
     def index
-      @tenants = Tenant.all
+      authorize Tenant, :index?
+
+      @tenants = policy_scope(Tenant)
       @tenants = apply_filters(@tenants)
       @tenants = apply_sort(@tenants)
     end
@@ -72,7 +80,7 @@ module Admin
     end
 
     def set_tenant
-      @tenant = Tenant.find(params[:id])
+      @tenant = policy_scope(Tenant).find(params[:id])
     end
 
     def tenant_params
