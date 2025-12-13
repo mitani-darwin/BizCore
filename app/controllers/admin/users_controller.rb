@@ -1,8 +1,8 @@
 module Admin
   class UsersController < ApplicationController
     before_action :set_tenant_options, only: [:index, :new, :create]
-    before_action :set_user, only: [:edit, :update]
-    before_action :set_selected_tenant, only: [:new, :create, :edit, :update]
+    before_action :set_user, only: [:edit, :update, :destroy]
+    before_action :set_selected_tenant, only: [:new, :create, :edit, :update, :destroy]
     before_action :set_role_options, only: [:new, :create, :edit, :update]
 
     def index
@@ -47,6 +47,15 @@ module Admin
         redirect_to admin_users_path(tenant_id: @user.tenant_id), notice: "ユーザを更新しました。"
       else
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      tenant_id = @user.tenant_id
+      if @user.destroy
+        redirect_to admin_users_path(tenant_id: tenant_id), notice: "ユーザを削除しました。"
+      else
+        redirect_to admin_users_path(tenant_id: tenant_id), alert: "ユーザの削除に失敗しました。"
       end
     end
 
