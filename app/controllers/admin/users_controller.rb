@@ -1,8 +1,9 @@
 module Admin
   class UsersController < ApplicationController
     before_action :set_tenant_options, only: [:index, :new, :create]
-    before_action :set_selected_tenant, only: [:new, :create]
-    before_action :set_role_options, only: [:new, :create]
+    before_action :set_user, only: [:edit, :update]
+    before_action :set_selected_tenant, only: [:new, :create, :edit, :update]
+    before_action :set_role_options, only: [:new, :create, :edit, :update]
 
     def index
       @tenant_search_name = params[:tenant_name].to_s.strip
@@ -23,6 +24,9 @@ module Admin
       )
     end
 
+    def edit
+    end
+
     def create
       @user = User.new(user_params)
       @user.initial_flag = true
@@ -35,7 +39,22 @@ module Admin
       end
     end
 
+    def update
+      @user.assign_attributes(user_params)
+      assign_roles(@user)
+
+      if @user.save
+        redirect_to admin_users_path(tenant_id: @user.tenant_id), notice: "ユーザを更新しました。"
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
     private
+
+    def set_user
+      @user = User.find(params[:id])
+    end
 
     def set_tenant_options
       @tenant_options = Tenant.order(:name).limit(100)

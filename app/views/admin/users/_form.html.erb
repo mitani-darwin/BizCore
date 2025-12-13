@@ -1,0 +1,108 @@
+<% submit_label ||= "保存" %>
+
+<div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <%= form_with model: [:admin, @user], local: true, class: "space-y-4" do |f| %>
+    <% tenant_errors = @user.errors[:tenant_id] + @user.errors[:tenant] %>
+    <% role_errors   = @user.errors[:roles] %>
+    <% name_errors   = @user.errors[:name] %>
+    <% email_errors  = @user.errors[:email] %>
+    <% line_errors   = @user.errors[:line_id] %>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <%= f.hidden_field :tenant_id, value: (@selected_tenant&.id || params[:tenant_id]) %>
+        <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
+          テナント
+          <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700">必須</span>
+        </label>
+        <% if @selected_tenant.present? %>
+          <div class="flex items-center justify-between rounded-lg border <%= tenant_errors.present? ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-slate-50' %> px-3 py-2">
+            <div>
+              <p class="text-sm font-semibold text-slate-900"><%= @selected_tenant.name %></p>
+              <p class="text-[11px] text-slate-600"><%= @selected_tenant.subdomain %> / <%= @selected_tenant.code %></p>
+            </div>
+            <span class="text-[11px] text-slate-500">変更不可</span>
+          </div>
+        <% else %>
+          <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            テナントが未選択です。ユーザ一覧でテナントを選択してからユーザ追加に進んでください。
+          </div>
+        <% end %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="mb-1 block text-[11px] font-medium text-slate-600">ロール</label>
+        <% if @selected_tenant.blank? %>
+          <div class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            テナント選択後にロールを設定できます。
+          </div>
+        <% elsif @role_options.empty? %>
+          <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+            このテナントにロールがありません。先にロールを作成してください。
+          </div>
+        <% else %>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <% @role_options.each do |role| %>
+              <label class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 hover:bg-slate-50">
+                <%= check_box_tag "user[role_ids][]", role.id, @user.roles.include?(role),
+                    class: "h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" %>
+                <span class="text-sm font-medium"><%= role.name %></span>
+                <span class="text-[11px] text-slate-500"><%= role.description.presence || role.key %></span>
+              </label>
+            <% end %>
+          </div>
+          <% if role_errors.present? %>
+            <p class="mt-1 text-[11px] text-rose-600">ロールを選択してください。</p>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div>
+        <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
+          氏名
+          <span class="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700">必須</span>
+        </label>
+        <%= f.text_field :name,
+            class: "w-full rounded-lg border #{name_errors.present? ? 'border-rose-300 bg-rose-50 focus:border-rose-400 focus:ring-rose-400' : 'border-slate-200 bg-white focus:border-sky-500 focus:ring-sky-500'} px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1",
+            placeholder: "山田 太郎" %>
+      </div>
+
+      <div>
+        <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
+          メールアドレス
+          <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">いずれか必須</span>
+        </label>
+        <%= f.email_field :email,
+            class: "w-full rounded-lg border #{email_errors.present? ? 'border-rose-300 bg-rose-50 focus:border-rose-400 focus:ring-rose-400' : 'border-slate-200 bg-white focus:border-sky-500 focus:ring-sky-500'} px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1",
+            placeholder: "user@example.com" %>
+        <p class="mt-1 text-[10px] text-slate-500">メールアドレスまたはLINE IDのどちらかを入力してください。</p>
+      </div>
+
+      <div>
+        <label class="mb-1 flex items-center gap-2 text-[11px] font-medium text-slate-600">
+          LINE ID
+          <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">いずれか必須</span>
+        </label>
+        <%= f.text_field :line_id,
+            class: "w-full rounded-lg border #{line_errors.present? ? 'border-rose-300 bg-rose-50 focus:border-rose-400 focus:ring-rose-400' : 'border-slate-200 bg-white focus:border-sky-500 focus:ring-sky-500'} px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-1",
+            placeholder: "line_user_id" %>
+        <p class="mt-1 text-[10px] text-slate-500">メールアドレスまたはLINE IDのどちらかを入力してください。</p>
+      </div>
+
+      <%= f.hidden_field :time_zone, value: @user.time_zone.presence || "Asia/Tokyo" %>
+      <%= f.hidden_field :locale, value: @user.locale.presence || "ja" %>
+
+      <div class="sm:col-span-2">
+        <label class="inline-flex items-center gap-2 text-sm text-slate-800">
+          <%= f.check_box :is_owner, class: "h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" %>
+          <span class="text-[13px]">テナントオーナーとして登録する</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= f.submit submit_label,
+          class: "inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700" %>
+    </div>
+  <% end %>
+</div>

@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     resources :tenants do
       resources :roles, only: [:index, :create]
     end
-    resources :users, only: [:index, :new, :create]
+    resources :users, only: [:index, :new, :create, :edit, :update]
     root to: "tenants#index"
   end
 end
