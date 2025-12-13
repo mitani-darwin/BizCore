@@ -4,15 +4,19 @@ module Admin
     before_action :set_search_params, only: [:index, :create]
 
     def index
-      @roles = @tenant.roles.order(:name)
-      @tenant_search_name = params[:tenant_name].to_s.strip
-      @tenant_search_code = params[:tenant_code].to_s.strip
-      @tenant_search_subdomain = params[:tenant_subdomain].to_s.strip
-      @tenant_options = Tenant.order(:id).limit(100)
-      @tenant_search_results = search_tenants(@tenant_search_name, @tenant_search_code, @tenant_search_subdomain)
+      authorize([:admin, Role], :manage?)
+
+      @roles = policy_scope([:admin, Role]).where(tenant: @tenant).order(:name)
+      @tenant_search_name = @tenant.name
+      @tenant_search_code = @tenant.code
+      @tenant_search_subdomain = @tenant.subdomain
+      @tenant_options = [@tenant].compact
+      @tenant_search_results = [@tenant].compact
     end
 
     def create
+      authorize([:admin, Role], :manage?)
+
       new_roles = role_params
       created = []
 
@@ -44,23 +48,14 @@ module Admin
     private
 
     def set_tenant
-      @tenant = Tenant.find(params[:tenant_id])
+      @tenant = current_tenant
+      raise Pundit::NotAuthorizedError unless @tenant.present? && params[:tenant_id].to_s == @tenant.id.to_s
     end
 
     def set_search_params
       @tenant_search_name = params[:tenant_name].to_s.strip
       @tenant_search_code = params[:tenant_code].to_s.strip
       @tenant_search_subdomain = params[:tenant_subdomain].to_s.strip
-    end
-
-    def search_tenants(name, code, subdomain)
-      return [] if name.blank? && code.blank? && subdomain.blank?
-
-      scope = Tenant.all
-      scope = scope.where(Tenant.arel_table[:name].matches("%#{name}%")) if name.present?
-      scope = scope.where(Tenant.arel_table[:code].matches("%#{code}%")) if code.present?
-      scope = scope.where(Tenant.arel_table[:subdomain].matches("%#{subdomain}%")) if subdomain.present?
-      scope.order(:name).limit(10)
     end
 
     def role_params

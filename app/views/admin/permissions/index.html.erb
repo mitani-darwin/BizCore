@@ -1,0 +1,113 @@
+<% content_for :page_title, "権限定義" %>
+
+<div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mb-6 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 px-6 py-5 text-white shadow-lg">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs font-semibold tracking-wide text-slate-200 uppercase">Permission Registry</p>
+        <h1 class="text-2xl font-bold leading-tight">権限定義</h1>
+        <p class="mt-1 text-sm text-slate-200">
+          画面や API で参照する Permission キーを登録・更新します。ロールとの紐付けは「権限管理」で行います。
+        </p>
+      </div>
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-slate-100 ring-1 ring-white/20">
+        <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.25)]"></span>
+        Pundit 連携
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">登録済み権限</p>
+          <p class="text-[11px] text-slate-500">リソース×アクション単位で整理しています。</p>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-500">
+            <tr>
+              <th class="px-3 py-2 font-medium">Key</th>
+              <th class="px-3 py-2 font-medium">Resource</th>
+              <th class="px-3 py-2 font-medium">Action</th>
+              <th class="px-3 py-2 font-medium">表示名</th>
+              <th class="px-3 py-2 font-medium">説明</th>
+              <th class="px-3 py-2 font-medium text-right">操作</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @permissions.each do |permission| %>
+              <tr class="hover:bg-slate-50">
+                <%= form_with model: [:admin, permission], url: admin_permission_path(permission), method: :patch, local: true do |f| %>
+                  <td class="px-3 py-2 align-middle">
+                    <%= f.text_field :key, class: "w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-800 focus:border-sky-500 focus:ring-sky-500" %>
+                  </td>
+                  <td class="px-3 py-2 align-middle">
+                    <%= f.text_field :resource, class: "w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-800 focus:border-sky-500 focus:ring-sky-500" %>
+                  </td>
+                  <td class="px-3 py-2 align-middle">
+                    <%= f.text_field :action, class: "w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-800 focus:border-sky-500 focus:ring-sky-500" %>
+                  </td>
+                  <td class="px-3 py-2 align-middle">
+                    <%= f.text_field :name, class: "w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-800 focus:border-sky-500 focus:ring-sky-500" %>
+                  </td>
+                  <td class="px-3 py-2 align-middle">
+                    <%= f.text_field :description, class: "w-full rounded border border-slate-200 px-2 py-1 text-xs text-slate-800 focus:border-sky-500 focus:ring-sky-500" %>
+                  </td>
+                  <td class="px-3 py-2 align-middle text-right">
+                    <div class="inline-flex items-center gap-2">
+                      <%= f.submit "更新", class: "rounded border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 shadow-sm hover:bg-slate-50" %>
+                      <%= button_to "削除",
+                          admin_permission_path(permission),
+                          method: :delete,
+                          data: { turbo_confirm: "削除しますか？ロールとの紐付けも消えます。" },
+                          class: "rounded border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700 shadow-sm hover:bg-rose-100" %>
+                    </div>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-4 py-3">
+        <p class="text-sm font-semibold text-slate-900">権限定義を追加</p>
+        <p class="text-[11px] text-slate-500">Key はアプリで `user.can?("key")` に使います。</p>
+      </div>
+      <div class="p-4">
+        <%= form_with model: [:admin, @permission], url: admin_permissions_path, local: true, class: "space-y-3" do |f| %>
+          <div>
+            <label class="mb-1 block text-[11px] font-semibold text-slate-700">Key</label>
+            <%= f.text_field :key, placeholder: "例: admin:dashboard", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label class="mb-1 block text-[11px] font-semibold text-slate-700">Resource</label>
+              <%= f.text_field :resource, placeholder: "例: admin", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
+            </div>
+            <div>
+              <label class="mb-1 block text-[11px] font-semibold text-slate-700">Action</label>
+              <%= f.text_field :action, placeholder: "例: dashboard", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
+            </div>
+          </div>
+          <div>
+            <label class="mb-1 block text-[11px] font-semibold text-slate-700">表示名</label>
+            <%= f.text_field :name, placeholder: "例: 管理ダッシュボード", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
+          </div>
+          <div>
+            <label class="mb-1 block text-[11px] font-semibold text-slate-700">説明</label>
+            <%= f.text_field :description, placeholder: "用途のメモ", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
+          </div>
+          <div class="pt-2">
+            <%= f.submit "権限を追加", class: "w-full inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
