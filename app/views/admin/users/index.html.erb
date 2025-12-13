@@ -109,10 +109,12 @@
                     <%= link_to "編集",
                         edit_admin_user_path(user, tenant_id: @selected_tenant_id),
                         class: "inline-flex items-center rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 shadow-sm hover:bg-slate-50" %>
-                    <%= link_to "削除",
+                    <%= button_to "削除",
                         admin_user_path(user, tenant_id: @selected_tenant_id),
                         method: :delete,
+                        form: { class: "inline", data: { turbo_confirm: "ユーザを削除します。よろしいですか？" } },
                         data: { confirm: "ユーザを削除します。よろしいですか？" },
+                        onclick: "return confirm('ユーザを削除します。よろしいですか？');",
                         class: "inline-flex items-center rounded border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] text-rose-600 shadow-sm hover:bg-rose-100" %>
                   </div>
                 </td>
@@ -154,10 +156,12 @@
                 <%= link_to "編集",
                     edit_admin_user_path(user, tenant_id: @selected_tenant_id),
                     class: "inline-flex items-center rounded border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 shadow-sm hover:bg-slate-50" %>
-                <%= link_to "削除",
+                <%= button_to "削除",
                     admin_user_path(user, tenant_id: @selected_tenant_id),
                     method: :delete,
+                    form: { class: "inline", data: { turbo_confirm: "ユーザを削除します。よろしいですか？" } },
                     data: { confirm: "ユーザを削除します。よろしいですか？" },
+                    onclick: "return confirm('ユーザを削除します。よろしいですか？');",
                     class: "inline-flex items-center rounded border border-rose-200 bg-rose-50 px-3 py-1.5 text-[11px] font-medium text-rose-700 shadow-sm hover:bg-rose-100" %>
               </div>
             </li>
