@@ -7,7 +7,8 @@ module Seeds
       roles: %w[index show new create edit update destroy],
       permissions: %w[index create update destroy],
       authorizations: %w[show update],
-      assignments: %w[index create destroy]
+      assignments: %w[index create destroy],
+      audit_logs: %w[index show]
     }.freeze
 
     def self.call
