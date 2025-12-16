@@ -1,27 +1,7 @@
+require_relative "seeds/permissions_admin"
+
+# 実行順序: permissions -> roles -> users(assignments)
 DEFAULT_PASSWORD = ENV.fetch("DEFAULT_PASSWORD", "ChangeMe123!")
-
-PERMISSION_DEFINITIONS = {
-  "dashboard" => %w[index],
-  "tenants" => %w[index show create update],
-  "roles" => %w[index show create update],
-  "users" => %w[index show create update],
-  "authorizations" => %w[show update],
-  "permissions" => %w[index create update destroy]
-}.freeze
-
-def ensure_permissions
-  PERMISSION_DEFINITIONS.each_with_object({}) do |(resource, actions), memo|
-    actions.each do |action|
-      key = "admin.#{resource}.#{action}"
-      memo[key] = Permission.find_or_create_by!(key: key) do |permission|
-        permission.resource = resource
-        permission.action = action
-        permission.name = "#{resource.humanize} #{action}"
-        permission.description = "Allows #{action} on #{resource}"
-      end
-    end
-  end
-end
 
 def ensure_tenant(attrs)
   Tenant.find_or_create_by!(code: attrs.fetch(:code)) do |t|
@@ -85,7 +65,7 @@ def ensure_user(tenant:, email:, name:, roles: [], owner_flag: false)
   user
 end
 
-permissions = ensure_permissions
+permissions = Seeds::PermissionsAdmin.call
 
 tenants = [
   { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", billing_email: "owner@darwin.example.com" },
