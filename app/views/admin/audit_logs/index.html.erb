@@ -1,0 +1,51 @@
+<% content_for :page_title do %>
+  監査ログ
+<% end %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">監査ログ</h1>
+    <p class="text-sm text-slate-600">管理画面での作成・更新・削除操作を記録します。</p>
+  </div>
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <table class="min-w-full text-left text-sm">
+      <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+        <tr>
+          <th class="px-4 py-2">日時</th>
+          <th class="px-4 py-2">ユーザー</th>
+          <th class="px-4 py-2">操作</th>
+          <th class="px-4 py-2">対象</th>
+          <th class="px-4 py-2">IP</th>
+          <th class="px-4 py-2 text-right">詳細</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <% @audit_logs.each do |log| %>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-2 text-xs text-slate-700"><%= l log.created_at, format: :short %></td>
+            <td class="px-4 py-2 text-sm text-slate-800"><%= log.user&.name || "System" %></td>
+            <td class="px-4 py-2 text-sm text-slate-800"><%= log.summary %></td>
+            <td class="px-4 py-2 text-xs text-slate-600"><%= "#{log.auditable_type}##{log.auditable_id}" %></td>
+            <td class="px-4 py-2 text-xs text-slate-600"><%= log.ip_address %></td>
+            <td class="px-4 py-2 text-right">
+              <% if can?("admin.audit_logs.show") %>
+                <%= link_to "詳細", admin_audit_log_path(log), class: "rounded border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @audit_logs.respond_to?(:current_page) %>
+    <div class="flex items-center justify-between text-sm text-slate-600">
+      <div>全 <%= @audit_logs.try(:total_count) || @audit_logs.size %> 件</div>
+      <div class="space-x-2">
+        <%= link_to "前へ", url_for(page: @audit_logs.prev_page), class: "text-sky-700 hover:underline" if @audit_logs.prev_page %>
+        <%= link_to "次へ", url_for(page: @audit_logs.next_page), class: "text-sky-700 hover:underline" if @audit_logs.next_page %>
+      </div>
+    </div>
+  <% end %>
+</div>

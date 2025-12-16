@@ -41,11 +41,11 @@ module Admin
           ]
         ),
         SidebarSection.new(
-          label: "権限管理",
-          items: [
-            SidebarItem.new(
-              label: "ロール",
-              path: admin_roles_path,
+      label: "権限管理",
+      items: [
+        SidebarItem.new(
+          label: "ロール",
+          path: admin_roles_path,
               permission_keys: %w[
                 admin.roles.index
                 admin.roles.show
@@ -67,13 +67,27 @@ module Admin
               controllers: %w[permissions]
             ),
             SidebarItem.new(
-              label: "権限割当",
-              path: admin_authorization_path,
+            label: "権限割当",
+            path: admin_authorization_path,
+            permission_keys: %w[
+              admin.authorizations.show
+              admin.authorizations.update
+            ],
+            controllers: %w[authorizations]
+          )
+        ]
+        ),
+        SidebarSection.new(
+          label: "監査",
+          items: [
+            SidebarItem.new(
+              label: "監査ログ",
+              path: admin_audit_logs_path,
               permission_keys: %w[
-                admin.authorizations.show
-                admin.authorizations.update
+                admin.audit_logs.index
+                admin.audit_logs.show
               ],
-              controllers: %w[authorizations]
+              controllers: %w[audit_logs]
             )
           ]
         )

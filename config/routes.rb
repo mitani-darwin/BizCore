@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resource :authorization, only: [:show, :update], controller: "authorizations"
     resources :permissions, only: [:index, :create, :update, :destroy]
+    resources :audit_logs, only: [:index, :show]
     resources :tenants, only: [:index, :show, :edit, :update]
     resources :roles, only: [:index, :show, :new, :create, :edit, :update]
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
