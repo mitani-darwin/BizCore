@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include AuthorizationHelper
+  helper Admin::SidebarHelper
 
   helper_method :current_user, :current_tenant, :current_ability
 

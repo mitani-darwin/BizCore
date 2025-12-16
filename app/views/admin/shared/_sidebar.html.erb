@@ -8,62 +8,24 @@
     </div>
   </div>
 
-  <!-- ナビメニュー -->
   <nav class="flex-1 py-4">
-    <ul class="space-y-1 px-3">
-      <% if can?("admin.dashboard.index") %>
-        <li>
-          <%= link_to admin_root_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_root_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🏠 ダッシュボード
+    <% sidebar_sections.each do |section| %>
+      <div class="mb-4 px-3">
+        <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500"><%= section.label %></p>
+        <ul class="space-y-1">
+          <% section.items.each do |item| %>
+            <% active = active_item?(item) %>
+            <li>
+              <%= link_to item.label,
+                  item.path,
+                  class: [
+                    "block rounded-lg px-3 py-2 text-sm",
+                    active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-100"
+                  ].join(" ") %>
+            </li>
           <% end %>
-        </li>
-      <% end %>
-
-      <% if can?("admin.tenants.index") %>
-        <li>
-          <%= link_to admin_tenants_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenants_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            📁 テナント管理
-          <% end %>
-        </li>
-      <% end %>
-
-      <% if can?("admin.roles.index") %>
-        <li>
-          <%= link_to admin_roles_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_roles_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🛡️ ロール
-          <% end %>
-        </li>
-      <% end %>
-
-      <% if can?("admin.authorizations.show") %>
-        <li>
-          <%= link_to admin_authorization_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_authorization_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🔒 権限割当
-          <% end %>
-        </li>
-      <% end %>
-
-      <% if can?("admin.permissions.index") %>
-        <li>
-          <%= link_to admin_permissions_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_permissions_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🧩 権限定義
-          <% end %>
-        </li>
-      <% end %>
-
-      <% if can?("admin.users.index") %>
-        <li>
-          <%= link_to admin_users_path,
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_users_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            👥 ユーザ
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
+        </ul>
+      </div>
+    <% end %>
   </nav>
 </aside>
