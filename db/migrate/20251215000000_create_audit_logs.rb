@@ -7,7 +7,7 @@ class CreateAuditLogs < ActiveRecord::Migration[8.1]
       t.string :auditable_type, null: false
       t.bigint :auditable_id, null: false
       t.string :summary, null: false
-      t.jsonb :changes
+      t.json :changes
       t.string :ip_address
       t.string :user_agent
       t.timestamps
