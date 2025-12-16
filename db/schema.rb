@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_13_074436) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_14_000000) do
+  create_table "assignments", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "role_id", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["role_id"], name: "index_assignments_on_role_id"
+    t.index ["tenant_id", "user_id", "role_id"], name: "index_assignments_on_tenant_id_and_user_id_and_role_id", unique: true
+    t.index ["tenant_id"], name: "index_assignments_on_tenant_id"
+    t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
   create_table "permissions", force: :cascade do |t|
     t.string "action", null: false
     t.datetime "created_at", null: false
@@ -110,6 +122,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_13_074436) do
     t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
+  add_foreign_key "assignments", "roles"
+  add_foreign_key "assignments", "tenants"
+  add_foreign_key "assignments", "users"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "roles", "tenants"

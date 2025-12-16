@@ -1,6 +1,7 @@
 class Tenant < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :roles, dependent: :destroy
+  has_many :assignments, dependent: :destroy
 
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true

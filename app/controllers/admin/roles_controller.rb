@@ -1,67 +1,66 @@
 module Admin
-  class RolesController < ApplicationController
-    before_action :set_tenant
-    before_action :set_search_params, only: [:index, :create]
+  class RolesController < BaseController
+    before_action :set_role, only: %i[show edit update]
+    before_action :set_permissions, only: %i[new create edit update]
 
     def index
-      authorize([:admin, Role], :manage?)
+      @roles = current_tenant.roles.includes(:permissions).order(:name)
+    end
 
-      @roles = policy_scope([:admin, Role]).where(tenant: @tenant).order(:name)
-      @tenant_search_name = @tenant.name
-      @tenant_search_code = @tenant.code
-      @tenant_search_subdomain = @tenant.subdomain
-      @tenant_options = [@tenant].compact
-      @tenant_search_results = [@tenant].compact
+    def show; end
+
+    def new
+      @role = current_tenant.roles.build
     end
 
     def create
-      authorize([:admin, Role], :manage?)
+      @role = current_tenant.roles.build(role_params)
+      assign_permissions(@role)
 
-      new_roles = role_params
-      created = []
-
-      ActiveRecord::Base.transaction do
-        new_roles.each do |attrs|
-          next if attrs.values.all?(&:blank?)
-
-          role = @tenant.roles.build(attrs)
-          if role.save
-            created << role
-          else
-            @errors = role.errors.full_messages
-            raise ActiveRecord::Rollback
-          end
-        end
-      end
-
-      if created.any? && @errors.blank?
-        redirect_to admin_tenant_roles_path(@tenant), notice: "ロールを保存しました。"
+      if @role.save
+        redirect_to admin_roles_path, notice: "ロールを作成しました。"
       else
-        @roles = @tenant.roles.order(:name)
-        @tenant_options = Tenant.order(:id).limit(100)
-        @tenant_search_results = search_tenants(@tenant_search_name, @tenant_search_code, @tenant_search_subdomain)
-        flash.now[:alert] = @errors&.join(", ") || "保存するロールがありません。"
-        render :index, status: :unprocessable_entity
+        render :new, status: :unprocessable_entity
+      end
+    end
+
+    def edit; end
+
+    def update
+      @role.assign_attributes(role_params)
+      assign_permissions(@role)
+
+      if @role.save
+        redirect_to admin_role_path(@role), notice: "ロールを更新しました。"
+      else
+        render :edit, status: :unprocessable_entity
       end
     end
 
     private
 
-    def set_tenant
-      @tenant = current_tenant
-      raise Pundit::NotAuthorizedError unless @tenant.present? && params[:tenant_id].to_s == @tenant.id.to_s
+    def set_role
+      @role = current_tenant.roles.find_by(id: params[:id])
+      return if @role
+
+      render_not_found and return false
     end
 
-    def set_search_params
-      @tenant_search_name = params[:tenant_name].to_s.strip
-      @tenant_search_code = params[:tenant_code].to_s.strip
-      @tenant_search_subdomain = params[:tenant_subdomain].to_s.strip
+    def set_permissions
+      @permissions = Permission.order(:resource, :action)
+    end
+
+    def assign_permissions(role)
+      role.permission_ids = permitted_permission_ids
+    end
+
+    def permitted_permission_ids
+      ids = Array(params.dig(:role, :permission_ids)).reject(&:blank?).map(&:to_i)
+      @permissions ? @permissions.where(id: ids).pluck(:id) : Permission.where(id: ids).pluck(:id)
     end
 
     def role_params
-      params.fetch(:roles, []).map do |role|
-        role.permit(:name, :key, :description)
-      end
+      params.require(:role).permit(:name, :key, :description)
     end
   end
 end

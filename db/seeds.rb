@@ -1,10 +1,27 @@
-# frozen_string_literal: true
+DEFAULT_PASSWORD = ENV.fetch("DEFAULT_PASSWORD", "ChangeMe123!")
 
-# Default data bootstrap for development/testing.
-# Idempotent: running seeds multiple times will not duplicate records.
+PERMISSION_DEFINITIONS = {
+  "dashboard" => %w[index],
+  "tenants" => %w[index show create update],
+  "roles" => %w[index show create update],
+  "users" => %w[index show create update],
+  "authorizations" => %w[show update],
+  "permissions" => %w[index create update destroy]
+}.freeze
 
-DEFAULT_ADMIN_EMAIL = "mitani@darwin-chiba.jp"
-DEFAULT_ADMIN_PASSWORD = ENV.fetch("DEFAULT_ADMIN_PASSWORD", "ChangeMe123!")
+def ensure_permissions
+  PERMISSION_DEFINITIONS.each_with_object({}) do |(resource, actions), memo|
+    actions.each do |action|
+      key = "admin.#{resource}.#{action}"
+      memo[key] = Permission.find_or_create_by!(key: key) do |permission|
+        permission.resource = resource
+        permission.action = action
+        permission.name = "#{resource.humanize} #{action}"
+        permission.description = "Allows #{action} on #{resource}"
+      end
+    end
+  end
+end
 
 def ensure_tenant(attrs)
   Tenant.find_or_create_by!(code: attrs.fetch(:code)) do |t|
@@ -12,102 +29,104 @@ def ensure_tenant(attrs)
     t.subdomain = attrs.fetch(:subdomain)
     t.plan = attrs[:plan] || "standard"
     t.status = attrs[:status] || "active"
-    t.billing_email = attrs[:billing_email] || DEFAULT_ADMIN_EMAIL
+    t.billing_email = attrs[:billing_email] || "owner@#{attrs[:code]}.example.com"
   end
 end
 
-def ensure_roles_for(tenant)
-  base = {
-    "owner" => { name: "オーナー", built_in: true, description: "全権限" },
-    "admin" => { name: "管理者", built_in: true, description: "管理機能全般" },
-    "manager" => { name: "マネージャー", description: "日常運用" },
-    "viewer" => { name: "閲覧者", description: "閲覧のみ" },
-    "finance" => { name: "経理担当", description: "請求・支払確認" },
-    "ops" => { name: "オペレーション", description: "日常オペレーション" },
-    "support" => { name: "サポート", description: "サポート窓口" },
-    "sales" => { name: "営業", description: "営業閲覧" },
-    "product" => { name: "プロダクト", description: "設定変更" },
-    "qa" => { name: "QA", description: "検証用" }
-  }
+def ensure_roles(tenant, permission_records)
+  all_ids = permission_records.values.map(&:id)
+  read_ids = permission_records.values.select { |p| p.action.in?(%w[index show]) }.map(&:id)
 
-  base.each_with_object({}) do |(key, attrs), memo|
-    memo[key] = tenant.roles.find_or_create_by!(key: key) do |role|
-      role.name = attrs[:name]
-      role.description = attrs[:description]
-      role.built_in = attrs[:built_in] || false
-    end
+  owner = tenant.roles.find_or_create_by!(key: "owner") do |r|
+    r.name = "オーナー"
+    r.description = "全権限"
+    r.built_in = true
   end
+  admin = tenant.roles.find_or_create_by!(key: "admin") do |r|
+    r.name = "管理者"
+    r.description = "全権限"
+    r.built_in = true
+  end
+  manager = tenant.roles.find_or_create_by!(key: "manager") do |r|
+    r.name = "マネージャー"
+    r.description = "閲覧 + ユーザ/ロール編集"
+    r.built_in = false
+  end
+  viewer = tenant.roles.find_or_create_by!(key: "viewer") do |r|
+    r.name = "閲覧者"
+    r.description = "閲覧のみ"
+    r.built_in = false
+  end
+
+  owner.permission_ids = all_ids
+  admin.permission_ids = all_ids
+  manager.permission_ids = (read_ids + permission_records.values.select { |p| %w[users roles].include?(p.resource) }.map(&:id)).uniq
+  viewer.permission_ids = read_ids
+
+  { owner: owner, admin: admin, manager: manager, viewer: viewer }
 end
 
-def ensure_user(tenant:, email:, name:, roles: [], owner: false)
+def ensure_user(tenant:, email:, name:, roles: [], owner_flag: false)
   user = User.find_or_initialize_by(email: email)
   user.tenant = tenant
   user.name = name
-  user.is_owner = owner
-  user.password = DEFAULT_ADMIN_PASSWORD
-  user.password_confirmation = DEFAULT_ADMIN_PASSWORD
-  user.role_ids = roles.map(&:id) if roles.any?
+  user.is_owner = owner_flag
+  user.password = DEFAULT_PASSWORD
+  user.password_confirmation = DEFAULT_PASSWORD
+  user.locale = "ja"
+  user.time_zone = "Asia/Tokyo"
+  user.role_ids = roles.map(&:id) if roles.present?
   user.save!
+
+  roles.each do |role|
+    Assignment.find_or_create_by!(tenant:, user:, role:)
+  end
 
   user
 end
 
-base_tenants = [
-  { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", status: "active", billing_email: DEFAULT_ADMIN_EMAIL },
-  { code: "acme", name: "Acme Corp", subdomain: "acme", plan: "standard", status: "active", billing_email: "ops@acme.test" },
-  { code: "globex", name: "Globex", subdomain: "globex", plan: "pro", status: "active", billing_email: "it@globex.test" }
+permissions = ensure_permissions
+
+tenants = [
+  { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", billing_email: "owner@darwin.example.com" },
+  { code: "acme", name: "Acme Corp", subdomain: "acme", plan: "standard", billing_email: "owner@acme.example.com" }
 ]
 
-# Fill up to 10 tenants total with generated data
-(4..10).each do |idx|
-  code = "tenant#{idx.to_s.rjust(2, '0')}"
-  base_tenants << {
-    code: code,
-    name: "Tenant #{idx}",
-    subdomain: "tenant#{idx}",
-    plan: %w[standard pro enterprise].sample,
-    status: "active",
-    billing_email: "owner@#{code}.test"
-  }
-end
-
-base_tenants.first[:billing_email] = DEFAULT_ADMIN_EMAIL # ensure mitani email stays
-
-base_tenants.each do |attrs|
+tenants.each do |attrs|
   tenant = ensure_tenant(attrs)
-  roles = ensure_roles_for(tenant)
+  roles = ensure_roles(tenant, permissions)
 
-  # Owner
-  ensure_user(
+  owner_user = ensure_user(
     tenant: tenant,
     email: attrs[:billing_email],
-    name: "#{attrs[:name]} Owner",
-    roles: [roles["owner"]],
-    owner: true
+    name: "#{attrs[:name]} オーナー",
+    roles: [roles[:owner]],
+    owner_flag: true
   )
 
-  # Create additional users up to 10 per tenant
-  users_needed = 10
-  (0...users_needed).each do |i|
-    email = "#{tenant.code}.user#{i}@example.com"
-    name = "#{tenant.name} User #{i + 1}"
-    assigned_roles =
-      case i
-      when 0 then [roles["admin"]]
-      when 1 then [roles["manager"]]
-      when 2 then [roles["viewer"]]
-      else
-        roles.values.sample(2)
-      end
+  ensure_user(
+    tenant: tenant,
+    email: "admin@#{tenant.code}.example.com",
+    name: "#{tenant.name} 管理者",
+    roles: [roles[:admin]],
+    owner_flag: false
+  )
 
-    ensure_user(
-      tenant: tenant,
-      email: email,
-      name: name,
-      roles: assigned_roles,
-      owner: false
-    )
-  end
+  ensure_user(
+    tenant: tenant,
+    email: "manager@#{tenant.code}.example.com",
+    name: "#{tenant.name} マネージャー",
+    roles: [roles[:manager]],
+    owner_flag: false
+  )
+
+  ensure_user(
+    tenant: tenant,
+    email: "viewer@#{tenant.code}.example.com",
+    name: "#{tenant.name} 閲覧者",
+    roles: [roles[:viewer]],
+    owner_flag: false
+  )
 end
 
-puts "Seeded 10 tenants with 10 roles & 10 users each. Default password: #{DEFAULT_ADMIN_PASSWORD}"
+puts "Seeded tenants, roles, permissions, and sample users. Default password: #{DEFAULT_PASSWORD}"

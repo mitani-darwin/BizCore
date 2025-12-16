@@ -1,8 +1,7 @@
 module Admin
-  class AuthorizationsController < ApplicationController
+  class AuthorizationsController < BaseController
     helper_method :locked_role?
 
-    before_action :authorize_page
     before_action :load_roles_and_permissions
 
     def show
@@ -25,12 +24,8 @@ module Admin
 
     private
 
-    def authorize_page
-      authorize [:admin, :authorization], :manage?
-    end
-
     def load_roles_and_permissions
-      @roles = policy_scope([:admin, Role]).includes(:permissions).order(:id)
+      @roles = current_tenant.roles.includes(:permissions).order(:id)
       @permissions = Permission.order(:resource, :action, :id)
       @permissions_by_resource = @permissions.group_by(&:resource)
       @permission_ids = @permissions.map(&:id)

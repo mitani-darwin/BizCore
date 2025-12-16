@@ -3,12 +3,10 @@ class User < ApplicationRecord
 
   belongs_to :tenant
 
-  has_many :user_roles, dependent: :destroy
-  has_many :roles, through: :user_roles
+  has_many :assignments, dependent: :destroy
+  has_many :roles, through: :assignments
   has_many :role_permissions, through: :roles
   has_many :permissions, through: :role_permissions
-  has_many :tenant_user_roles, foreign_key: :tenant_user_id, dependent: :destroy
-  has_many :roles_via_tenant_user_roles, through: :tenant_user_roles, source: :role
 
   validates :tenant, presence: { message: "を選択してください" }
   validates :name, presence: { message: "を入力してください" }
@@ -16,7 +14,7 @@ class User < ApplicationRecord
   validate :roles_must_be_selected
 
   def can?(permission_key)
-    permissions.exists?(key: permission_key)
+    Ability.new(self).can?(permission_key)
   end
 
   private
