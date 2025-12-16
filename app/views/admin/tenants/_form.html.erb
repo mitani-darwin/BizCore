@@ -10,85 +10,41 @@
     </div>
   <% end %>
 
-  <p class="text-xs text-slate-500">※ は必須項目を示します。入力漏れがあると保存できません。</p>
-
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
-      <%= f.label :name, class: "block text-sm font-medium text-slate-700" do %>
-        テナント名 <span class="ml-1 text-rose-500">※</span>
-      <% end %>
-      <% if tenant.persisted? %>
-        <p class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= tenant.name %></p>
-        <%= f.hidden_field :name, value: tenant.name %>
-        <p class="mt-1 text-xs text-slate-500">作成後はテナント名を変更できません。</p>
-      <% else %>
-        <%= f.text_field :name,
-            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
-            required: true %>
-      <% end %>
+      <%= f.label :name, "テナント名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
-      <%= f.label :code, class: "block text-sm font-medium text-slate-700" do %>
-        コード <span class="ml-1 text-rose-500">※</span>
-      <% end %>
-      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) tenant_001" %>
+      <%= f.label :code, "コード", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
-      <%= f.label :subdomain, class: "block text-sm font-medium text-slate-700" do %>
-        サブドメイン <span class="ml-1 text-rose-500">※</span>
-      <% end %>
-      <%= f.text_field :subdomain, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "ex) acme" %>
-      <p class="mt-1 text-xs text-slate-500">例: acme.example.com</p>
+      <%= f.label :subdomain, "サブドメイン", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :subdomain, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <p class="mt-1 text-xs text-slate-500">例: acme.example.com の acme 部分</p>
     </div>
 
     <div>
-      <%= f.label :billing_email, class: "block text-sm font-medium text-slate-700" do %>
-        請求先メールアドレス <span class="ml-1 text-rose-500">※</span>
-      <% end %>
+      <%= f.label :billing_email, "請求メール", class: "block text-sm font-medium text-slate-800" %>
       <%= f.email_field :billing_email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
-      <%= f.label :plan, class: "block text-sm font-medium text-slate-700" do %>
-        プラン <span class="ml-1 text-rose-500">※</span>
-      <% end %>
-      <%= f.select :plan,
-          options_for_select(
-            [
-              ["フリー", "free"],
-              ["スタンダード", "standard"],
-              ["エンタープライズ", "enterprise"]
-            ],
-            tenant.plan
-          ),
-          {},
-          class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
-          required: true %>
+      <%= f.label :plan, "プラン", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :plan, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
 
     <div>
-      <%= f.label :status, class: "block text-sm font-medium text-slate-700" do %>
-        ステータス <span class="ml-1 text-rose-500">※</span>
-      <% end %>
-      <%= f.select :status,
-          options_for_select(
-            [
-              ["有効", "active"],
-              ["トライアル", "trial"],
-              ["一時停止", "suspended"]
-            ],
-            tenant.status
-          ),
-          {},
-          class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
-          required: true %>
+      <%= f.label :status, "ステータス", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :status, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
   </div>
 
-  <div class="flex items-center gap-3 pt-2">
-    <%= f.submit "保存する", class: "inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700" %>
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
     <%= link_to "キャンセル", admin_tenants_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
   </div>
 <% end %>

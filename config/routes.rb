@@ -10,22 +10,25 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  devise_scope :user do
+    unauthenticated do
+      root to: "devise/sessions#new"
+    end
+  end
+  
   # Defines the root path route ("/")
   authenticated :user do
     root to: "admin/dashboard#index", as: :authenticated_root
   end
 
-  unauthenticated do
-    root to: "devise/sessions#new"
-  end
+
 
   namespace :admin do
     resource :authorization, only: [:show, :update], controller: "authorizations"
-    resources :tenants do
-      resources :roles, only: [:index, :create]
-    end
     resources :permissions, only: [:index, :create, :update, :destroy]
-    resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :tenants, only: [:index, :show, :edit, :update]
+    resources :roles, only: [:index, :show, :new, :create, :edit, :update]
+    resources :users, only: [:index, :show, :new, :create, :edit, :update]
     root to: "dashboard#index"
   end
 end

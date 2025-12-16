@@ -1,0 +1,14 @@
+<% content_for :page_title do %>
+  ロール作成
+<% end %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">新しいロールを作成</h1>
+    <p class="text-sm text-slate-600">現在のテナント向けに権限をまとめます。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", role: @role %>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<% content_for :page_title do %>
+  ロール詳細
+<% end %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900"><%= @role.name %></h1>
+      <p class="text-sm text-slate-600">キー: <%= @role.key %></p>
+    </div>
+    <% if can?("admin.roles.update") %>
+      <%= link_to "編集", edit_admin_role_path(@role), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <dl class="space-y-2 text-sm text-slate-800">
+      <div>
+        <dt class="text-xs text-slate-500">説明</dt>
+        <dd><%= @role.description.presence || "説明なし" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">付与権限</dt>
+        <dd class="mt-2">
+          <% if @role.permissions.any? %>
+            <div class="flex flex-wrap gap-2">
+              <% @role.permissions.each do |permission| %>
+                <span class="rounded-full bg-slate-50 px-3 py-1 text-xs text-slate-700 border border-slate-200"><%= permission.key %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <span class="text-slate-500">権限が設定されていません。</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_roles_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.roles.update") %>
+      <%= link_to "編集", edit_admin_role_path(@role), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+  </div>
+</div>

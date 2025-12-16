@@ -11,7 +11,7 @@
   <!-- ナビメニュー -->
   <nav class="flex-1 py-4">
     <ul class="space-y-1 px-3">
-      <% if policy([:admin, :dashboard]).access? %>
+      <% if can?("admin.dashboard.index") %>
         <li>
           <%= link_to admin_root_path,
               class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_root_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
@@ -20,33 +20,34 @@
         </li>
       <% end %>
 
-      <li>
-        <%= link_to admin_tenants_path,
-            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenants_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-          📁 テナント管理
-        <% end %>
-      </li>
-
-      <li>
-        <% if current_tenant.present? %>
-          <%= link_to admin_tenant_roles_path(current_tenant),
-              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenant_roles_path(current_tenant)) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🛡️ ロール一覧
+      <% if can?("admin.tenants.index") %>
+        <li>
+          <%= link_to admin_tenants_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_tenants_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            📁 テナント管理
           <% end %>
-        <% else %>
-          <span class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-400">
-            🛡️ ロール一覧（テナント未選択）
-          </span>
-        <% end %>
-      </li>
+        </li>
+      <% end %>
 
-      <% if policy([:admin, :authorization]).manage? %>
+      <% if can?("admin.roles.index") %>
+        <li>
+          <%= link_to admin_roles_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_roles_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            🛡️ ロール
+          <% end %>
+        </li>
+      <% end %>
+
+      <% if can?("admin.authorizations.show") %>
         <li>
           <%= link_to admin_authorization_path,
               class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_authorization_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-            🔒 権限管理
+            🔒 権限割当
           <% end %>
         </li>
+      <% end %>
+
+      <% if can?("admin.permissions.index") %>
         <li>
           <%= link_to admin_permissions_path,
               class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_permissions_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
@@ -55,19 +56,14 @@
         </li>
       <% end %>
 
-      <li>
-        <%= link_to admin_users_path,
-            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_users_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
-          👥 ユーザ一覧
-        <% end %>
-      </li>
-
-      <li>
-        <%= link_to "#",
-            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" do %>
-          📊 アクセスログ（例）
-        <% end %>
-      </li>
+      <% if can?("admin.users.index") %>
+        <li>
+          <%= link_to admin_users_path,
+              class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 #{current_page?(admin_users_path) ? 'bg-slate-100 font-semibold' : ''}" do %>
+            👥 ユーザ
+          <% end %>
+        </li>
+      <% end %>
     </ul>
   </nav>
 </aside>

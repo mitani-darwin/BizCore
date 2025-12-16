@@ -1,332 +1,59 @@
-<%# app/views/admin/tenants/index.html.erb %>
+<% content_for :page_title do %>
+  テナント一覧
+<% end %>
 
-<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-  <!-- Page header -->
-  <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-slate-900">テナント一覧</h1>
-      <p class="mt-1 text-xs text-slate-500">
-        中小企業向けSaaSの全テナントを管理します。検索・フィルタで素早く絞り込みできます。
-      </p>
+      <p class="text-sm text-slate-600">表示されるのは現在のテナントのみです。</p>
     </div>
-    <div class="flex items-center gap-2">
-      <button
-        class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50"
-      >
-        CSVエクスポート
-      </button>
-      <%= link_to "＋ 新規テナント追加",
-                  new_admin_tenant_path,
-                  class: "inline-flex items-center gap-1 rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-sky-700" %>
-    </div>
+    <% if @tenant && can?("admin.tenants.update") %>
+      <%= link_to "設定を編集", edit_admin_tenant_path(@tenant), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
   </div>
 
-  <!-- Filters -->
-  <section class="mb-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:px-5">
-    <%= form_with url: admin_tenants_path, method: :get, local: true,
-                  class: "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" do |f| %>
-
-      <!-- Search -->
-      <div class="flex flex-1 items-center gap-2">
-        <div class="relative flex-1">
-          <span class="pointer-events-none absolute inset-y-0 left-2 flex items-center text-slate-400">
-            🔍
-          </span>
-          <%= f.search_field :q,
-              value: params[:q],
-              placeholder: "テナント名 / ドメイン / 担当者で検索",
-              class: "w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500" %>
-        </div>
-      </div>
-
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-2">
-        <%= f.select :status,
-          options_for_select(
-            [
-              ["ステータス: すべて", ""],
-              ["有効", "active"],
-              ["トライアル", "trial"],
-              ["一時停止", "suspended"]
-            ],
-            params[:status]
-          ),
-          {},
-          class: "rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
-
-        <%= f.select :plan,
-          options_for_select(
-            [
-              ["プラン: すべて", ""],
-              ["フリー", "free"],
-              ["スタンダード", "standard"],
-              ["エンタープライズ", "enterprise"]
-            ],
-            params[:plan]
-          ),
-          {},
-          class: "rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
-
-        <%= f.select :sort,
-          options_for_select(
-            [
-              ["並び順: 最近アクセス順", "recent"],
-              ["登録日(新しい順)", "created_desc"],
-              ["登録日(古い順)", "created_asc"],
-              ["テナント名", "name"]
-            ],
-            params[:sort]
-          ),
-          {},
-          class: "rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
-      </div>
-    <% end %>
-  </section>
-
-  <!-- Table -->
-  <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
-    <!-- table header info -->
-    <div class="flex items-center justify-between border-b border-slate-100 px-4 py-2 text-xs text-slate-500">
-      <% total_count = @tenants.respond_to?(:total_count) ? @tenants.total_count : @tenants.size %>
-      <span>全 <%= total_count %> 件</span>
-
-      <div class="flex items-center gap-3">
-        <label class="inline-flex items-center gap-1">
-          <span>ページあたり</span>
-          <select class="rounded border border-slate-200 bg-white px-1.5 py-1 text-xs">
-            <option>20</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
-        </label>
-      </div>
-    </div>
-
-    <!-- Desktop table -->
-    <div class="hidden sm:block">
-      <table class="min-w-full text-left text-xs">
-        <thead class="bg-slate-50 text-slate-500">
-          <tr>
-            <th class="w-10 px-4 py-2">
-              <input
-                type="checkbox"
-                class="h-3.5 w-3.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-              />
-            </th>
-            <th class="px-3 py-2 font-medium">テナント名</th>
-            <th class="px-3 py-2 font-medium">ドメイン</th>
-            <th class="px-3 py-2 font-medium">プラン</th>
-            <th class="px-3 py-2 font-medium">ステータス</th>
-            <th class="px-3 py-2 font-medium">利用開始日</th>
-            <th class="px-3 py-2 font-medium">最終アクセス</th>
-            <th class="px-3 py-2 text-right font-medium">アクション</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <% @tenants.each do |tenant| %>
-            <%# ==== バッジ用のラベル & クラスをRubyで決定 ==== %>
-            <% plan_label, plan_badge_class =
-              case tenant.plan
-              when "free"
-                ["フリー", "bg-slate-50 text-slate-700"]
-              when "standard"
-                ["スタンダード", "bg-sky-50 text-sky-700"]
-              when "enterprise"
-                ["エンタープライズ", "bg-slate-900/90 text-slate-50"]
-              else
-                [tenant.plan.to_s, "bg-slate-100 text-slate-600"]
-              end %>
-
-            <% status_label, status_badge_class, status_dot_class =
-              case tenant.status
-              when "active"
-                ["有効", "bg-emerald-50 text-emerald-700", "bg-emerald-500"]
-              when "trial"
-                ["トライアル中", "bg-amber-50 text-amber-700", "bg-amber-500"]
-              when "suspended"
-                ["一時停止", "bg-slate-100 text-slate-600", "bg-slate-400"]
-              else
-                [tenant.status.to_s, "bg-slate-100 text-slate-600", "bg-slate-400"]
-              end %>
-
-            <tr class="hover:bg-slate-50">
-              <td class="px-4 py-2 align-middle">
-                <input
-                  type="checkbox"
-                  class="h-3.5 w-3.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-                />
-              </td>
-              <td class="px-3 py-2 align-middle">
-                <div class="flex flex-col">
-                  <span class="text-xs font-semibold text-slate-900">
-                    <%= tenant.name %>
-                  </span>
-                  <%# テナントコードやIDなど。属性名は実際のスキーマに合わせて変更してください %>
-                  <span class="text-[11px] text-slate-500">
-                    <%= tenant.code %>
-                  </span>
-                </div>
-              </td>
-              <td class="px-3 py-2 align-middle">
-                <span class="text-[11px] text-sky-700">
-                  <%= tenant.primary_domain %>
-                </span>
-              </td>
-              <td class="px-3 py-2 align-middle">
-                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium <%= plan_badge_class %>">
-                  <%= plan_label %>
-                </span>
-              </td>
-              <td class="px-3 py-2 align-middle">
-                <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium <%= status_badge_class %>">
-                  <span class="h-1.5 w-1.5 rounded-full <%= status_dot_class %>"></span>
-                  <%= status_label %>
-                </span>
-              </td>
-              <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
-                <%= tenant.started_on&.strftime("%Y-%m-%d") %>
-              </td>
-              <td class="px-3 py-2 align-middle text-[11px] text-slate-600">
-                <%= tenant.last_access_at&.strftime("%Y-%m-%d %H:%M") %>
-              </td>
-              <td class="px-3 py-2 align-middle text-right">
-                <div class="inline-flex items-center gap-1.5">
-                  <%= link_to "詳細",
-                              admin_tenant_path(tenant),
-                              class: "rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50" %>
-
-                  <%# テナントにログインする独自アクションのパスはアプリ側に合わせて変更してください %>
-                  <%= link_to "ログイン",
-                              "#",
-                              class: "rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50" %>
-
-                  <% if tenant.status == "active" || tenant.status == "trial" %>
-                    <%= link_to "停止",
-                                "#",
-                                class: "rounded border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] text-rose-600 hover:bg-rose-100" %>
-                  <% else %>
-                    <%= link_to "再開",
-                                "#",
-                                class: "rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] text-emerald-600 hover:bg-emerald-100" %>
-                  <% end %>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Mobile cards -->
-    <div class="divide-y divide-slate-100 sm:hidden">
+  <% if @tenants.any? %>
+    <div class="grid grid-cols-1 gap-4">
       <% @tenants.each do |tenant| %>
-        <% plan_label, plan_badge_class =
-          case tenant.plan
-          when "free"
-            ["フリー", "bg-slate-50 text-slate-700"]
-          when "standard"
-            ["スタンダード", "bg-sky-50 text-sky-700"]
-          when "enterprise"
-            ["エンタープライズ", "bg-slate-900/90 text-slate-50"]
-          else
-            [tenant.plan.to_s, "bg-slate-100 text-slate-600"]
-          end %>
-
-        <% status_label, status_badge_class, status_dot_class =
-          case tenant.status
-          when "active"
-            ["有効", "bg-emerald-50 text-emerald-700", "bg-emerald-500"]
-          when "trial"
-            ["トライアル中", "bg-amber-50 text-amber-700", "bg-amber-500"]
-          when "suspended"
-            ["一時停止", "bg-slate-100 text-slate-600", "bg-slate-400"]
-          else
-            [tenant.status.to_s, "bg-slate-100 text-slate-600", "bg-slate-400"]
-          end %>
-
-        <div class="px-4 py-3">
-          <div class="flex items-start justify-between gap-2">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="flex items-start justify-between">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-slate-900">
-                  <%= tenant.name %>
-                </span>
-                <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium <%= status_badge_class %>">
-                  <span class="h-1.5 w-1.5 rounded-full <%= status_dot_class %>"></span>
-                  <%= status_label %>
-                </span>
-              </div>
-              <p class="mt-0.5 text-[11px] text-slate-500">
-                <%= tenant.primary_domain %> ・ <%= plan_label %>
-              </p>
+              <h2 class="text-lg font-semibold text-slate-900"><%= tenant.name %></h2>
+              <p class="text-sm text-slate-600"><%= tenant.subdomain %>.example.com</p>
             </div>
-            <input
-              type="checkbox"
-              class="mt-1 h-3.5 w-3.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-            />
+            <div class="text-right text-xs text-slate-500">
+              <div>コード: <%= tenant.code %></div>
+              <div>プラン: <%= tenant.plan %></div>
+              <div>ステータス: <%= tenant.status %></div>
+            </div>
           </div>
-          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
-            <span>利用開始: <%= tenant.started_on&.strftime("%Y-%m-%d") %></span>
-            <span>最終アクセス: <%= tenant.last_access_at&.strftime("%Y-%m-%d %H:%M") %></span>
-          </div>
-          <div class="mt-2 flex flex-wrap gap-1.5">
-            <%= link_to "詳細",
-                        admin_tenant_path(tenant),
-                        class: "rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50" %>
-            <%= link_to "ログイン",
-                        "#",
-                        class: "rounded border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 hover:bg-slate-50" %>
 
-            <% if tenant.status == "active" || tenant.status == "trial" %>
-              <%= link_to "停止",
-                          "#",
-                          class: "rounded border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] text-rose-600 hover:bg-rose-100" %>
-            <% else %>
-              <%= link_to "再開",
-                          "#",
-                          class: "rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] text-emerald-600 hover:bg-emerald-100" %>
+          <dl class="mt-3 grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-2">
+            <div class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+              <dt class="font-medium text-slate-800">請求メール</dt>
+              <dd><%= tenant.billing_email %></dd>
+            </div>
+            <div class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+              <dt class="font-medium text-slate-800">最終更新</dt>
+              <dd><%= tenant.updated_at&.strftime("%Y-%m-%d %H:%M") %></dd>
+            </div>
+          </dl>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <% if can?("admin.tenants.show") %>
+              <%= link_to "詳細", admin_tenant_path(tenant), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" %>
+            <% end %>
+            <% if can?("admin.tenants.update") %>
+              <%= link_to "編集", edit_admin_tenant_path(tenant), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
             <% end %>
           </div>
         </div>
       <% end %>
     </div>
-
-    <!-- Pagination（ここはお好みで kaminari / will_paginate に差し替え推奨） -->
-    <div class="flex items-center justify-between border-t border-slate-100 px-4 py-3">
-      <button
-        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 disabled:opacity-40"
-        disabled
-      >
-        ‹ 前へ
-      </button>
-      <div class="flex items-center gap-1 text-xs">
-        <button
-          class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-600 text-[11px] font-semibold text-white"
-        >
-          1
-        </button>
-        <button
-          class="inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] text-slate-600 hover:bg-slate-100"
-        >
-          2
-        </button>
-        <button
-          class="inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] text-slate-600 hover:bg-slate-100"
-        >
-          3
-        </button>
-        <span class="px-1 text-slate-400">…</span>
-        <button
-          class="inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] text-slate-600 hover:bg-slate-100"
-        >
-          7
-        </button>
-      </div>
-      <button
-        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
-      >
-        次へ ›
-      </button>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      表示できるテナントがありません。
     </div>
-  </section>
+  <% end %>
 </div>

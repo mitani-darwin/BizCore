@@ -23,19 +23,22 @@
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 class="text-sm font-semibold text-slate-800">クイックアクセス</h2>
       <div class="mt-3 space-y-2 text-sm">
-        <%= link_to "テナント設定", admin_tenants_path, class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
-        <% if @tenant.present? %>
-          <%= link_to "ロール管理", admin_tenant_roles_path(@tenant), class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
+        <% if can?("admin.tenants.index") %>
+          <%= link_to "テナント設定", admin_tenants_path, class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
         <% end %>
-        <%= link_to "ユーザー一覧", admin_users_path, class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
+        <% if can?("admin.roles.index") %>
+          <%= link_to "ロール管理", admin_roles_path, class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
+        <% end %>
+        <% if can?("admin.users.index") %>
+          <%= link_to "ユーザー一覧", admin_users_path, class: "block rounded-lg border border-slate-200 px-3 py-2 hover:bg-slate-50" %>
+        <% end %>
       </div>
     </div>
 
     <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 shadow-sm">
       <p class="font-semibold">権限について</p>
       <p class="mt-1">
-        管理画面はテナントオーナーまたは admin 権限を持つユーザーのみがアクセスできます。
-        URL 直叩きは Pundit で 403 を返します。
+        管理画面は権限キーによって保護され、権限がない場合は 404 を返します。
       </p>
     </div>
   </div>

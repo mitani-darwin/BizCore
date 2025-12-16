@@ -1,0 +1,49 @@
+<% content_for :page_title do %>
+  ユーザ詳細
+<% end %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900"><%= @user.name %></h1>
+      <p class="text-sm text-slate-600"><%= @user.email %></p>
+    </div>
+    <% if can?("admin.users.update") %>
+      <%= link_to "編集", edit_admin_user_path(@user), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2 text-sm text-slate-800">
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <dt class="text-xs text-slate-500">タイムゾーン</dt>
+        <dd><%= @user.time_zone.presence || "未設定" %></dd>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <dt class="text-xs text-slate-500">ロケール</dt>
+        <dd><%= @user.locale.presence || "未設定" %></dd>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3 sm:col-span-2">
+        <dt class="text-xs text-slate-500">ロール</dt>
+        <dd class="mt-2">
+          <% if @user.roles.any? %>
+            <div class="flex flex-wrap gap-2">
+              <% @user.roles.each do |role| %>
+                <span class="rounded-full bg-slate-50 px-3 py-1 text-xs text-slate-700 border border-slate-200"><%= role.name %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <span class="text-slate-500 text-xs">未割り当て</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_users_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.users.update") %>
+      <%= link_to "編集", edit_admin_user_path(@user), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+  </div>
+</div>
