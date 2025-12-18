@@ -42,7 +42,7 @@
               </td>
               <td class="px-4 py-2 text-right">
                 <div class="inline-flex gap-2">
-                  <% if can?("admin.users.show") %>
+                  <% if can?("admin.users.read") %>
                     <%= link_to "詳細", admin_user_path(user), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
                   <% end %>
                   <% if can?("admin.users.update") %>

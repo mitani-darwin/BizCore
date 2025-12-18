@@ -11,18 +11,17 @@ module Admin
             SidebarItem.new(
               label: "ダッシュボード",
               path: admin_root_path,
-              permission_keys: %w[admin.dashboard.index],
+              permission_keys: %w[admin.dashboard.read],
               controllers: %w[dashboard]
             ),
             SidebarItem.new(
               label: "テナント",
               path: admin_tenants_path,
               permission_keys: %w[
-                admin.tenants.index
-                admin.tenants.show
+                admin.tenants.read
                 admin.tenants.create
                 admin.tenants.update
-                admin.tenants.destroy
+                admin.tenants.delete
               ],
               controllers: %w[tenants]
             ),
@@ -30,11 +29,10 @@ module Admin
               label: "ユーザー",
               path: admin_users_path,
               permission_keys: %w[
-                admin.users.index
-                admin.users.show
+                admin.users.read
                 admin.users.create
                 admin.users.update
-                admin.users.destroy
+                admin.users.delete
               ],
               controllers: %w[users]
             )
@@ -47,11 +45,10 @@ module Admin
           label: "ロール",
           path: admin_roles_path,
               permission_keys: %w[
-                admin.roles.index
-                admin.roles.show
+                admin.roles.read
                 admin.roles.create
                 admin.roles.update
-                admin.roles.destroy
+                admin.roles.delete
               ],
               controllers: %w[roles]
             ),
@@ -59,10 +56,10 @@ module Admin
               label: "権限定義",
               path: admin_permissions_path,
               permission_keys: %w[
-                admin.permissions.index
+                admin.permissions.read
                 admin.permissions.create
                 admin.permissions.update
-                admin.permissions.destroy
+                admin.permissions.delete
               ],
               controllers: %w[permissions]
             ),
@@ -70,7 +67,7 @@ module Admin
             label: "権限割当",
             path: admin_authorization_path,
             permission_keys: %w[
-              admin.authorizations.show
+              admin.authorizations.read
               admin.authorizations.update
             ],
             controllers: %w[authorizations]
@@ -84,8 +81,7 @@ module Admin
               label: "監査ログ",
               path: admin_audit_logs_path,
               permission_keys: %w[
-                admin.audit_logs.index
-                admin.audit_logs.show
+                admin.audit_logs.read
               ],
               controllers: %w[audit_logs]
             )

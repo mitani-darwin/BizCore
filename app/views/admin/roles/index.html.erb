@@ -28,7 +28,7 @@
               <p class="text-sm text-slate-600">キー: <%= role.key %></p>
             </div>
             <div class="flex gap-2">
-              <% if can?("admin.roles.show") %>
+              <% if can?("admin.roles.read") %>
                 <%= link_to "詳細", admin_role_path(role), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" %>
               <% end %>
               <% if can?("admin.roles.update") %>
