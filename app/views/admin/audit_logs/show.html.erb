@@ -15,22 +15,30 @@
         <div class="font-semibold"><%= l @audit_log.created_at, format: :long %></div>
       </div>
       <div class="text-right">
-        <div class="text-xs text-slate-500">ユーザー</div>
-        <div class="font-semibold"><%= @audit_log.user&.name || "System" %></div>
+        <div class="text-xs text-slate-500">操作者</div>
+        <div class="font-semibold"><%= @audit_log.actor&.try(:name) || @audit_log.actor&.try(:id) || "System" %></div>
       </div>
     </div>
 
     <div>
-      <div class="text-xs text-slate-500">操作</div>
-      <div class="font-semibold"><%= @audit_log.summary %></div>
+      <div class="text-xs text-slate-500">アクション</div>
+      <div class="font-semibold"><%= @audit_log.action_key %> <span class="ml-2 rounded bg-slate-100 px-2 py-1 text-xs"><%= @audit_log.status %></span></div>
     </div>
 
     <div>
       <div class="text-xs text-slate-500">対象リソース</div>
-      <div class="font-semibold"><%= "#{@audit_log.auditable_type}##{@audit_log.auditable_id}" %></div>
+      <div class="font-semibold"><%= [@audit_log.auditable_type, @audit_log.auditable_id].compact.join("#").presence || "-" %></div>
     </div>
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div>
+        <div class="text-xs text-slate-500">HTTP</div>
+        <div class="font-semibold text-slate-700"><%= [@audit_log.http_method, @audit_log.path].compact.join(" ") %></div>
+      </div>
+      <div>
+        <div class="text-xs text-slate-500">Request ID</div>
+        <div class="text-xs text-slate-700 break-all"><%= @audit_log.request_id %></div>
+      </div>
       <div>
         <div class="text-xs text-slate-500">IPアドレス</div>
         <div class="font-semibold text-slate-700"><%= @audit_log.ip_address %></div>
@@ -41,10 +49,10 @@
       </div>
     </div>
 
-    <% if @audit_log.changes.present? %>
+    <% if @audit_log.metadata.present? %>
       <div>
-        <div class="text-xs text-slate-500">変更内容</div>
-        <pre class="mt-1 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200"><%= JSON.pretty_generate(@audit_log.changes) %></pre>
+        <div class="text-xs text-slate-500">メタデータ</div>
+        <pre class="mt-1 overflow-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200"><%= JSON.pretty_generate(@audit_log.metadata) %></pre>
       </div>
     <% end %>
   </div>

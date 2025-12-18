@@ -13,9 +13,10 @@
       <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
         <tr>
           <th class="px-4 py-2">日時</th>
-          <th class="px-4 py-2">ユーザー</th>
-          <th class="px-4 py-2">操作</th>
-          <th class="px-4 py-2">対象</th>
+          <th class="px-4 py-2">操作者</th>
+          <th class="px-4 py-2">アクション</th>
+          <th class="px-4 py-2">ステータス</th>
+          <th class="px-4 py-2">対象リソース</th>
           <th class="px-4 py-2">IP</th>
           <th class="px-4 py-2 text-right">詳細</th>
         </tr>
@@ -24,9 +25,10 @@
         <% @audit_logs.each do |log| %>
           <tr class="hover:bg-slate-50">
             <td class="px-4 py-2 text-xs text-slate-700"><%= l log.created_at, format: :short %></td>
-            <td class="px-4 py-2 text-sm text-slate-800"><%= log.user&.name || "System" %></td>
-            <td class="px-4 py-2 text-sm text-slate-800"><%= log.summary %></td>
-            <td class="px-4 py-2 text-xs text-slate-600"><%= "#{log.auditable_type}##{log.auditable_id}" %></td>
+            <td class="px-4 py-2 text-sm text-slate-800"><%= log.actor&.try(:name) || log.actor&.try(:id) || "System" %></td>
+            <td class="px-4 py-2 text-sm text-slate-800"><%= log.action_key %></td>
+            <td class="px-4 py-2 text-xs text-slate-700"><span class="rounded bg-slate-100 px-2 py-1"><%= log.status %></span></td>
+            <td class="px-4 py-2 text-xs text-slate-600"><%= [log.auditable_type, log.auditable_id].compact.join("#") %></td>
             <td class="px-4 py-2 text-xs text-slate-600"><%= log.ip_address %></td>
             <td class="px-4 py-2 text-right">
               <% if can?("admin.audit_logs.show") %>

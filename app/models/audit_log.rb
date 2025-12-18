@@ -1,9 +1,19 @@
 class AuditLog < ApplicationRecord
-  belongs_to :tenant
-  belongs_to :user, optional: true
+  STATUSES = {
+    succeeded: "succeeded",
+    failed: "failed",
+    denied: "denied"
+  }.freeze
 
-  validates :action, :auditable_type, :auditable_id, :summary, presence: true
+  belongs_to :tenant
+  belongs_to :actor, polymorphic: true, optional: true
+  belongs_to :auditable, polymorphic: true, optional: true
+
+  attribute :metadata, :json, default: {}
+
+  validates :tenant_id, :action_key, :status, presence: true
+  validates :status, inclusion: { in: STATUSES.values }
 
   scope :recent, -> { order(created_at: :desc) }
-  scope :for_tenant, ->(tenant) { where(tenant:) }
+  scope :for_tenant, ->(tenant) { where(tenant_id: tenant.respond_to?(:id) ? tenant.id : tenant) }
 end
