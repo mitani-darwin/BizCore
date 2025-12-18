@@ -7,7 +7,7 @@ module Admin
     around_action :with_audit_context
     after_action :write_automatic_audit_log
 
-    helper_method :current_admin_user, :required_permission_key, :audit_context
+    helper_method :current_admin_user, :required_permission_key, :audit_context, :navigation_sections, :navigation_active?, :navigation_path
 
     rescue_from AuthorizationError, with: :handle_authorization_error
 
@@ -160,6 +160,21 @@ module Admin
     def handle_authorization_error(_error)
       # TODO: add dedicated forbidden screen and richer audit context.
       render_not_found
+    end
+
+    def navigation_sections
+      Admin::Navigation.visible_sections(self)
+    end
+
+    def navigation_path(item)
+      Admin::Navigation.resolve_path(item, self)
+    end
+
+    def navigation_active?(item)
+      path = navigation_path(item)
+      return true if path && current_page?(path)
+
+      item.children.any? { |child| navigation_active?(child) }
     end
 
     def audit_target_record
