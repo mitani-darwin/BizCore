@@ -9,6 +9,8 @@ module Admin
 
     helper_method :current_admin_user, :required_permission_key, :audit_context
 
+    rescue_from AuthorizationError, with: :handle_authorization_error
+
     AUDITABLE_ACTIONS = %w[create update destroy].freeze
     SENSITIVE_AUDIT_KEYS = %w[
       encrypted_password
@@ -31,9 +33,7 @@ module Admin
     end
 
     def require_permission!
-      return if current_ability.can?(required_permission_key)
-
-      render_not_found and return false
+      authorize!(required_permission_key)
     end
 
     def required_permission_key
@@ -73,6 +73,10 @@ module Admin
     def with_audit_context
       audit_context
       yield
+    rescue AuthorizationError => e
+      @audit_exception = e
+      log_denied_audit(e)
+      raise
     rescue => e
       @audit_exception = e
       log_failed_audit(e)
@@ -123,6 +127,18 @@ module Admin
       )
     end
 
+    def log_denied_audit(exception)
+      return if @audit_recorded
+      return unless audit_loggable_action?
+
+      audit!(
+        action_key: required_permission_key,
+        auditable: audit_target_record,
+        metadata: { error: exception.message },
+        status: "denied"
+      )
+    end
+
     def audit_loggable_action?
       AUDITABLE_ACTIONS.include?(normalized_action_name) && audit_context[:tenant_id].present?
     end
@@ -139,6 +155,11 @@ module Admin
     def response_successful?
       status_code = response&.status.to_i
       status_code.positive? && status_code < 400
+    end
+
+    def handle_authorization_error(_error)
+      # TODO: add dedicated forbidden screen and richer audit context.
+      render_not_found
     end
 
     def audit_target_record

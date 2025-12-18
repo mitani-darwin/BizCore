@@ -12,6 +12,7 @@ module Admin
     def edit; end
 
     def update
+      authorize!("admin.tenants.update")
       if @tenant.update(tenant_params)
         audit!(
           action_key: "admin.tenants.update",
