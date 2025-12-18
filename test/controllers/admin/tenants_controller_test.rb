@@ -21,6 +21,14 @@ class Admin::TenantsControllerTest < ActionDispatch::IntegrationTest
       time_zone: "Asia/Tokyo",
       is_owner: true
     )
+
+    Permission.create!(
+      key: "admin.tenants.update",
+      resource: "tenants",
+      action: "update",
+      name: "テナント更新",
+      description: "テナントを更新できる"
+    )
   end
 
   test "update writes an audit log" do

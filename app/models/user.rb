@@ -17,6 +17,16 @@ class User < ApplicationRecord
     Ability.new(self).can?(permission_key)
   end
 
+  def permissions_for(tenant)
+    return Permission.none if tenant.blank?
+    return Permission.none if tenant_id.present? && tenant_id != tenant.id
+
+    roles_for_tenant = roles.joins(:assignments).where(assignments: { tenant_id: tenant.id })
+    Permission.joins(role_permissions: :role)
+              .where(roles: { id: roles_for_tenant.select(:id) })
+              .distinct
+  end
+
   private
 
   def self.human_attribute_name(attr, options = {})
