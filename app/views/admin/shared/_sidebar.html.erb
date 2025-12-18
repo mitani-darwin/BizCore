@@ -9,19 +9,36 @@
   </div>
 
   <nav class="flex-1 py-4">
-    <% sidebar_sections.each do |section| %>
+    <% navigation_sections.each do |section| %>
       <div class="mb-4 px-3">
         <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500"><%= section.label %></p>
         <ul class="space-y-1">
           <% section.items.each do |item| %>
-            <% active = active_item?(item) %>
+            <% active = navigation_active?(item) %>
+            <% path = navigation_path(item) %>
             <li>
               <%= link_to item.label,
-                  item.path,
+                  path || "#",
                   class: [
                     "block rounded-lg px-3 py-2 text-sm",
                     active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-100"
                   ].join(" ") %>
+              <% if item.children.any? %>
+                <ul class="mt-1 space-y-1 pl-3">
+                  <% item.children.each do |child| %>
+                    <% child_active = navigation_active?(child) %>
+                    <% child_path = navigation_path(child) %>
+                    <li>
+                      <%= link_to child.label,
+                          child_path || "#",
+                          class: [
+                            "block rounded-md px-3 py-1.5 text-xs",
+                            child_active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-600 hover:bg-slate-100"
+                          ].join(" ") %>
+                    </li>
+                  <% end %>
+                </ul>
+              <% end %>
             </li>
           <% end %>
         </ul>
