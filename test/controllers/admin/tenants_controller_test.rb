@@ -22,13 +22,7 @@ class Admin::TenantsControllerTest < ActionDispatch::IntegrationTest
       is_owner: true
     )
 
-    Permission.create!(
-      key: "admin.tenants.update",
-      resource: "tenants",
-      action: "update",
-      name: "テナント更新",
-      description: "テナントを更新できる"
-    )
+    Permissions::Catalog.seed_admin!
   end
 
   test "update writes an audit log" do
@@ -37,7 +31,7 @@ class Admin::TenantsControllerTest < ActionDispatch::IntegrationTest
     end
 
     audit_log = AuditLog.order(created_at: :desc).first
-    assert_equal "admin.tenants.update", audit_log.action_key
+    assert_equal Permissions::Catalog.admin_key(:tenants, :update), audit_log.action_key
     assert_equal @tenant.id, audit_log.tenant_id
     assert_equal @tenant.id, audit_log.auditable_id
     assert_equal "Tenant", audit_log.auditable_type
