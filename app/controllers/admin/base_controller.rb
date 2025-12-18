@@ -4,9 +4,19 @@ module Admin
 
     before_action :ensure_current_tenant!
     before_action :require_permission!
-    after_action :write_audit_log
+    around_action :with_audit_context
+    after_action :write_automatic_audit_log
 
-    helper_method :current_admin_user, :required_permission_key
+    helper_method :current_admin_user, :required_permission_key, :audit_context
+
+    AUDITABLE_ACTIONS = %w[create update destroy].freeze
+    SENSITIVE_AUDIT_KEYS = %w[
+      encrypted_password
+      password
+      password_confirmation
+      reset_password_token
+      reset_password_sent_at
+    ].freeze
 
     private
 
@@ -26,30 +36,6 @@ module Admin
       render_not_found and return false
     end
 
-    def write_audit_log
-      return unless audit_loggable_action?
-
-      AuditLogger.log(
-        tenant: Current.tenant,
-        user: Current.user,
-        action: action_name,
-        auditable: audit_target_record,
-        request: request
-      )
-    rescue => e
-      Rails.logger.error("[AuditLog] failed to write audit log: #{e.class} #{e.message}")
-    end
-
-    def audit_loggable_action?
-      %w[create update destroy].include?(action_name) &&
-        Current.tenant.present? &&
-        response&.status.to_i < 400
-    end
-
-    def audit_target_record
-      instance_variable_get("@#{controller_name.singularize}")
-    end
-
     def required_permission_key
       action =
         case action_name
@@ -62,6 +48,107 @@ module Admin
         end
 
       "admin.#{controller_name}.#{action}"
+    end
+
+    def audit_context
+      @audit_context ||= build_audit_context
+    end
+
+    def build_audit_context
+      {
+        tenant_id: current_tenant&.id,
+        actor: current_admin_user,
+        request_id: request&.request_id,
+        ip_address: request&.remote_ip,
+        user_agent: request&.user_agent,
+        path: request&.fullpath,
+        http_method: request&.request_method
+      }
+    end
+
+    def with_audit_context
+      audit_context
+      yield
+    rescue => e
+      @audit_exception = e
+      log_failed_audit(e)
+      raise
+    end
+
+    def audit!(action_key:, auditable: nil, metadata: {}, status: "succeeded")
+      return unless audit_context[:tenant_id]
+
+      AuditLog.create!(
+        tenant_id: audit_context[:tenant_id],
+        actor: audit_context[:actor],
+        action_key: action_key,
+        auditable: auditable,
+        request_id: audit_context[:request_id],
+        ip_address: audit_context[:ip_address],
+        user_agent: audit_context[:user_agent],
+        path: audit_context[:path],
+        http_method: audit_context[:http_method],
+        status: status,
+        metadata: metadata.presence
+      )
+      @audit_recorded = true
+    rescue => e
+      Rails.logger.error("[AuditLog] failed to write audit log: #{e.class} #{e.message}")
+    end
+
+    def write_automatic_audit_log
+      return if @audit_recorded
+      return unless audit_loggable_action? && response_successful?
+
+      audit!(
+        action_key: required_permission_key,
+        auditable: audit_target_record,
+        metadata: default_audit_metadata
+      )
+    end
+
+    def log_failed_audit(exception)
+      return if @audit_recorded
+      return unless audit_loggable_action?
+
+      audit!(
+        action_key: required_permission_key,
+        auditable: audit_target_record,
+        metadata: { error: "#{exception.class}: #{exception.message}" },
+        status: "failed"
+      )
+    end
+
+    def audit_loggable_action?
+      AUDITABLE_ACTIONS.include?(normalized_action_name) && audit_context[:tenant_id].present?
+    end
+
+    def normalized_action_name
+      case action_name
+      when "new" then "create"
+      when "edit" then "update"
+      else
+        action_name
+      end
+    end
+
+    def response_successful?
+      status_code = response&.status.to_i
+      status_code.positive? && status_code < 400
+    end
+
+    def audit_target_record
+      instance_variable_get("@#{controller_name.singularize}")
+    end
+
+    def default_audit_metadata
+      record = audit_target_record
+      return {} unless record.respond_to?(:saved_changes)
+
+      filtered = record.saved_changes.except(*SENSITIVE_AUDIT_KEYS)
+      return {} if filtered.empty?
+
+      { changes: filtered }
     end
   end
 end

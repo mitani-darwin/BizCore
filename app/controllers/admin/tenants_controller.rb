@@ -13,6 +13,11 @@ module Admin
 
     def update
       if @tenant.update(tenant_params)
+        audit!(
+          action_key: "admin.tenants.update",
+          auditable: @tenant,
+          metadata: { changes: @tenant.saved_changes }
+        )
         redirect_to admin_tenant_path(@tenant), notice: "テナントを更新しました。"
       else
         render :edit, status: :unprocessable_entity

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_15_000000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_19_000000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -24,19 +24,29 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_15_000000) do
   end
 
   create_table "audit_logs", force: :cascade do |t|
-    t.string "action", null: false
-    t.bigint "auditable_id", null: false
-    t.string "auditable_type", null: false
-    t.json "changes"
+    t.string "action"
+    t.string "action_key", null: false
+    t.bigint "actor_id"
+    t.string "actor_type"
+    t.bigint "auditable_id"
+    t.string "auditable_type"
     t.datetime "created_at", null: false
+    t.string "http_method"
     t.string "ip_address"
-    t.string "summary", null: false
+    t.text "metadata"
+    t.string "path"
+    t.string "request_id"
+    t.string "status", default: "succeeded", null: false
+    t.string "summary"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.bigint "user_id"
+    t.index ["action_key"], name: "index_audit_logs_on_action_key"
+    t.index ["actor_type", "actor_id"], name: "index_audit_logs_on_actor_type_and_actor_id"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
     t.index ["created_at"], name: "index_audit_logs_on_created_at"
+    t.index ["request_id"], name: "index_audit_logs_on_request_id"
     t.index ["tenant_id"], name: "index_audit_logs_on_tenant_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
