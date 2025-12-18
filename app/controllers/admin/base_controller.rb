@@ -172,7 +172,7 @@ module Admin
 
     def navigation_active?(item)
       path = navigation_path(item)
-      return true if path && current_page?(path)
+      return true if path && view_context.current_page?(path)
 
       item.children.any? { |child| navigation_active?(child) }
     end
