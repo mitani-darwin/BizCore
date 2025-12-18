@@ -41,7 +41,7 @@
           </dl>
 
           <div class="mt-4 flex flex-wrap gap-2">
-            <% if can?("admin.tenants.show") %>
+            <% if can?("admin.tenants.read") %>
               <%= link_to "詳細", admin_tenant_path(tenant), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" %>
             <% end %>
             <% if can?("admin.tenants.update") %>

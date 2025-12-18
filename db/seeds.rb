@@ -1,4 +1,4 @@
-require_relative "seeds/permissions_admin"
+require_relative "seeds/permissions/admin_permissions"
 
 # 実行順序: permissions -> roles -> users(assignments)
 DEFAULT_PASSWORD = ENV.fetch("DEFAULT_PASSWORD", "ChangeMe123!")
@@ -15,7 +15,7 @@ end
 
 def ensure_roles(tenant, permission_records)
   all_ids = permission_records.values.map(&:id)
-  read_ids = permission_records.values.select { |p| p.action.in?(%w[index show]) }.map(&:id)
+  read_ids = permission_records.values.select { |p| p.action == "read" }.map(&:id)
 
   owner = tenant.roles.find_or_create_by!(key: "owner") do |r|
     r.name = "オーナー"
@@ -65,7 +65,7 @@ def ensure_user(tenant:, email:, name:, roles: [], owner_flag: false)
   user
 end
 
-permissions = Seeds::PermissionsAdmin.call
+permissions = Seeds::Permissions::Admin.call
 
 tenants = [
   { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", billing_email: "owner@darwin.example.com" },

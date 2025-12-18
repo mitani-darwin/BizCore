@@ -39,10 +39,14 @@ module Admin
     def required_permission_key
       action =
         case action_name
+        when "index", "show"
+          "read"
         when "new", "create"
           "create"
         when "edit", "update"
           "update"
+        when "destroy"
+          "delete"
         else
           action_name
         end

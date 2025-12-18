@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_19_000000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_000000) do
 
   create_table "permissions", force: :cascade do |t|
     t.string "action", null: false
+    t.string "category"
     t.datetime "created_at", null: false
     t.string "description"
     t.string "key", null: false
