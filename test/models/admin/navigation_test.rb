@@ -33,6 +33,7 @@ class Admin::NavigationTest < ActiveSupport::TestCase
     section_ids = sections.map(&:id)
 
     assert_not_includes section_ids, :audit
+    assert_not_includes section_ids, :access
     assert_not_includes section_ids, :core
   end
 end

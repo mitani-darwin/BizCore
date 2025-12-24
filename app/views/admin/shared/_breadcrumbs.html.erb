@@ -1,0 +1,15 @@
+<% if breadcrumbs.present? %>
+  <nav class="text-[11px] text-slate-500">
+    <% breadcrumbs.each_with_index do |crumb, index| %>
+      <% label = crumb[:label] %>
+      <% if crumb[:path].present? && index < breadcrumbs.size - 1 %>
+        <%= link_to label, crumb[:path], class: "hover:text-slate-700" %>
+      <% else %>
+        <span class="text-slate-700"><%= label %></span>
+      <% end %>
+      <% unless index == breadcrumbs.size - 1 %>
+        <span class="mx-2 text-slate-300">/</span>
+      <% end %>
+    <% end %>
+  </nav>
+<% end %>

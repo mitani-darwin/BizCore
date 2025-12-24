@@ -40,6 +40,26 @@ module Admin
           ]
         ),
         Section.new(
+          id: :access,
+          label: "権限管理",
+          items: [
+            Item.new(
+              id: :permissions,
+              label: "権限定義",
+              path: :admin_permissions_path,
+              required_keys: %w[admin.permissions.read],
+              children: []
+            ),
+            Item.new(
+              id: :authorizations,
+              label: "権限割当",
+              path: :admin_authorization_path,
+              required_keys: %w[admin.authorizations.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :audit,
           label: "監査",
           items: [
