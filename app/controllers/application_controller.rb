@@ -16,22 +16,8 @@ class ApplicationController < ActionController::Base
 
   def set_current_context
     Current.reset
-    # TODO: Replace with real authentication and tenant switching when login is implemented.
-    Current.user = find_current_user
-    Current.tenant = Current.user&.tenant
-  end
-
-  def find_current_user
-    return Current.user if Current.user.present?
-
-    # Prefer Devise/Warden user when available, otherwise fall back to first user for mock login.
-    begin
-      super_user = defined?(super) ? super : nil
-    rescue NoMethodError
-      super_user = nil
-    end
-
-    super_user || User.first
+  Current.user = warden.user(:user)
+  Current.tenant = Current.user&.tenant
   end
 
   def current_user

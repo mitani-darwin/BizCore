@@ -2,6 +2,7 @@ module Admin
   class BaseController < ::ApplicationController
     layout "admin"
 
+    before_action :authenticate_user!
     before_action :ensure_current_tenant!
     before_action :prepare_screen_context
     before_action :require_permission!

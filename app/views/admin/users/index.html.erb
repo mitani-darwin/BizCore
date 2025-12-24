@@ -57,7 +57,12 @@
     </div>
   <% else %>
     <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
-      ユーザがまだいません。
+      <p>ユーザがまだいません。</p>
+      <% if can?("admin.users.create") %>
+        <div class="mt-3">
+          <%= link_to "最初のユーザを作成", new_admin_user_path, class: "inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>
