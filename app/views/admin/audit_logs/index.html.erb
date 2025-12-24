@@ -8,38 +8,44 @@
     <p class="text-sm text-slate-600">管理画面での作成・更新・削除操作を記録します。</p>
   </div>
 
-  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table class="min-w-full text-left text-sm">
-      <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-        <tr>
-          <th class="px-4 py-2">日時</th>
-          <th class="px-4 py-2">操作者</th>
-          <th class="px-4 py-2">アクション</th>
-          <th class="px-4 py-2">ステータス</th>
-          <th class="px-4 py-2">対象リソース</th>
-          <th class="px-4 py-2">IP</th>
-          <th class="px-4 py-2 text-right">詳細</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-        <% @audit_logs.each do |log| %>
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-2 text-xs text-slate-700"><%= l log.created_at, format: :short %></td>
-            <td class="px-4 py-2 text-sm text-slate-800"><%= log.actor&.try(:name) || log.actor&.try(:id) || "System" %></td>
-            <td class="px-4 py-2 text-sm text-slate-800"><%= log.action_key %></td>
-            <td class="px-4 py-2 text-xs text-slate-700"><span class="rounded bg-slate-100 px-2 py-1"><%= log.status %></span></td>
-            <td class="px-4 py-2 text-xs text-slate-600"><%= [log.auditable_type, log.auditable_id].compact.join("#") %></td>
-            <td class="px-4 py-2 text-xs text-slate-600"><%= log.ip_address %></td>
-            <td class="px-4 py-2 text-right">
-              <% if can?("admin.audit_logs.read") %>
-                <%= link_to "詳細", admin_audit_log_path(log), class: "rounded border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50" %>
-              <% end %>
-            </td>
+  <% if @audit_logs.any? %>
+    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">日時</th>
+            <th class="px-4 py-2">操作者</th>
+            <th class="px-4 py-2">アクション</th>
+            <th class="px-4 py-2">ステータス</th>
+            <th class="px-4 py-2">対象リソース</th>
+            <th class="px-4 py-2">IP</th>
+            <th class="px-4 py-2 text-right">詳細</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @audit_logs.each do |log| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 text-xs text-slate-700"><%= l log.created_at, format: :short %></td>
+              <td class="px-4 py-2 text-sm text-slate-800"><%= log.actor&.try(:name) || log.actor&.try(:id) || "System" %></td>
+              <td class="px-4 py-2 text-sm text-slate-800"><%= log.action_key %></td>
+              <td class="px-4 py-2 text-xs text-slate-700"><span class="rounded bg-slate-100 px-2 py-1"><%= log.status %></span></td>
+              <td class="px-4 py-2 text-xs text-slate-600"><%= [log.auditable_type, log.auditable_id].compact.join("#") %></td>
+              <td class="px-4 py-2 text-xs text-slate-600"><%= log.ip_address %></td>
+              <td class="px-4 py-2 text-right">
+                <% if can?("admin.audit_logs.read") %>
+                  <%= link_to "詳細", admin_audit_log_path(log), class: "rounded border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 hover:bg-slate-50" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      監査ログがまだありません。
+    </div>
+  <% end %>
 
   <% if @audit_logs.respond_to?(:current_page) %>
     <div class="flex items-center justify-between text-sm text-slate-600">

@@ -2,9 +2,12 @@
   <div class="mx-auto flex h-full max-w-full items-center justify-between px-4">
 
     <!-- ページタイトル（content_for :page_title） -->
-    <h1 class="text-sm font-semibold text-slate-700">
-      <%= content_for?(:page_title) ? yield(:page_title) : "" %>
-    </h1>
+    <div class="flex flex-col gap-1">
+      <%= render "admin/shared/breadcrumbs" %>
+      <h1 class="text-sm font-semibold text-slate-700">
+        <%= content_for?(:page_title) ? yield(:page_title) : (page_title || "") %>
+      </h1>
+    </div>
 
     <div class="flex items-center gap-3">
       <div class="text-right text-[11px] leading-tight text-slate-600">

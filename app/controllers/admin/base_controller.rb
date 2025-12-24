@@ -3,11 +3,21 @@ module Admin
     layout "admin"
 
     before_action :ensure_current_tenant!
+    before_action :prepare_screen_context
     before_action :require_permission!
     around_action :with_audit_context
     after_action :write_automatic_audit_log
 
-    helper_method :current_admin_user, :required_permission_key, :audit_context, :navigation_sections, :navigation_active?, :navigation_path
+    helper_method :current_admin_user,
+                  :required_permission_key,
+                  :audit_context,
+                  :navigation_sections,
+                  :navigation_active?,
+                  :navigation_path,
+                  :screen,
+                  :screen_action,
+                  :page_title,
+                  :breadcrumbs
 
     rescue_from AuthorizationError, with: :handle_authorization_error
 
@@ -37,6 +47,8 @@ module Admin
     end
 
     def required_permission_key
+      return screen_action.permission_key if screen_action&.permission_key.present?
+
       action =
         case action_name
         when "index", "show"
@@ -56,6 +68,27 @@ module Admin
 
     def audit_context
       @audit_context ||= build_audit_context
+    end
+
+    def prepare_screen_context
+      @screen = Admin::Screens.screen_for(controller_name)
+      @screen_action = Admin::Screens.action_for(controller_name, action_name)
+    end
+
+    def screen
+      @screen
+    end
+
+    def screen_action
+      @screen_action
+    end
+
+    def page_title
+      Admin::Screens.page_title_for(controller_name, action_name, record: audit_target_record)
+    end
+
+    def breadcrumbs
+      Admin::Screens.breadcrumbs_for(self, controller_name, action_name, record: audit_target_record)
     end
 
     def build_audit_context
