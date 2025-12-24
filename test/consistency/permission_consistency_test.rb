@@ -53,7 +53,7 @@ class PermissionConsistencyTest < ActionDispatch::IntegrationTest
       billing_email: "audit@example.com"
     )
 
-    User.create!(
+    user = User.create!(
       tenant: tenant,
       name: "Owner User",
       email: "owner@audit.example.com",
@@ -63,6 +63,7 @@ class PermissionConsistencyTest < ActionDispatch::IntegrationTest
       time_zone: "Asia/Tokyo",
       is_owner: true
     )
+    sign_in user
 
     assert_difference("AuditLog.count", 1) do
       patch admin_tenant_path(tenant), params: { tenant: { name: "Updated Tenant" } }

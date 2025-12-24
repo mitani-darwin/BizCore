@@ -23,6 +23,7 @@ class Admin::TenantsControllerTest < ActionDispatch::IntegrationTest
     )
 
     Permissions::Catalog.seed_admin!
+    sign_in @owner
   end
 
   test "update writes an audit log" do
