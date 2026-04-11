@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -257,6 +257,124 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
     t.index ["tenant_id"], name: "index_products_on_tenant_id"
   end
 
+  create_table "purchase_adjustments", force: :cascade do |t|
+    t.date "adjustment_date", null: false
+    t.string "adjustment_number", null: false
+    t.string "adjustment_type", null: false
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "issued_at"
+    t.string "processed_by_name"
+    t.string "product_code_snapshot"
+    t.integer "product_id"
+    t.string "product_name_snapshot"
+    t.integer "purchase_order_id", null: false
+    t.integer "purchase_receipt_id", null: false
+    t.integer "purchase_receipt_item_id"
+    t.integer "quantity", default: 0, null: false
+    t.text "reason"
+    t.string "status", default: "issued", null: false
+    t.integer "supplier_id", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "unit_cost", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "unit_name_snapshot"
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id", null: false
+    t.index ["product_id"], name: "index_purchase_adjustments_on_product_id"
+    t.index ["purchase_order_id"], name: "index_purchase_adjustments_on_purchase_order_id"
+    t.index ["purchase_receipt_id"], name: "index_purchase_adjustments_on_purchase_receipt_id"
+    t.index ["purchase_receipt_item_id"], name: "index_purchase_adjustments_on_purchase_receipt_item_id"
+    t.index ["supplier_id"], name: "index_purchase_adjustments_on_supplier_id"
+    t.index ["tenant_id", "adjustment_date"], name: "index_purchase_adjustments_on_tenant_id_and_adjustment_date"
+    t.index ["tenant_id", "adjustment_number"], name: "index_purchase_adjustments_on_tenant_id_and_adjustment_number", unique: true
+    t.index ["tenant_id", "adjustment_type"], name: "index_purchase_adjustments_on_tenant_id_and_adjustment_type"
+    t.index ["tenant_id"], name: "index_purchase_adjustments_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_purchase_adjustments_on_warehouse_id"
+  end
+
+  create_table "purchase_order_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.integer "line_no", null: false
+    t.string "product_code_snapshot", null: false
+    t.integer "product_id", null: false
+    t.string "product_name_snapshot", null: false
+    t.integer "purchase_order_id", null: false
+    t.integer "quantity", null: false
+    t.integer "received_quantity", default: 0, null: false
+    t.string "status", default: "pending", null: false
+    t.string "tax_category_snapshot", default: "taxable_10", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "unit_cost", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "unit_name_snapshot", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_purchase_order_items_on_product_id"
+    t.index ["purchase_order_id", "line_no"], name: "index_purchase_order_items_on_purchase_order_id_and_line_no", unique: true
+    t.index ["purchase_order_id"], name: "index_purchase_order_items_on_purchase_order_id"
+    t.index ["tenant_id"], name: "index_purchase_order_items_on_tenant_id"
+  end
+
+  create_table "purchase_orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "order_date", null: false
+    t.string "ordered_by_name"
+    t.string "purchase_order_number", null: false
+    t.text "remarks"
+    t.date "requested_delivery_date"
+    t.datetime "sent_at"
+    t.string "status", default: "draft", null: false
+    t.integer "supplier_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id", null: false
+    t.index ["supplier_id"], name: "index_purchase_orders_on_supplier_id"
+    t.index ["tenant_id", "order_date"], name: "index_purchase_orders_on_tenant_id_and_order_date"
+    t.index ["tenant_id", "purchase_order_number"], name: "index_purchase_orders_on_tenant_id_and_purchase_order_number", unique: true
+    t.index ["tenant_id", "status"], name: "index_purchase_orders_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_purchase_orders_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_purchase_orders_on_warehouse_id"
+  end
+
+  create_table "purchase_receipt_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.string "product_code_snapshot", null: false
+    t.integer "product_id", null: false
+    t.string "product_name_snapshot", null: false
+    t.integer "purchase_order_item_id", null: false
+    t.integer "purchase_receipt_id", null: false
+    t.integer "received_quantity", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "unit_cost", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "unit_name_snapshot", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_purchase_receipt_items_on_product_id"
+    t.index ["purchase_order_item_id"], name: "index_purchase_receipt_items_on_purchase_order_item_id"
+    t.index ["purchase_receipt_id"], name: "index_purchase_receipt_items_on_purchase_receipt_id"
+    t.index ["tenant_id"], name: "index_purchase_receipt_items_on_tenant_id"
+  end
+
+  create_table "purchase_receipts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "issued_at"
+    t.integer "purchase_order_id", null: false
+    t.string "purchase_receipt_number", null: false
+    t.string "received_by_name"
+    t.date "received_on", null: false
+    t.text "remarks"
+    t.string "status", default: "issued", null: false
+    t.integer "supplier_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id", null: false
+    t.index ["purchase_order_id"], name: "index_purchase_receipts_on_purchase_order_id"
+    t.index ["supplier_id"], name: "index_purchase_receipts_on_supplier_id"
+    t.index ["tenant_id", "purchase_receipt_number"], name: "idx_on_tenant_id_purchase_receipt_number_631b1eb1c2", unique: true
+    t.index ["tenant_id", "received_on"], name: "index_purchase_receipts_on_tenant_id_and_received_on"
+    t.index ["tenant_id"], name: "index_purchase_receipts_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_purchase_receipts_on_warehouse_id"
+  end
+
   create_table "quotation_items", force: :cascade do |t|
     t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -394,6 +512,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
     t.index ["warehouse_id"], name: "index_stock_movements_on_warehouse_id"
   end
 
+  create_table "suppliers", force: :cascade do |t|
+    t.string "address1"
+    t.string "address2"
+    t.integer "closing_day"
+    t.string "code", null: false
+    t.string "contact_person_department"
+    t.string "contact_person_email"
+    t.string "contact_person_name"
+    t.string "contact_person_tel"
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "name", null: false
+    t.string "name_kana"
+    t.text "note"
+    t.string "payment_due_rule"
+    t.string "payment_method"
+    t.string "postal_code"
+    t.string "status", default: "active", null: false
+    t.string "tel"
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "code"], name: "index_suppliers_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id", "status"], name: "index_suppliers_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_suppliers_on_tenant_id"
+  end
+
   create_table "tenant_user_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "primary_flag", default: false, null: false
@@ -498,6 +642,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
   add_foreign_key "payments", "customers"
   add_foreign_key "payments", "tenants"
   add_foreign_key "products", "tenants"
+  add_foreign_key "purchase_adjustments", "products"
+  add_foreign_key "purchase_adjustments", "purchase_orders"
+  add_foreign_key "purchase_adjustments", "purchase_receipt_items"
+  add_foreign_key "purchase_adjustments", "purchase_receipts"
+  add_foreign_key "purchase_adjustments", "suppliers"
+  add_foreign_key "purchase_adjustments", "tenants"
+  add_foreign_key "purchase_adjustments", "warehouses"
+  add_foreign_key "purchase_order_items", "products"
+  add_foreign_key "purchase_order_items", "purchase_orders"
+  add_foreign_key "purchase_order_items", "tenants"
+  add_foreign_key "purchase_orders", "suppliers"
+  add_foreign_key "purchase_orders", "tenants"
+  add_foreign_key "purchase_orders", "warehouses"
+  add_foreign_key "purchase_receipt_items", "products"
+  add_foreign_key "purchase_receipt_items", "purchase_order_items"
+  add_foreign_key "purchase_receipt_items", "purchase_receipts"
+  add_foreign_key "purchase_receipt_items", "tenants"
+  add_foreign_key "purchase_receipts", "purchase_orders"
+  add_foreign_key "purchase_receipts", "suppliers"
+  add_foreign_key "purchase_receipts", "tenants"
+  add_foreign_key "purchase_receipts", "warehouses"
   add_foreign_key "quotation_items", "products"
   add_foreign_key "quotation_items", "quotations"
   add_foreign_key "quotation_items", "tenants"
@@ -520,6 +685,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
   add_foreign_key "stock_movements", "products"
   add_foreign_key "stock_movements", "tenants"
   add_foreign_key "stock_movements", "warehouses"
+  add_foreign_key "suppliers", "tenants"
   add_foreign_key "tenant_user_roles", "roles"
   add_foreign_key "tenant_user_roles", "users", column: "tenant_user_id"
   add_foreign_key "user_roles", "roles"

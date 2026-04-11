@@ -1,0 +1,95 @@
+<% content_for :page_title, "発注一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">発注一覧</h1>
+      <p class="text-sm text-slate-600">発注書送信から入荷完了までを管理します。</p>
+    </div>
+    <% if can?("admin.purchase_orders.create") %>
+      <%= link_to "新規発注", new_admin_purchase_order_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_purchase_orders_path, method: :get, local: true, class: "grid gap-3 xl:grid-cols-[minmax(0,2fr)_220px_240px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "発注番号・仕入先・担当者・備考で検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + PurchaseOrder::STATUSES.keys.map { |key| [purchase_order_status_label(key), key] }, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :supplier_id, "仕入先", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.collection_select :supplier_id, @supplier_filter_options, :id, :name, { include_blank: "すべて", selected: @filters[:supplier_id] }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_purchase_orders_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 md:grid-cols-3">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対象発注</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">未完了</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:open_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">入荷完了</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:completed_count] %></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @purchase_orders.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">発注番号</th>
+            <th class="px-4 py-2">仕入先</th>
+            <th class="px-4 py-2">入荷倉庫</th>
+            <th class="px-4 py-2">発注日</th>
+            <th class="px-4 py-2">希望納期</th>
+            <th class="px-4 py-2">金額</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @purchase_orders.each do |purchase_order| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= purchase_order.purchase_order_number %></td>
+              <td class="px-4 py-2 text-slate-700"><%= purchase_order.supplier.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= purchase_order.warehouse.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(purchase_order.order_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(purchase_order.requested_delivery_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(purchase_order.total_amount) %></td>
+              <td class="px-4 py-2"><%= purchase_order_status_badge(purchase_order) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_purchase_order_path(purchase_order), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.purchase_orders.update") && purchase_order.draft? %>
+                    <%= link_to "編集", edit_admin_purchase_order_path(purchase_order), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p><%= @filters[:q].present? || @filters[:status].present? || @filters[:supplier_id].present? ? "条件に一致する発注がありません。" : "発注がまだ登録されていません。" %></p>
+    </div>
+  <% end %>
+</div>

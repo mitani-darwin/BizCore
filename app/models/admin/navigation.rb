@@ -67,6 +67,19 @@ module Admin
           ]
         ),
         Section.new(
+          id: :procurement_master,
+          label: "仕入マスタ",
+          items: [
+            Item.new(
+              id: :suppliers,
+              label: "仕入先",
+              path: :admin_suppliers_path,
+              required_keys: %w[admin.suppliers.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :inventory,
           label: "在庫管理",
           items: [
@@ -130,6 +143,33 @@ module Admin
               label: "入金",
               path: :admin_payments_path,
               required_keys: %w[admin.payments.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
+          id: :procurement_flow,
+          label: "発注業務",
+          items: [
+            Item.new(
+              id: :purchase_orders,
+              label: "発注",
+              path: :admin_purchase_orders_path,
+              required_keys: %w[admin.purchase_orders.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_receipts,
+              label: "入荷",
+              path: :admin_purchase_receipts_path,
+              required_keys: %w[admin.purchase_receipts.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_adjustments,
+              label: "返品/値引き",
+              path: :admin_purchase_adjustments_path,
+              required_keys: %w[admin.purchase_adjustments.read],
               children: []
             )
           ]

@@ -1,0 +1,157 @@
+<% content_for :page_title, "仕入先詳細" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @supplier.name %></h1>
+        <%= supplier_status_badge(@supplier) %>
+      </div>
+      <p class="text-sm text-slate-600">コード: <%= @supplier.code %></p>
+    </div>
+    <% if can?("admin.suppliers.update") %>
+      <%= link_to "編集", edit_admin_supplier_path(@supplier), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">基本情報</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">仕入先名カナ</dt>
+          <dd><%= @supplier.name_kana.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">メールアドレス</dt>
+          <dd><%= @supplier.email.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">電話番号</dt>
+          <dd><%= @supplier.tel.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">住所</dt>
+          <dd><%= @supplier.full_address.presence || "-" %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">担当者情報</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">担当部署・担当者</dt>
+          <dd><%= @supplier.primary_contact.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">担当者メール</dt>
+          <dd><%= @supplier.contact_person_email.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">担当者電話</dt>
+          <dd><%= @supplier.contact_person_tel.presence || "-" %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">支払条件</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">締日</dt>
+          <dd><%= @supplier.closing_day.present? ? "#{@supplier.closing_day}日" : "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">支払期日ルール</dt>
+          <dd><%= payment_due_rule_label(@supplier.payment_due_rule) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">支払方法</dt>
+          <dd><%= payment_method_label(@supplier.payment_method) %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">関連件数</h2>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2">
+        <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+          <div class="text-xs text-slate-500">発注</div>
+          <div class="mt-1 text-xl font-semibold text-slate-900"><%= @supplier.purchase_orders.count %></div>
+        </div>
+        <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+          <div class="text-xs text-slate-500">入荷</div>
+          <div class="mt-1 text-xl font-semibold text-slate-900"><%= @supplier.purchase_receipts.count %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-slate-900">最近の発注</h2>
+        <% if can?("admin.purchase_orders.create") %>
+          <%= link_to "新規発注", new_admin_purchase_order_path(supplier_id: @supplier.id), class: "text-xs font-semibold text-sky-700 hover:underline" %>
+        <% end %>
+      </div>
+      <% if @recent_purchase_orders.any? %>
+        <div class="mt-3 space-y-2">
+          <% @recent_purchase_orders.each do |purchase_order| %>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to purchase_order.purchase_order_number, admin_purchase_order_path(purchase_order), class: "hover:underline" %></div>
+                  <div class="text-xs text-slate-500">発注日 <%= jp_date(purchase_order.order_date) %> / <%= purchase_order.warehouse.name %></div>
+                </div>
+                <%= purchase_order_status_badge(purchase_order) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500">発注履歴はありません。</p>
+      <% end %>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">最近の入荷</h2>
+      <% if @recent_purchase_receipts.any? %>
+        <div class="mt-3 space-y-2">
+          <% @recent_purchase_receipts.each do |receipt| %>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to receipt.purchase_receipt_number, admin_purchase_receipt_path(receipt), class: "hover:underline" %></div>
+                  <div class="text-xs text-slate-500">入荷日 <%= jp_date(receipt.received_on) %> / <%= receipt.warehouse.name %></div>
+                </div>
+                <%= purchase_receipt_status_badge(receipt) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500">入荷履歴はありません。</p>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @supplier.note.present? %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">備考</h2>
+      <div class="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <%= simple_format(@supplier.note) %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_suppliers_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.suppliers.update") %>
+      <%= link_to "編集", edit_admin_supplier_path(@supplier), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+  </div>
+</div>

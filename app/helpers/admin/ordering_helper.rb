@@ -31,6 +31,16 @@ module Admin
       ["停止", "inactive"]
     ].freeze
 
+    SUPPLIER_STATUS_OPTIONS = [
+      ["取引中", "active"],
+      ["停止", "inactive"]
+    ].freeze
+
+    PURCHASE_ADJUSTMENT_TYPE_OPTIONS = [
+      ["返品", "purchase_return"],
+      ["値引き", "discount"]
+    ].freeze
+
     STOCK_MOVEMENT_OPTIONS = [
       ["入庫", "inbound"],
       ["棚卸増加", "adjustment_increase"],
@@ -61,6 +71,14 @@ module Admin
 
     def customer_status_options
       CUSTOMER_STATUS_OPTIONS
+    end
+
+    def supplier_status_options
+      SUPPLIER_STATUS_OPTIONS
+    end
+
+    def purchase_adjustment_type_options
+      PURCHASE_ADJUSTMENT_TYPE_OPTIONS
     end
 
     def stock_movement_options
@@ -94,6 +112,63 @@ module Admin
 
     def order_status_label(status)
       order_status_tone(status).first
+    end
+
+    def purchase_order_status_badge(purchase_order)
+      label, tone = purchase_order_status_tone(purchase_order.status)
+
+      status_badge(label, tone)
+    end
+
+    def purchase_order_status_label(status)
+      purchase_order_status_tone(status).first
+    end
+
+    def purchase_order_item_status_label(status)
+      case status
+      when "pending" then "未入荷"
+      when "partially_received" then "一部入荷"
+      when "received" then "入荷済"
+      when "cancelled" then "取消"
+      else status.to_s
+      end
+    end
+
+    def purchase_receipt_status_badge(receipt)
+      label, tone = case receipt.status
+      when "issued" then ["入荷済", "emerald"]
+      when "cancelled" then ["取消", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def purchase_adjustment_type_label(value)
+      case value.to_s
+      when "purchase_return" then "返品"
+      when "discount" then "値引き"
+      else value.to_s
+      end
+    end
+
+    def purchase_adjustment_status_badge(adjustment)
+      label, tone = case adjustment.status
+      when "issued"
+        [purchase_adjustment_type_label(adjustment.adjustment_type), adjustment.purchase_return? ? "rose" : "amber"]
+      when "cancelled" then ["取消", "slate"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def purchase_adjustment_signed_amount(adjustment)
+      "-#{money(adjustment.amount)}"
+    end
+
+    def purchase_receipt_item_return_option_label(item)
+      "#{item.product_name_snapshot} (返品可能 #{item.returnable_quantity} #{item.unit_name_snapshot})"
     end
 
     def order_item_status_label(status)
@@ -153,6 +228,19 @@ module Admin
     def customer_status_badge(customer)
       tone = customer.active? ? "emerald" : "slate"
       status_badge(customer_status_label(customer.status), tone)
+    end
+
+    def supplier_status_label(value)
+      case value.to_s
+      when "active" then "取引中"
+      when "inactive" then "停止"
+      else value.to_s.presence || "-"
+      end
+    end
+
+    def supplier_status_badge(supplier)
+      tone = supplier.active? ? "emerald" : "slate"
+      status_badge(supplier_status_label(supplier.status), tone)
     end
 
     def active_badge(active)
@@ -233,6 +321,17 @@ module Admin
       when "sent" then ["提示済", "sky"]
       when "accepted" then ["採用", "emerald"]
       when "converted" then ["注文変換済", "violet"]
+      when "cancelled" then ["取消", "rose"]
+      else ["不明", "slate"]
+      end
+    end
+
+    def purchase_order_status_tone(status)
+      case status
+      when "draft" then ["下書き", "slate"]
+      when "sent" then ["発注済", "sky"]
+      when "partially_received" then ["一部入荷", "amber"]
+      when "received" then ["入荷完了", "emerald"]
       when "cancelled" then ["取消", "rose"]
       else ["不明", "slate"]
       end

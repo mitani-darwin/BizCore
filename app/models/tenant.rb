@@ -3,11 +3,15 @@ class Tenant < ApplicationRecord
   has_many :roles, dependent: :destroy
   has_many :assignments, dependent: :destroy
   has_many :customers, dependent: :destroy
+  has_many :suppliers, dependent: :destroy
   has_many :products, dependent: :destroy
   has_many :warehouses, dependent: :destroy
   has_many :stock_items, dependent: :destroy
   has_many :stock_movements, dependent: :destroy
   has_many :stock_counts, dependent: :destroy
+  has_many :purchase_orders, dependent: :destroy
+  has_many :purchase_receipts, dependent: :destroy
+  has_many :purchase_adjustments, dependent: :destroy
   has_many :quotations, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :deliveries, dependent: :destroy

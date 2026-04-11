@@ -1,0 +1,93 @@
+<%= form_with model: [:admin, purchase_order], local: true, class: "space-y-6" do |f| %>
+  <% if purchase_order.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% purchase_order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @supplier_options.blank? || @product_options.blank? || @warehouse_options.blank? %>
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      発注を作成するには、先に仕入先・商品・倉庫を登録してください。
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :supplier_id, "仕入先", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.collection_select :supplier_id, @supplier_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", required: true %>
+    </div>
+    <div>
+      <%= f.label :warehouse_id, "入荷倉庫", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.collection_select :warehouse_id, @warehouse_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", required: true %>
+    </div>
+    <div>
+      <%= f.label :order_date, "発注日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :order_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", required: true %>
+    </div>
+    <div>
+      <%= f.label :requested_delivery_date, "希望納期", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :requested_delivery_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :ordered_by_name, "発注担当者", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :ordered_by_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :remarks, "備考", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_area :remarks, rows: 3, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+  </div>
+
+  <div
+    class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+    data-controller="order-items"
+    data-order-items-index-value="<%= purchase_order.purchase_order_items.reject(&:marked_for_destruction?).size %>">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">発注明細</h2>
+        <p class="text-xs text-slate-500">必要に応じて商品行を追加します。</p>
+      </div>
+      <button
+        type="button"
+        data-action="order-items#addRow"
+        class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100">
+        明細を追加
+      </button>
+    </div>
+
+    <div class="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-3 py-2">商品</th>
+            <th class="px-3 py-2">数量</th>
+            <th class="px-3 py-2">単価</th>
+            <th class="px-3 py-2">金額</th>
+            <th class="px-3 py-2">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" data-order-items-target="rows">
+          <%= f.fields_for :purchase_order_items do |item_form| %>
+            <%= render "purchase_order_item_row", item_form: item_form, product_options: @product_options %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <template data-order-items-target="template">
+      <%= f.fields_for :purchase_order_items, PurchaseOrderItem.new(tenant: current_tenant), child_index: "NEW_RECORD" do |item_form| %>
+        <%= render "purchase_order_item_row", item_form: item_form, product_options: @product_options %>
+      <% end %>
+    </template>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", purchase_order.persisted? ? admin_purchase_order_path(purchase_order) : admin_purchase_orders_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

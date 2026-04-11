@@ -31,11 +31,20 @@ Rails.application.routes.draw do
     resources :roles, only: [:index, :show, :new, :create, :edit, :update]
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :customers, only: [:index, :show, :new, :create, :edit, :update]
+    resources :suppliers, only: [:index, :show, :new, :create, :edit, :update]
     resources :products, only: [:index, :show, :new, :create, :edit, :update]
     resources :warehouses, only: [:index, :show, :new, :create, :edit, :update]
     resources :stock_items, only: [:index, :show, :new, :create, :edit, :update]
     resources :stock_movements, only: [:index, :show, :new, :create]
     resources :stock_counts, only: [:index, :new, :create]
+    resources :purchase_orders, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        patch :send_purchase_order
+        patch :receive_items
+      end
+    end
+    resources :purchase_receipts, only: [:index, :show]
+    resources :purchase_adjustments, only: [:index, :show, :create]
     resources :quotations, only: [:index, :show, :new, :create, :edit, :update] do
       member do
         get :download_excel

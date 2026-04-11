@@ -1,6 +1,6 @@
 module Inventory
   class RecordMovement
-    ALLOWED_TYPES = %w[inbound adjustment adjustment_increase adjustment_decrease].freeze
+    ALLOWED_TYPES = %w[inbound outbound adjustment adjustment_increase adjustment_decrease].freeze
 
     def self.call(stock_item:, movement_type:, quantity:, occurred_on:, note:, reference: nil)
       new(
@@ -52,7 +52,7 @@ module Inventory
       case movement_type
       when "inbound", "adjustment", "adjustment_increase"
         quantity
-      when "adjustment_decrease"
+      when "outbound", "adjustment_decrease"
         -quantity
       else
         raise ArgumentError, "unsupported movement type"

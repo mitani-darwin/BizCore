@@ -1,0 +1,12 @@
+<% content_for :page_title, "仕入先作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">新しい仕入先を作成</h1>
+    <p class="text-sm text-slate-600">発注や入荷に使う仕入先マスタを登録します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", supplier: @supplier %>
+  </div>
+</div>
