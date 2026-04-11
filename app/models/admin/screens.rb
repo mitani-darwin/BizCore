@@ -49,6 +49,10 @@ module Admin
         index_path: :admin_customers_path,
         actions: %i[index show new create edit update]
       },
+      receivables: {
+        index_path: :admin_receivables_path,
+        actions: %i[index]
+      },
       products: {
         index_path: :admin_products_path,
         actions: %i[index show new create edit update]
@@ -107,6 +111,10 @@ module Admin
         action_overrides: {
           reconcile: { permission_action: :update, label: "消し込み", breadcrumb_label: "消し込み", page_title: "%{resource}詳細" }
         }
+      },
+      payables: {
+        index_path: :admin_payables_path,
+        actions: %i[index]
       },
       quotations: {
         index_path: :admin_quotations_path,

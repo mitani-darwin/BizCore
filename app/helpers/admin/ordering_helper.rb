@@ -36,6 +36,12 @@ module Admin
       ["停止", "inactive"]
     ].freeze
 
+    BALANCE_SCOPE_OPTIONS = [
+      ["すべて", "all"],
+      ["残高あり", "open"],
+      ["滞留あり", "overdue"]
+    ].freeze
+
     PURCHASE_ADJUSTMENT_TYPE_OPTIONS = [
       ["返品", "purchase_return"],
       ["値引き", "discount"]
@@ -75,6 +81,10 @@ module Admin
 
     def supplier_status_options
       SUPPLIER_STATUS_OPTIONS
+    end
+
+    def balance_scope_options
+      BALANCE_SCOPE_OPTIONS
     end
 
     def purchase_adjustment_type_options

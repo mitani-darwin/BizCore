@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
     resources :customers, only: [:index, :show, :new, :create, :edit, :update]
     resources :suppliers, only: [:index, :show, :new, :create, :edit, :update]
+    resources :receivables, only: [:index]
+    resources :payables, only: [:index]
     resources :products, only: [:index, :show, :new, :create, :edit, :update]
     resources :warehouses, only: [:index, :show, :new, :create, :edit, :update]
     resources :stock_items, only: [:index, :show, :new, :create, :edit, :update]

@@ -151,6 +151,13 @@ module Admin
               path: :admin_payments_path,
               required_keys: %w[admin.payments.read],
               children: []
+            ),
+            Item.new(
+              id: :receivables,
+              label: "売掛残高",
+              path: :admin_receivables_path,
+              required_keys: %w[admin.receivables.read],
+              children: []
             )
           ]
         ),
@@ -198,6 +205,13 @@ module Admin
               label: "支払",
               path: :admin_supplier_payments_path,
               required_keys: %w[admin.supplier_payments.read],
+              children: []
+            ),
+            Item.new(
+              id: :payables,
+              label: "買掛残高",
+              path: :admin_payables_path,
+              required_keys: %w[admin.payables.read],
               children: []
             )
           ]
