@@ -41,6 +41,50 @@ module Admin
         index_path: :admin_roles_path,
         actions: %i[index show new create edit update]
       },
+      customers: {
+        index_path: :admin_customers_path,
+        actions: %i[index show new create edit update]
+      },
+      products: {
+        index_path: :admin_products_path,
+        actions: %i[index show new create edit update]
+      },
+      warehouses: {
+        index_path: :admin_warehouses_path,
+        actions: %i[index show new create edit update]
+      },
+      stock_items: {
+        index_path: :admin_stock_items_path,
+        actions: %i[index new create edit update]
+      },
+      orders: {
+        index_path: :admin_orders_path,
+        actions: %i[index show new create edit update send_order accept_order reserve_stock issue_delivery],
+        action_overrides: {
+          send_order: { permission_action: :update, label: "注文書送信", breadcrumb_label: "注文書送信", page_title: "%{resource}詳細" },
+          accept_order: { permission_action: :update, label: "受注確定", breadcrumb_label: "受注確定", page_title: "%{resource}詳細" },
+          reserve_stock: { permission_action: :update, label: "在庫確保", breadcrumb_label: "在庫確保", page_title: "%{resource}詳細" },
+          issue_delivery: { permission_action: :update, label: "納品書発行", breadcrumb_label: "納品書発行", page_title: "%{resource}詳細" }
+        }
+      },
+      deliveries: {
+        index_path: :admin_deliveries_path,
+        actions: %i[index show]
+      },
+      invoices: {
+        index_path: :admin_invoices_path,
+        actions: %i[index show issue_monthly],
+        action_overrides: {
+          issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" }
+        }
+      },
+      payments: {
+        index_path: :admin_payments_path,
+        actions: %i[index show new create edit update reconcile],
+        action_overrides: {
+          reconcile: { permission_action: :update, label: "消し込み", breadcrumb_label: "消し込み", page_title: "%{resource}詳細" }
+        }
+      },
       permissions: {
         index_path: :admin_permissions_path,
         actions: %i[index create update destroy]
@@ -157,6 +201,11 @@ module Admin
       return nil unless record
       return record.name if record.respond_to?(:name) && record.name.present?
       return record.title if record.respond_to?(:title) && record.title.present?
+      return record.order_number if record.respond_to?(:order_number) && record.order_number.present?
+      return record.delivery_number if record.respond_to?(:delivery_number) && record.delivery_number.present?
+      return record.invoice_number if record.respond_to?(:invoice_number) && record.invoice_number.present?
+      return record.payment_number if record.respond_to?(:payment_number) && record.payment_number.present?
+      return record.code if record.respond_to?(:code) && record.code.present?
 
       if record.respond_to?(:id) && record.class.respond_to?(:model_name)
         return "#{record.class.model_name.human}##{record.id}"

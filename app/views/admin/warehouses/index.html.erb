@@ -1,0 +1,49 @@
+<% content_for :page_title, "倉庫一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">倉庫一覧</h1>
+      <p class="text-sm text-slate-600">在庫確保に利用する倉庫マスタです。</p>
+    </div>
+    <% if can?("admin.warehouses.create") %>
+      <%= link_to "新規倉庫", new_admin_warehouse_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <% if @warehouses.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">コード</th>
+            <th class="px-4 py-2">倉庫名</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @warehouses.each do |warehouse| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= warehouse.code %></td>
+              <td class="px-4 py-2 text-slate-700"><%= warehouse.name %></td>
+              <td class="px-4 py-2"><%= active_badge(warehouse.active) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_warehouse_path(warehouse), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.warehouses.update") %>
+                    <%= link_to "編集", edit_admin_warehouse_path(warehouse), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>倉庫がまだ登録されていません。</p>
+    </div>
+  <% end %>
+</div>

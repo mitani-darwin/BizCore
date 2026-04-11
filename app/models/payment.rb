@@ -21,6 +21,7 @@ class Payment < ApplicationRecord
   validates :payment_number, :payment_date, :amount, :status, presence: true
   validates :amount, numericality: { greater_than: 0 }
   validate :tenant_consistency
+  validate :amount_must_cover_allocations
 
   before_validation :set_defaults
 
@@ -49,5 +50,12 @@ class Payment < ApplicationRecord
     return if tenant_id.blank? || customer.blank?
 
     errors.add(:tenant, "と取引先の所属が一致しません") if tenant_id != customer.tenant_id
+  end
+
+  def amount_must_cover_allocations
+    return if amount.blank?
+    return if amount.to_d >= allocated_amount
+
+    errors.add(:amount, "は消込済金額以上である必要があります")
   end
 end

@@ -1,0 +1,88 @@
+<% content_for :page_title, "請求一覧" %>
+
+<div class="space-y-4">
+  <div class="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h1 class="text-xl font-semibold text-slate-900">請求一覧</h1>
+      <p class="mt-1 text-sm text-slate-600">月末請求を実行し、発行済の請求書を確認します。</p>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-slate-900">4. 月末に請求</h2>
+          <p class="text-xs text-slate-500">納品済かつ未請求のデータから請求書を発行します。</p>
+        </div>
+      </div>
+
+      <% if can?("admin.invoices.create") %>
+        <%= form_with url: issue_monthly_admin_invoices_path, method: :post, local: true, class: "mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5" do %>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">請求期間開始</label>
+            <%= date_field_tag :billing_period_from, @billing_defaults[:billing_period_from], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">請求期間終了</label>
+            <%= date_field_tag :billing_period_to, @billing_defaults[:billing_period_to], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">締日</label>
+            <%= date_field_tag :closing_date, @billing_defaults[:closing_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">請求日</label>
+            <%= date_field_tag :invoice_date, @billing_defaults[:invoice_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700">支払期日</label>
+            <%= date_field_tag :due_date, @billing_defaults[:due_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+          </div>
+          <div class="sm:col-span-2 xl:col-span-5">
+            <%= submit_tag "月末請求を実行", class: "rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700" %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="mt-4 text-sm text-slate-500">請求書を発行する権限がありません。</p>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @invoices.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">請求番号</th>
+            <th class="px-4 py-2">得意先</th>
+            <th class="px-4 py-2">請求日</th>
+            <th class="px-4 py-2">支払期日</th>
+            <th class="px-4 py-2">請求額</th>
+            <th class="px-4 py-2">残高</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @invoices.each do |invoice| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= invoice.invoice_number %></td>
+              <td class="px-4 py-2 text-slate-700"><%= invoice.customer.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(invoice.invoice_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(invoice.due_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(invoice.total_amount) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(invoice.balance_amount) %></td>
+              <td class="px-4 py-2"><%= invoice_status_badge(invoice) %></td>
+              <td class="px-4 py-2 text-right">
+                <%= link_to "詳細", admin_invoice_path(invoice), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>請求書はまだ発行されていません。</p>
+    </div>
+  <% end %>
+</div>

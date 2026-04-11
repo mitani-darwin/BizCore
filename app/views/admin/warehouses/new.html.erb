@@ -1,0 +1,12 @@
+<% content_for :page_title, "倉庫作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">新しい倉庫を作成</h1>
+    <p class="text-sm text-slate-600">在庫確保の対象となる倉庫を登録します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", warehouse: @warehouse %>
+  </div>
+</div>

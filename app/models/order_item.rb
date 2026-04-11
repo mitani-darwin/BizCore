@@ -23,6 +23,7 @@ class OrderItem < ApplicationRecord
   validate :tenant_consistency
 
   before_validation :set_defaults
+  before_validation :inherit_tenant
   before_validation :snapshot_product
   before_validation :calculate_amount
 
@@ -48,6 +49,10 @@ class OrderItem < ApplicationRecord
     self.line_no ||= next_line_no
     self.status ||= "pending"
     self.unit_price ||= product&.standard_price || 0
+  end
+
+  def inherit_tenant
+    self.tenant ||= order&.tenant
   end
 
   def snapshot_product
