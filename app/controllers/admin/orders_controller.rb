@@ -85,7 +85,7 @@ module Admin
     private
 
     def set_order
-      @order = current_tenant.orders.includes(order_items: [product: [], stock_allocations: :warehouse]).find_by(id: params[:id])
+      @order = current_tenant.orders.includes(:quotation, order_items: [product: [], stock_allocations: :warehouse]).find_by(id: params[:id])
       return if @order
 
       render_not_found and return false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_153000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -185,6 +185,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
     t.date "order_date", null: false
     t.string "order_number", null: false
     t.string "ordered_by_name"
+    t.integer "quotation_id"
     t.text "remarks"
     t.date "requested_delivery_date"
     t.datetime "sent_at"
@@ -192,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["quotation_id"], name: "index_orders_on_quotation_id"
     t.index ["tenant_id", "order_number"], name: "index_orders_on_tenant_id_and_order_number", unique: true
     t.index ["tenant_id"], name: "index_orders_on_tenant_id"
   end
@@ -253,6 +255,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "code"], name: "index_products_on_tenant_id_and_code", unique: true
     t.index ["tenant_id"], name: "index_products_on_tenant_id"
+  end
+
+  create_table "quotation_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.integer "line_no", null: false
+    t.string "product_code_snapshot", null: false
+    t.integer "product_id", null: false
+    t.string "product_name_snapshot", null: false
+    t.integer "quantity", null: false
+    t.integer "quotation_id", null: false
+    t.string "tax_category_snapshot", default: "taxable_10", null: false
+    t.integer "tenant_id", null: false
+    t.string "unit_name_snapshot", null: false
+    t.decimal "unit_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_quotation_items_on_product_id"
+    t.index ["quotation_id", "line_no"], name: "index_quotation_items_on_quotation_id_and_line_no", unique: true
+    t.index ["quotation_id"], name: "index_quotation_items_on_quotation_id"
+    t.index ["tenant_id"], name: "index_quotation_items_on_tenant_id"
+  end
+
+  create_table "quotations", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "converted_at"
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.date "expiration_date", null: false
+    t.date "quotation_date", null: false
+    t.string "quotation_number", null: false
+    t.string "quoted_by_name"
+    t.text "remarks"
+    t.datetime "sent_at"
+    t.string "status", default: "draft", null: false
+    t.string "subject"
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_quotations_on_customer_id"
+    t.index ["tenant_id", "quotation_date"], name: "index_quotations_on_tenant_id_and_quotation_date"
+    t.index ["tenant_id", "quotation_number"], name: "index_quotations_on_tenant_id_and_quotation_number", unique: true
+    t.index ["tenant_id", "status"], name: "index_quotations_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_quotations_on_tenant_id"
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -446,6 +490,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
   add_foreign_key "order_items", "products"
   add_foreign_key "order_items", "tenants"
   add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "quotations"
   add_foreign_key "orders", "tenants"
   add_foreign_key "payment_allocations", "invoices"
   add_foreign_key "payment_allocations", "payments"
@@ -453,6 +498,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
   add_foreign_key "payments", "customers"
   add_foreign_key "payments", "tenants"
   add_foreign_key "products", "tenants"
+  add_foreign_key "quotation_items", "products"
+  add_foreign_key "quotation_items", "quotations"
+  add_foreign_key "quotation_items", "tenants"
+  add_foreign_key "quotations", "customers"
+  add_foreign_key "quotations", "tenants"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "roles", "tenants"

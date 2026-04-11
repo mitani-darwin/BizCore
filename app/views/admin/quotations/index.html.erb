@@ -1,0 +1,57 @@
+<% content_for :page_title, "見積一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">見積一覧</h1>
+      <p class="text-sm text-slate-600">見積作成から採用、注文変換までを管理します。</p>
+    </div>
+    <% if can?("admin.quotations.create") %>
+      <%= link_to "新規見積", new_admin_quotation_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <% if @quotations.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">見積番号</th>
+            <th class="px-4 py-2">得意先</th>
+            <th class="px-4 py-2">件名</th>
+            <th class="px-4 py-2">見積日</th>
+            <th class="px-4 py-2">有効期限</th>
+            <th class="px-4 py-2">金額</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @quotations.each do |quotation| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= quotation.quotation_number %></td>
+              <td class="px-4 py-2 text-slate-700"><%= quotation.customer.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= quotation.subject.presence || "-" %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(quotation.quotation_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(quotation.expiration_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(quotation.total_amount) %></td>
+              <td class="px-4 py-2"><%= quotation_status_badge(quotation) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_quotation_path(quotation), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.quotations.update") && quotation.draft? %>
+                    <%= link_to "編集", edit_admin_quotation_path(quotation), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>見積がまだ登録されていません。</p>
+    </div>
+  <% end %>
+</div>

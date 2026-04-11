@@ -26,6 +26,16 @@
         <h2 class="text-sm font-semibold text-slate-900">注文情報</h2>
         <dl class="mt-3 grid gap-4 sm:grid-cols-2 text-sm text-slate-800">
           <div>
+            <dt class="text-xs text-slate-500">元見積</dt>
+            <dd>
+              <% if @order.quotation.present? %>
+                <%= link_to @order.quotation.quotation_number, admin_quotation_path(@order.quotation), class: "text-sky-700 hover:underline" %>
+              <% else %>
+                -
+              <% end %>
+            </dd>
+          </div>
+          <div>
             <dt class="text-xs text-slate-500">希望納期</dt>
             <dd><%= jp_date(@order.requested_delivery_date) %></dd>
           </div>

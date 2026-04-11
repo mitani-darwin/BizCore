@@ -13,6 +13,7 @@ class Order < ApplicationRecord
 
   belongs_to :tenant
   belongs_to :customer
+  belongs_to :quotation, optional: true
 
   has_many :order_items, dependent: :destroy
   has_many :deliveries, dependent: :restrict_with_exception
@@ -56,6 +57,9 @@ class Order < ApplicationRecord
   def tenant_consistency
     return if tenant_id.blank? || customer.blank?
 
-    errors.add(:tenant, "と取引先の所属が一致しません") if tenant_id != customer.tenant_id
+    mismatch = tenant_id != customer.tenant_id
+    mismatch ||= quotation.present? && (tenant_id != quotation.tenant_id || customer_id != quotation.customer_id)
+
+    errors.add(:tenant, "と取引先の所属が一致しません") if mismatch
   end
 end

@@ -77,6 +77,21 @@ module Admin
       status_badge(label, tone)
     end
 
+    def quotation_status_badge(quotation)
+      label, tone = quotation_status_tone(quotation.status)
+
+      if quotation.expiration_date.present? && quotation.expiration_date < Date.current && quotation.sent?
+        label = "期限切れ"
+        tone = "rose"
+      end
+
+      status_badge(label, tone)
+    end
+
+    def quotation_status_label(status)
+      quotation_status_tone(status).first
+    end
+
     def order_status_label(status)
       order_status_tone(status).first
     end
@@ -211,6 +226,17 @@ module Admin
     end
 
     private
+
+    def quotation_status_tone(status)
+      case status
+      when "draft" then ["下書き", "slate"]
+      when "sent" then ["提示済", "sky"]
+      when "accepted" then ["採用", "emerald"]
+      when "converted" then ["注文変換済", "violet"]
+      when "cancelled" then ["取消", "rose"]
+      else ["不明", "slate"]
+      end
+    end
 
     def order_status_tone(status)
       case status

@@ -1,0 +1,93 @@
+<%= form_with model: [:admin, quotation], local: true, class: "space-y-6" do |f| %>
+  <% if quotation.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% quotation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @customer_options.blank? || @product_options.blank? %>
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      見積を作成するには、先に得意先と商品を登録してください。
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :customer_id, "得意先", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :quoted_by_name, "社内担当者", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :quoted_by_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :subject, "件名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :subject, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", placeholder: "例: 4月キャンペーン向け備品一式" %>
+    </div>
+    <div>
+      <%= f.label :quotation_date, "見積日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :quotation_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :expiration_date, "有効期限", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :expiration_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :remarks, "備考", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_area :remarks, rows: 3, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div
+    class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+    data-controller="order-items"
+    data-order-items-index-value="<%= quotation.quotation_items.reject(&:marked_for_destruction?).size %>">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">見積明細</h2>
+        <p class="text-xs text-slate-500">必要な行だけ追加して見積金額を組み立てます。</p>
+      </div>
+      <button
+        type="button"
+        data-action="order-items#addRow"
+        class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100">
+        明細を追加
+      </button>
+    </div>
+
+    <div class="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-3 py-2">商品</th>
+            <th class="px-3 py-2">数量</th>
+            <th class="px-3 py-2">単価</th>
+            <th class="px-3 py-2">金額</th>
+            <th class="px-3 py-2">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" data-order-items-target="rows">
+          <%= f.fields_for :quotation_items do |item_form| %>
+            <%= render "quotation_item_row", item_form: item_form, product_options: @product_options %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <template data-order-items-target="template">
+      <%= f.fields_for :quotation_items, QuotationItem.new(tenant: current_tenant), child_index: "NEW_RECORD" do |item_form| %>
+        <%= render "quotation_item_row", item_form: item_form, product_options: @product_options %>
+      <% end %>
+    </template>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", quotation.persisted? ? admin_quotation_path(quotation) : admin_quotations_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

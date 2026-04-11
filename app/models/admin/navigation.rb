@@ -98,6 +98,13 @@ module Admin
           label: "受発注業務",
           items: [
             Item.new(
+              id: :quotations,
+              label: "見積",
+              path: :admin_quotations_path,
+              required_keys: %w[admin.quotations.read],
+              children: []
+            ),
+            Item.new(
               id: :orders,
               label: "注文",
               path: :admin_orders_path,

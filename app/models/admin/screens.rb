@@ -65,6 +65,16 @@ module Admin
         index_path: :admin_stock_counts_path,
         actions: %i[index new create]
       },
+      quotations: {
+        index_path: :admin_quotations_path,
+        actions: %i[index show new create edit update download_excel send_quotation accept_quotation create_order],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
+          send_quotation: { permission_action: :update, label: "見積書送信", breadcrumb_label: "見積書送信", page_title: "%{resource}詳細" },
+          accept_quotation: { permission_action: :update, label: "採用", breadcrumb_label: "採用", page_title: "%{resource}詳細" },
+          create_order: { permission_action: :update, label: "注文へ変換", breadcrumb_label: "注文へ変換", page_title: "%{resource}詳細" }
+        }
+      },
       orders: {
         index_path: :admin_orders_path,
         actions: %i[index show new create edit update send_order accept_order reserve_stock issue_delivery],
@@ -210,6 +220,7 @@ module Admin
       return record.name if record.respond_to?(:name) && record.name.present?
       return record.title if record.respond_to?(:title) && record.title.present?
       return record.order_number if record.respond_to?(:order_number) && record.order_number.present?
+      return record.quotation_number if record.respond_to?(:quotation_number) && record.quotation_number.present?
       return record.delivery_number if record.respond_to?(:delivery_number) && record.delivery_number.present?
       return record.invoice_number if record.respond_to?(:invoice_number) && record.invoice_number.present?
       return record.payment_number if record.respond_to?(:payment_number) && record.payment_number.present?

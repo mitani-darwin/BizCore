@@ -6,6 +6,7 @@ class Customer < ApplicationRecord
 
   belongs_to :tenant
 
+  has_many :quotations, dependent: :restrict_with_exception
   has_many :orders, dependent: :restrict_with_exception
   has_many :deliveries, dependent: :restrict_with_exception
   has_many :invoices, dependent: :restrict_with_exception

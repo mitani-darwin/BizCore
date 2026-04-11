@@ -36,6 +36,14 @@ Rails.application.routes.draw do
     resources :stock_items, only: [:index, :show, :new, :create, :edit, :update]
     resources :stock_movements, only: [:index, :show, :new, :create]
     resources :stock_counts, only: [:index, :new, :create]
+    resources :quotations, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        get :download_excel
+        patch :send_quotation
+        patch :accept_quotation
+        post :create_order
+      end
+    end
     resources :orders, only: [:index, :show, :new, :create, :edit, :update] do
       member do
         patch :send_order

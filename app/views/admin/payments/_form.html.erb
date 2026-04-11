@@ -10,10 +10,21 @@
     </div>
   <% end %>
 
+  <% if @source_invoice.present? %>
+    <%= hidden_field_tag :source_invoice_id, @source_invoice.id %>
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+      請求 <span class="font-semibold"><%= @source_invoice.invoice_number %></span> から入金を登録します。
+      保存時に <span class="font-semibold"><%= money([payment.amount.to_d, @source_invoice.outstanding_amount].min) %></span> を自動で消し込みます。
+    </div>
+  <% end %>
+
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :customer_id, "得意先", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, disabled: @source_invoice.present? %>
+      <% if @source_invoice.present? %>
+        <%= f.hidden_field :customer_id %>
+      <% end %>
     </div>
     <div>
       <%= f.label :payment_date, "入金日", class: "block text-sm font-medium text-slate-800" %>
