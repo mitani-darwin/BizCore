@@ -12,6 +12,10 @@
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
+      <%= f.label :status, "取引状態", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :status, options_for_select(customer_status_options, customer.status), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
       <%= f.label :code, "得意先コード", class: "block text-sm font-medium text-slate-800" %>
       <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
     </div>
@@ -43,6 +47,33 @@
       <%= f.label :address2, "住所2", class: "block text-sm font-medium text-slate-800" %>
       <%= f.text_field :address2, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
     </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <h2 class="text-sm font-semibold text-slate-900">担当者情報</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :contact_person_department, "部署名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_person_department, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :contact_person_name, "担当者名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_person_name, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :contact_person_email, "担当者メール", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.email_field :contact_person_email, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :contact_person_tel, "担当者電話", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_person_tel, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <h2 class="text-sm font-semibold text-slate-900">請求条件</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :closing_day, "締日", class: "block text-sm font-medium text-slate-800" %>
       <%= f.number_field :closing_day, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", min: 1, max: 31 %>
@@ -59,6 +90,10 @@
       <%= f.label :invoice_delivery_method, "請求書送付方法", class: "block text-sm font-medium text-slate-800" %>
       <%= f.select :invoice_delivery_method, options_for_select(invoice_delivery_method_options, customer.invoice_delivery_method), { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
     </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div class="sm:col-span-2">
       <%= f.label :note, "備考", class: "block text-sm font-medium text-slate-800" %>
       <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>

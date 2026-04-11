@@ -3,12 +3,34 @@
 <div class="space-y-4">
   <div class="flex items-center justify-between gap-3">
     <div>
-      <h1 class="text-xl font-semibold text-slate-900"><%= @customer.name %></h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @customer.name %></h1>
+        <%= customer_status_badge(@customer) %>
+      </div>
       <p class="text-sm text-slate-600">コード: <%= @customer.code %></p>
     </div>
     <% if can?("admin.customers.update") %>
       <%= link_to "編集", edit_admin_customer_path(@customer), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
     <% end %>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div class="text-xs text-slate-500">売掛残高</div>
+      <div class="mt-1 text-2xl font-semibold text-slate-900"><%= money(@customer.outstanding_invoice_amount) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div class="text-xs text-slate-500">未入金請求</div>
+      <div class="mt-1 text-2xl font-semibold text-slate-900"><%= @customer.unpaid_invoice_count %> 件</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div class="text-xs text-slate-500">累計請求</div>
+      <div class="mt-1 text-2xl font-semibold text-slate-900"><%= money(@customer.total_billed_amount) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div class="text-xs text-slate-500">累計入金</div>
+      <div class="mt-1 text-2xl font-semibold text-slate-900"><%= money(@customer.total_payment_amount) %></div>
+    </div>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
@@ -35,6 +57,24 @@
     </div>
 
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">担当者情報</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">担当部署・担当者</dt>
+          <dd><%= @customer.primary_contact.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">担当者メール</dt>
+          <dd><%= @customer.contact_person_email.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">担当者電話</dt>
+          <dd><%= @customer.contact_person_tel.presence || "-" %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 class="text-sm font-semibold text-slate-900">請求条件</h2>
       <dl class="mt-3 space-y-3 text-sm text-slate-800">
         <div>
@@ -52,6 +92,24 @@
         <div>
           <dt class="text-xs text-slate-500">請求書送付方法</dt>
           <dd><%= invoice_delivery_method_label(@customer.invoice_delivery_method) %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">取引状況</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">最終注文日</dt>
+          <dd><%= jp_date(@customer.last_order_date) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">最終請求日</dt>
+          <dd><%= jp_date(@customer.last_invoice_date) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">最終入金日</dt>
+          <dd><%= jp_date(@customer.last_payment_date) %></dd>
         </div>
       </dl>
     </div>
@@ -73,13 +131,93 @@
         <div class="mt-1 text-xl font-semibold text-slate-900"><%= @customer.payments.count %></div>
       </div>
     </div>
-    <% if @customer.note.present? %>
-      <div class="mt-4 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        <div class="mb-1 text-xs text-slate-500">備考</div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold text-slate-900">最近の注文</h2>
+        <span class="text-xs text-slate-500"><%= @customer.orders.size %> 件</span>
+      </div>
+      <% if @recent_orders.any? %>
+        <div class="mt-3 space-y-3">
+          <% @recent_orders.each do |order| %>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to order.order_number, admin_order_path(order), class: "hover:text-sky-700" %></div>
+                  <div class="text-xs text-slate-500"><%= jp_date(order.order_date) %></div>
+                </div>
+                <%= order_status_badge(order) %>
+              </div>
+              <div class="mt-2 text-sm text-slate-700"><%= money(order.total_amount) %></div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500">注文履歴はありません。</p>
+      <% end %>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold text-slate-900">最近の請求</h2>
+        <span class="text-xs text-slate-500"><%= @customer.invoices.size %> 件</span>
+      </div>
+      <% if @recent_invoices.any? %>
+        <div class="mt-3 space-y-3">
+          <% @recent_invoices.each do |invoice| %>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to invoice.invoice_number, admin_invoice_path(invoice), class: "hover:text-sky-700" %></div>
+                  <div class="text-xs text-slate-500"><%= jp_date(invoice.invoice_date) %> / 支払期限 <%= jp_date(invoice.due_date) %></div>
+                </div>
+                <%= invoice_status_badge(invoice) %>
+              </div>
+              <div class="mt-2 text-sm text-slate-700">請求 <%= money(invoice.total_amount) %> / 残高 <%= money(invoice.balance_amount) %></div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500">請求履歴はありません。</p>
+      <% end %>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold text-slate-900">最近の入金</h2>
+        <span class="text-xs text-slate-500"><%= @customer.payments.size %> 件</span>
+      </div>
+      <% if @recent_payments.any? %>
+        <div class="mt-3 space-y-3">
+          <% @recent_payments.each do |payment| %>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to payment.payment_number, admin_payment_path(payment), class: "hover:text-sky-700" %></div>
+                  <div class="text-xs text-slate-500"><%= jp_date(payment.payment_date) %> / <%= payment_method_label(payment.payment_method) %></div>
+                </div>
+                <%= payment_status_badge(payment) %>
+              </div>
+              <div class="mt-2 text-sm text-slate-700">入金 <%= money(payment.amount) %> / 未消込 <%= money(payment.unapplied_amount) %></div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-sm text-slate-500">入金履歴はありません。</p>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @customer.note.present? %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">備考</h2>
+      <div class="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
         <%= simple_format(@customer.note) %>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 
   <div class="flex gap-2">
     <%= link_to "一覧へ戻る", admin_customers_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>

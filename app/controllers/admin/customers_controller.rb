@@ -3,14 +3,30 @@ module Admin
     before_action :set_customer, only: [:show, :edit, :update]
 
     def index
-      @customers = current_tenant.customers.order(:code, :id)
+      @filters = { q: search_keyword, status: search_status }
+      @customers = current_tenant.customers
+                                 .includes(:orders, :invoices)
+                                 .search(search_keyword)
+                                 .with_status(search_status)
+                                 .ordered_for_admin
+      @customer_summary = {
+        count: @customers.size,
+        active_count: @customers.count(&:active?),
+        unpaid_invoice_count: @customers.sum(&:unpaid_invoice_count),
+        outstanding_amount: @customers.sum(&:outstanding_invoice_amount)
+      }
     end
 
-    def show; end
+    def show
+      @recent_orders = @customer.orders.order(order_date: :desc, id: :desc).limit(5)
+      @recent_invoices = @customer.invoices.order(invoice_date: :desc, id: :desc).limit(5)
+      @recent_payments = @customer.payments.order(payment_date: :desc, id: :desc).limit(5)
+    end
 
     def new
       @customer = current_tenant.customers.build(
         closing_day: 31,
+        status: "active",
         invoice_delivery_method: "email",
         payment_method: "bank_transfer",
         payment_due_rule: "next_month_end"
@@ -40,10 +56,19 @@ module Admin
     private
 
     def set_customer
-      @customer = current_tenant.customers.find_by(id: params[:id])
+      @customer = current_tenant.customers.includes(:orders, :invoices, :payments).find_by(id: params[:id])
       return if @customer
 
       render_not_found and return false
+    end
+
+    def search_keyword
+      params[:q].to_s.strip
+    end
+
+    def search_status
+      status = params[:status].to_s
+      Customer.statuses.value?(status) ? status : nil
     end
 
     def customer_params
@@ -51,11 +76,16 @@ module Admin
         :code,
         :name,
         :name_kana,
+        :status,
         :postal_code,
         :address1,
         :address2,
         :tel,
         :email,
+        :contact_person_name,
+        :contact_person_department,
+        :contact_person_email,
+        :contact_person_tel,
         :closing_day,
         :payment_due_rule,
         :payment_method,
