@@ -85,6 +85,8 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
 
     get new_admin_order_path
     assert_response :success
+    assert_select "tbody[data-order-items-target='rows'] > tr[data-order-items-target='row']", count: 1
+    assert_select "button[data-action='order-items#addRow']", text: "明細を追加"
 
     get admin_deliveries_path
     assert_response :success

@@ -1,6 +1,6 @@
 module Admin
   class OrdersController < BaseController
-    MINIMUM_ORDER_ITEM_ROWS = 3
+    MINIMUM_ORDER_ITEM_ROWS = 1
 
     before_action :set_order, only: [:show, :edit, :update, :send_order, :accept_order, :reserve_stock, :issue_delivery]
     before_action :set_form_options, only: [:new, :create, :edit, :update]
