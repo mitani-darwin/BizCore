@@ -1,4 +1,8 @@
-<aside class="hidden md:flex w-64 flex-col border-r border-slate-200 bg-white">
+<aside
+  class="hidden md:flex w-64 flex-col border-r border-slate-200 bg-white"
+  data-controller="sidebar"
+  data-sidebar-storage-key-value="admin-sidebar-sections"
+>
   <div class="h-14 flex items-center px-4 border-b border-slate-200">
     <div class="flex items-center gap-2">
       <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white text-lg font-bold">
@@ -9,40 +13,78 @@
   </div>
 
   <nav class="flex-1 py-4">
+    <div class="mb-4 flex justify-end px-3">
+      <button
+        type="button"
+        data-action="sidebar#toggleAll"
+        class="rounded-lg border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+      >
+        <span data-sidebar-target="toggleAllLabel">すべて折りたたむ</span>
+      </button>
+    </div>
+
     <% navigation_sections.each do |section| %>
-      <div class="mb-4 px-3">
-        <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500"><%= section.label %></p>
-        <ul class="space-y-1">
-          <% section.items.each do |item| %>
-            <% active = navigation_active?(item) %>
-            <% path = navigation_path(item) %>
-            <li>
-              <%= link_to item.label,
-                  path || "#",
-                  class: [
-                    "block rounded-lg px-3 py-2 text-sm",
-                    active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-100"
-                  ].join(" ") %>
-              <% if item.children.any? %>
-                <ul class="mt-1 space-y-1 pl-3">
-                  <% item.children.each do |child| %>
-                    <% child_active = navigation_active?(child) %>
-                    <% child_path = navigation_path(child) %>
-                    <li>
-                      <%= link_to child.label,
-                          child_path || "#",
-                          class: [
-                            "block rounded-md px-3 py-1.5 text-xs",
-                            child_active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-600 hover:bg-slate-100"
-                          ].join(" ") %>
-                    </li>
-                  <% end %>
-                </ul>
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+      <% section_active = section.items.any? { |item| navigation_active?(item) } %>
+      <section
+        class="mb-4 px-3"
+        data-sidebar-target="section"
+        data-sidebar-section-id="<%= section.id %>"
+        data-sidebar-default-open="true"
+        data-sidebar-active="<%= section_active %>"
+        data-sidebar-open="true"
+      >
+        <button
+          type="button"
+          data-action="sidebar#toggleSection"
+          data-sidebar-role="button"
+          aria-expanded="true"
+          class="mb-2 flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition hover:bg-slate-50"
+        >
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-slate-500"><%= section.label %></span>
+          <svg
+            data-sidebar-role="icon"
+            class="h-4 w-4 rotate-90 text-slate-400 transition-transform"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path fill-rule="evenodd" d="M7.22 4.97a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L10.94 10 7.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <div data-sidebar-role="panel">
+          <ul class="space-y-1">
+            <% section.items.each do |item| %>
+              <% active = navigation_active?(item) %>
+              <% path = navigation_path(item) %>
+              <li>
+                <%= link_to item.label,
+                    path || "#",
+                    class: [
+                      "block rounded-lg px-3 py-2 text-sm",
+                      active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-700 hover:bg-slate-100"
+                    ].join(" ") %>
+                <% if item.children.any? %>
+                  <ul class="mt-1 space-y-1 pl-3">
+                    <% item.children.each do |child| %>
+                      <% child_active = navigation_active?(child) %>
+                      <% child_path = navigation_path(child) %>
+                      <li>
+                        <%= link_to child.label,
+                            child_path || "#",
+                            class: [
+                              "block rounded-md px-3 py-1.5 text-xs",
+                              child_active ? "bg-slate-100 font-semibold text-slate-900" : "text-slate-600 hover:bg-slate-100"
+                            ].join(" ") %>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </section>
     <% end %>
   </nav>
 </aside>

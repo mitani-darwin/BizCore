@@ -73,6 +73,8 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
   test "ordering management screens render" do
     get admin_customers_path
     assert_response :success
+    assert_select "aside[data-controller='sidebar']"
+    assert_select "button[data-action='sidebar#toggleAll']", text: "すべて折りたたむ"
 
     get admin_customer_path(@customer)
     assert_response :success
