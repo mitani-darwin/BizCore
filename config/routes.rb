@@ -45,6 +45,25 @@ Rails.application.routes.draw do
     end
     resources :purchase_receipts, only: [:index, :show]
     resources :purchase_adjustments, only: [:index, :show, :create]
+    resources :purchase_bill_batches, only: [:index, :show] do
+      member do
+        patch :cancel
+      end
+    end
+    resources :purchase_bills, only: [:index, :show] do
+      member do
+        patch :cancel
+        post :reissue
+      end
+      collection do
+        post :issue_monthly
+      end
+    end
+    resources :supplier_payments, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        patch :reconcile
+      end
+    end
     resources :quotations, only: [:index, :show, :new, :create, :edit, :update] do
       member do
         get :download_excel

@@ -9,6 +9,8 @@ class Supplier < ApplicationRecord
   has_many :purchase_orders, dependent: :restrict_with_exception
   has_many :purchase_receipts, dependent: :restrict_with_exception
   has_many :purchase_adjustments, dependent: :restrict_with_exception
+  has_many :purchase_bills, dependent: :restrict_with_exception
+  has_many :supplier_payments, dependent: :restrict_with_exception
 
   enum :status, STATUSES
 
@@ -44,6 +46,34 @@ class Supplier < ApplicationRecord
 
   def primary_contact
     [contact_person_department, contact_person_name].compact_blank.join(" ")
+  end
+
+  def billing_closes_on?(date)
+    return true if closing_day.blank?
+
+    date.day == effective_closing_day_for(date)
+  end
+
+  def effective_closing_day_for(date)
+    configured_day = closing_day.to_i
+    return date.end_of_month.day if configured_day <= 0
+
+    [configured_day, date.end_of_month.day].min
+  end
+
+  def due_date_for(closing_date:, default_due_date: nil)
+    case payment_due_rule
+    when "end_of_month"
+      closing_date.end_of_month
+    when "next_month_end"
+      closing_date.next_month.end_of_month
+    when "next_two_month_end"
+      closing_date.next_month.next_month.end_of_month
+    when "custom"
+      default_due_date || closing_date.next_month.end_of_month
+    else
+      default_due_date || closing_date.next_month.end_of_month
+    end
   end
 
   private

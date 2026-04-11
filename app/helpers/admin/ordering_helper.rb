@@ -167,6 +167,41 @@ module Admin
       "-#{money(adjustment.amount)}"
     end
 
+    def purchase_bill_status_badge(purchase_bill)
+      label, tone = case purchase_bill.status
+      when "issued" then ["未払", "amber"]
+      when "partially_paid" then ["一部支払", "sky"]
+      when "paid" then ["支払済", "emerald"]
+      when "credit" then ["差引超過", "violet"]
+      when "cancelled" then ["取消", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def purchase_bill_batch_status_badge(purchase_bill_batch)
+      label, tone = case purchase_bill_batch.status
+      when "issued" then ["締め済", "violet"]
+      when "cancelled" then ["締め解除", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def supplier_payment_status_badge(supplier_payment)
+      label, tone = case supplier_payment.status
+      when "pending" then ["未消込", "amber"]
+      when "partially_applied" then ["一部消込", "sky"]
+      when "applied" then ["消込済", "emerald"]
+      when "cancelled" then ["取消", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
     def purchase_receipt_item_return_option_label(item)
       "#{item.product_name_snapshot} (返品可能 #{item.returnable_quantity} #{item.unit_name_snapshot})"
     end

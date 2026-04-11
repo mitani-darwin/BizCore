@@ -85,6 +85,29 @@ module Admin
         index_path: :admin_purchase_adjustments_path,
         actions: %i[index show create]
       },
+      purchase_bill_batches: {
+        index_path: :admin_purchase_bill_batches_path,
+        actions: %i[index show cancel],
+        action_overrides: {
+          cancel: { permission_action: :update, label: "締め解除", breadcrumb_label: "締め解除", page_title: "%{resource}詳細" }
+        }
+      },
+      purchase_bills: {
+        index_path: :admin_purchase_bills_path,
+        actions: %i[index show issue_monthly cancel reissue],
+        action_overrides: {
+          issue_monthly: { permission_action: :create, label: "月次仕入請求", breadcrumb_label: "月次仕入請求", page_title: "%{resource}一覧" },
+          cancel: { permission_action: :update, label: "請求取消", breadcrumb_label: "請求取消", page_title: "%{resource}詳細" },
+          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" }
+        }
+      },
+      supplier_payments: {
+        index_path: :admin_supplier_payments_path,
+        actions: %i[index show new create edit update reconcile],
+        action_overrides: {
+          reconcile: { permission_action: :update, label: "消し込み", breadcrumb_label: "消し込み", page_title: "%{resource}詳細" }
+        }
+      },
       quotations: {
         index_path: :admin_quotations_path,
         actions: %i[index show new create edit update download_excel send_quotation accept_quotation create_order],
@@ -253,6 +276,7 @@ module Admin
       return record.purchase_receipt_number if record.respond_to?(:purchase_receipt_number) && record.purchase_receipt_number.present?
       return record.adjustment_number if record.respond_to?(:adjustment_number) && record.adjustment_number.present?
       return record.batch_number if record.respond_to?(:batch_number) && record.batch_number.present?
+      return record.bill_number if record.respond_to?(:bill_number) && record.bill_number.present?
       return record.quotation_number if record.respond_to?(:quotation_number) && record.quotation_number.present?
       return record.delivery_number if record.respond_to?(:delivery_number) && record.delivery_number.present?
       return record.invoice_number if record.respond_to?(:invoice_number) && record.invoice_number.present?

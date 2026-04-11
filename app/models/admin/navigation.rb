@@ -178,6 +178,27 @@ module Admin
               path: :admin_purchase_adjustments_path,
               required_keys: %w[admin.purchase_adjustments.read],
               children: []
+            ),
+            Item.new(
+              id: :purchase_bill_batches,
+              label: "仕入締め",
+              path: :admin_purchase_bill_batches_path,
+              required_keys: %w[admin.purchase_bill_batches.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_bills,
+              label: "仕入請求",
+              path: :admin_purchase_bills_path,
+              required_keys: %w[admin.purchase_bills.read],
+              children: []
+            ),
+            Item.new(
+              id: :supplier_payments,
+              label: "支払",
+              path: :admin_supplier_payments_path,
+              required_keys: %w[admin.supplier_payments.read],
+              children: []
             )
           ]
         ),

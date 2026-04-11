@@ -81,9 +81,21 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_purchase_adjustments_path
     assert_response :success
+
+    get admin_purchase_bills_path
+    assert_response :success
+
+    get admin_purchase_bill_batches_path
+    assert_response :success
+
+    get admin_supplier_payments_path
+    assert_response :success
+
+    get new_admin_supplier_payment_path
+    assert_response :success
   end
 
-  test "procurement flow proceeds from purchase order to receipt return and discount" do
+  test "procurement flow proceeds from purchase order to receipt return, billing, and payment reconciliation" do
     assert_difference(["PurchaseOrder.count", "PurchaseOrderItem.count"], 1) do
       post admin_purchase_orders_path, params: {
         purchase_order: {
@@ -212,5 +224,55 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     get admin_purchase_adjustments_path(adjustment_type: "discount")
     assert_response :success
     assert_select "td", text: discount_adjustment.adjustment_number
+
+    assert_difference(["PurchaseBillBatch.count", "PurchaseBill.count"], 1) do
+      post issue_monthly_admin_purchase_bills_path, params: {
+        billing_period_from: "2026-04-01",
+        billing_period_to: "2026-04-30",
+        closing_date: "2026-04-30",
+        bill_date: "2026-04-30",
+        default_due_date: "2026-05-31"
+      }
+    end
+
+    purchase_bill_batch = PurchaseBillBatch.order(:id).last
+    assert_redirected_to admin_purchase_bill_batch_path(purchase_bill_batch)
+
+    get admin_purchase_bill_batch_path(purchase_bill_batch)
+    assert_response :success
+
+    purchase_bill = PurchaseBill.order(:id).last
+    get admin_purchase_bill_path(purchase_bill)
+    assert_response :success
+    assert_select "a", text: "この請求の支払を登録"
+
+    get new_admin_supplier_payment_path(source_purchase_bill_id: purchase_bill.id)
+    assert_response :success
+    assert_select "input[name='source_purchase_bill_id'][value='#{purchase_bill.id}']", count: 1
+    assert_select "input[name='supplier_payment[amount]'][value='#{purchase_bill.outstanding_amount.to_i}.0'], input[name='supplier_payment[amount]'][value='#{purchase_bill.outstanding_amount.to_i}']", count: 1
+
+    assert_difference(["SupplierPayment.count", "SupplierPaymentAllocation.count"], 1) do
+      post admin_supplier_payments_path, params: {
+        source_purchase_bill_id: purchase_bill.id,
+        supplier_payment: {
+          supplier_id: @supplier.id,
+          payment_date: "2026-05-20",
+          amount: purchase_bill.outstanding_amount.to_i,
+          payment_method: "bank_transfer",
+          bank_name: "テスト銀行",
+          account_name: "買掛口座",
+          reference_note: "仕入請求から登録"
+        }
+      }
+    end
+
+    supplier_payment = SupplierPayment.order(:id).last
+    assert_redirected_to admin_supplier_payment_path(supplier_payment)
+    assert_equal purchase_bill.id, supplier_payment.supplier_payment_allocations.last.purchase_bill_id
+    assert supplier_payment.reload.applied?
+    assert purchase_bill.reload.paid?
+
+    get admin_supplier_payment_path(supplier_payment)
+    assert_response :success
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_113000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -327,6 +327,84 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
     t.index ["warehouse_id"], name: "index_purchase_adjustments_on_warehouse_id"
   end
 
+  create_table "purchase_bill_batches", force: :cascade do |t|
+    t.string "batch_number", null: false
+    t.integer "bill_count", default: 0, null: false
+    t.date "bill_date", null: false
+    t.date "billing_period_from", null: false
+    t.date "billing_period_to", null: false
+    t.datetime "cancelled_at"
+    t.integer "cancelled_by_id"
+    t.date "closing_date", null: false
+    t.datetime "created_at", null: false
+    t.date "default_due_date"
+    t.datetime "executed_at"
+    t.integer "executed_by_id"
+    t.text "note"
+    t.string "status", default: "issued", null: false
+    t.integer "supplier_count", default: 0, null: false
+    t.integer "tenant_id", null: false
+    t.decimal "total_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cancelled_by_id"], name: "index_purchase_bill_batches_on_cancelled_by_id"
+    t.index ["executed_by_id"], name: "index_purchase_bill_batches_on_executed_by_id"
+    t.index ["tenant_id", "batch_number"], name: "index_purchase_bill_batches_on_tenant_id_and_batch_number", unique: true
+    t.index ["tenant_id", "billing_period_from", "billing_period_to"], name: "idx_on_tenant_id_billing_period_from_billing_period_0255e1340b"
+    t.index ["tenant_id", "closing_date"], name: "index_purchase_bill_batches_on_tenant_id_and_closing_date"
+    t.index ["tenant_id"], name: "index_purchase_bill_batches_on_tenant_id"
+  end
+
+  create_table "purchase_bill_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.integer "purchase_bill_id", null: false
+    t.integer "quantity", null: false
+    t.integer "source_id"
+    t.string "source_type"
+    t.string "tax_category", default: "taxable_10", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "unit_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["purchase_bill_id"], name: "index_purchase_bill_items_on_purchase_bill_id"
+    t.index ["source_type", "source_id"], name: "index_purchase_bill_items_on_source"
+    t.index ["tenant_id", "source_type", "source_id"], name: "idx_on_tenant_id_source_type_source_id_75db0218e4"
+    t.index ["tenant_id"], name: "index_purchase_bill_items_on_tenant_id"
+  end
+
+  create_table "purchase_bills", force: :cascade do |t|
+    t.decimal "balance_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.date "bill_date", null: false
+    t.string "bill_number", null: false
+    t.date "billing_period_from", null: false
+    t.date "billing_period_to", null: false
+    t.datetime "cancelled_at"
+    t.date "closing_date", null: false
+    t.integer "closing_day_snapshot"
+    t.datetime "created_at", null: false
+    t.date "due_date", null: false
+    t.decimal "paid_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "payment_due_rule_snapshot"
+    t.string "payment_method_snapshot"
+    t.integer "purchase_bill_batch_id"
+    t.integer "reissued_from_id"
+    t.text "remarks"
+    t.string "status", default: "issued", null: false
+    t.decimal "subtotal_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.integer "supplier_id", null: false
+    t.decimal "tax_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "total_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["purchase_bill_batch_id"], name: "index_purchase_bills_on_purchase_bill_batch_id"
+    t.index ["reissued_from_id"], name: "index_purchase_bills_on_reissued_from_id"
+    t.index ["supplier_id"], name: "index_purchase_bills_on_supplier_id"
+    t.index ["tenant_id", "bill_date"], name: "index_purchase_bills_on_tenant_id_and_bill_date"
+    t.index ["tenant_id", "bill_number"], name: "index_purchase_bills_on_tenant_id_and_bill_number", unique: true
+    t.index ["tenant_id", "status"], name: "index_purchase_bills_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_purchase_bills_on_tenant_id"
+  end
+
   create_table "purchase_order_items", force: :cascade do |t|
     t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
     t.datetime "created_at", null: false
@@ -547,6 +625,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
     t.index ["warehouse_id"], name: "index_stock_movements_on_warehouse_id"
   end
 
+  create_table "supplier_payment_allocations", force: :cascade do |t|
+    t.decimal "allocated_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "allocated_at"
+    t.datetime "created_at", null: false
+    t.integer "purchase_bill_id", null: false
+    t.integer "supplier_payment_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["purchase_bill_id"], name: "index_supplier_payment_allocations_on_purchase_bill_id"
+    t.index ["supplier_payment_id", "purchase_bill_id"], name: "index_supplier_payment_allocations_on_payment_and_bill", unique: true
+    t.index ["supplier_payment_id"], name: "index_supplier_payment_allocations_on_supplier_payment_id"
+    t.index ["tenant_id"], name: "index_supplier_payment_allocations_on_tenant_id"
+  end
+
+  create_table "supplier_payments", force: :cascade do |t|
+    t.string "account_name"
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "bank_name"
+    t.datetime "created_at", null: false
+    t.date "payment_date", null: false
+    t.string "payment_method"
+    t.string "payment_number", null: false
+    t.string "reference_note"
+    t.string "status", default: "pending", null: false
+    t.integer "supplier_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["supplier_id"], name: "index_supplier_payments_on_supplier_id"
+    t.index ["tenant_id", "payment_date"], name: "index_supplier_payments_on_tenant_id_and_payment_date"
+    t.index ["tenant_id", "payment_number"], name: "index_supplier_payments_on_tenant_id_and_payment_number", unique: true
+    t.index ["tenant_id", "status"], name: "index_supplier_payments_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_supplier_payments_on_tenant_id"
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "address1"
     t.string "address2"
@@ -689,6 +801,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
   add_foreign_key "purchase_adjustments", "suppliers"
   add_foreign_key "purchase_adjustments", "tenants"
   add_foreign_key "purchase_adjustments", "warehouses"
+  add_foreign_key "purchase_bill_batches", "tenants"
+  add_foreign_key "purchase_bill_batches", "users", column: "cancelled_by_id"
+  add_foreign_key "purchase_bill_batches", "users", column: "executed_by_id"
+  add_foreign_key "purchase_bill_items", "purchase_bills"
+  add_foreign_key "purchase_bill_items", "tenants"
+  add_foreign_key "purchase_bills", "purchase_bill_batches"
+  add_foreign_key "purchase_bills", "purchase_bills", column: "reissued_from_id"
+  add_foreign_key "purchase_bills", "suppliers"
+  add_foreign_key "purchase_bills", "tenants"
   add_foreign_key "purchase_order_items", "products"
   add_foreign_key "purchase_order_items", "purchase_orders"
   add_foreign_key "purchase_order_items", "tenants"
@@ -725,6 +846,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
   add_foreign_key "stock_movements", "products"
   add_foreign_key "stock_movements", "tenants"
   add_foreign_key "stock_movements", "warehouses"
+  add_foreign_key "supplier_payment_allocations", "purchase_bills"
+  add_foreign_key "supplier_payment_allocations", "supplier_payments"
+  add_foreign_key "supplier_payment_allocations", "tenants"
+  add_foreign_key "supplier_payments", "suppliers"
+  add_foreign_key "supplier_payments", "tenants"
   add_foreign_key "suppliers", "tenants"
   add_foreign_key "tenant_user_roles", "roles"
   add_foreign_key "tenant_user_roles", "users", column: "tenant_user_id"

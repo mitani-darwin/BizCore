@@ -4,6 +4,7 @@ class PurchaseReceiptItem < ApplicationRecord
   belongs_to :purchase_order_item
   belongs_to :product
   has_many :purchase_adjustments, dependent: :restrict_with_exception
+  has_many :purchase_bill_items, as: :source, dependent: :restrict_with_exception
 
   validates :received_quantity, :unit_cost, :amount, presence: true
   validates :received_quantity, numericality: { greater_than: 0, only_integer: true }

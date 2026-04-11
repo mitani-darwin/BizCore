@@ -18,6 +18,7 @@ class PurchaseAdjustment < ApplicationRecord
   belongs_to :purchase_receipt
   belongs_to :purchase_receipt_item, optional: true
   belongs_to :product, optional: true
+  has_many :purchase_bill_items, as: :source, dependent: :restrict_with_exception
 
   enum :adjustment_type, TYPES
   enum :status, STATUSES

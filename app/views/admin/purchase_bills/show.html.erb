@@ -1,0 +1,170 @@
+<% content_for :page_title, "仕入請求詳細" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @purchase_bill.bill_number %></h1>
+        <%= purchase_bill_status_badge(@purchase_bill) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= @purchase_bill.supplier.name %> / 請求日 <%= jp_date(@purchase_bill.bill_date) %></p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if can?("admin.supplier_payments.create") && @purchase_bill.outstanding_amount.positive? && !@purchase_bill.cancelled? %>
+        <%= link_to "この請求の支払を登録", new_admin_supplier_payment_path(source_purchase_bill_id: @purchase_bill.id), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+      <% end %>
+      <% if can?("admin.purchase_bills.update") && @purchase_bill.cancellable? %>
+        <%= button_to "請求を取消", cancel_admin_purchase_bill_path(@purchase_bill), method: :patch, class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
+      <% if can?("admin.purchase_bills.create") && @purchase_bill.reissuable? %>
+        <%= button_to "請求を再発行", reissue_admin_purchase_bill_path(@purchase_bill), method: :post, params: { bill_date: Date.current, default_due_date: @purchase_bill.due_date }, class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <%= link_to "一覧へ", admin_purchase_bills_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">請求額</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= money(@purchase_bill.total_amount) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">支払済額</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= money(@purchase_bill.paid_amount) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">残高</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= money(@purchase_bill.balance_amount) %></div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-4 py-3">
+        <h2 class="text-sm font-semibold text-slate-900">仕入請求明細</h2>
+      </div>
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">内容</th>
+            <th class="px-4 py-2">数量</th>
+            <th class="px-4 py-2">単価</th>
+            <th class="px-4 py-2">税区分</th>
+            <th class="px-4 py-2">金額</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @purchase_bill.purchase_bill_items.each do |item| %>
+            <tr>
+              <td class="px-4 py-2 text-slate-700"><%= item.description %></td>
+              <td class="px-4 py-2 text-slate-700"><%= item.quantity %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(item.unit_price) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= tax_category_label(item.tax_category) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(item.amount) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="space-y-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">仕入請求情報</h2>
+        <dl class="mt-3 space-y-3 text-sm text-slate-800">
+          <div>
+            <dt class="text-xs text-slate-500">仕入締め</dt>
+            <dd>
+              <% if @purchase_bill.purchase_bill_batch.present? %>
+                <%= link_to @purchase_bill.purchase_bill_batch.batch_number, admin_purchase_bill_batch_path(@purchase_bill.purchase_bill_batch), class: "text-sky-700 hover:underline" %>
+              <% else %>
+                -
+              <% end %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">請求期間</dt>
+            <dd><%= jp_date(@purchase_bill.billing_period_from) %> 〜 <%= jp_date(@purchase_bill.billing_period_to) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">締日</dt>
+            <dd><%= jp_date(@purchase_bill.closing_date) %> (<%= @purchase_bill.closing_day_snapshot.presence || "-" %>日締め)</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">支払期日</dt>
+            <dd><%= jp_date(@purchase_bill.due_date) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">支払方法</dt>
+            <dd><%= payment_method_label(@purchase_bill.payment_method_snapshot) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">支払条件</dt>
+            <dd><%= payment_due_rule_label(@purchase_bill.payment_due_rule_snapshot) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">再発行元</dt>
+            <dd>
+              <% if @purchase_bill.reissued_from.present? %>
+                <%= link_to @purchase_bill.reissued_from.bill_number, admin_purchase_bill_path(@purchase_bill.reissued_from), class: "text-sky-700 hover:underline" %>
+              <% else %>
+                -
+              <% end %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">備考</dt>
+            <dd><%= simple_format(@purchase_bill.remarks.presence || "-") %></dd>
+          </div>
+          <% if @purchase_bill.cancelled_at.present? %>
+            <div>
+              <dt class="text-xs text-slate-500">取消日時</dt>
+              <dd><%= @purchase_bill.cancelled_at.strftime("%Y/%m/%d %H:%M") %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">支払履歴</h2>
+        <% if @purchase_bill.supplier_payment_allocations.any? %>
+          <div class="mt-3 space-y-2">
+            <% @purchase_bill.supplier_payment_allocations.each do |allocation| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-slate-900">
+                      <%= link_to allocation.supplier_payment.payment_number, admin_supplier_payment_path(allocation.supplier_payment), class: "hover:underline" %>
+                    </div>
+                    <div class="text-xs text-slate-500"><%= allocation.allocated_at.strftime("%Y/%m/%d %H:%M") %></div>
+                  </div>
+                  <div class="font-semibold text-slate-900"><%= money(allocation.allocated_amount) %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">まだ支払は消し込まれていません。</p>
+        <% end %>
+      </div>
+
+      <% if @purchase_bill.reissues.any? %>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="text-sm font-semibold text-slate-900">再発行履歴</h2>
+          <div class="mt-3 space-y-2">
+            <% @purchase_bill.reissues.order(:created_at).each do |reissue| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-slate-900"><%= link_to reissue.bill_number, admin_purchase_bill_path(reissue), class: "hover:underline" %></div>
+                    <div class="text-xs text-slate-500">請求日 <%= jp_date(reissue.bill_date) %></div>
+                  </div>
+                  <%= purchase_bill_status_badge(reissue) %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

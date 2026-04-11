@@ -12,6 +12,9 @@ class Tenant < ApplicationRecord
   has_many :purchase_orders, dependent: :destroy
   has_many :purchase_receipts, dependent: :destroy
   has_many :purchase_adjustments, dependent: :destroy
+  has_many :purchase_bill_batches, dependent: :destroy
+  has_many :purchase_bills, dependent: :destroy
+  has_many :supplier_payments, dependent: :destroy
   has_many :quotations, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :deliveries, dependent: :destroy
