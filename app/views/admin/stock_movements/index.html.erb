@@ -1,0 +1,50 @@
+<% content_for :page_title, "在庫移動履歴" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">在庫移動履歴</h1>
+      <p class="text-sm text-slate-600">入庫・出庫・調整の履歴を時系列で確認します。</p>
+    </div>
+    <% if can?("admin.stock_movements.create") %>
+      <%= link_to "在庫移動を登録", new_admin_stock_movement_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <% if @stock_movements.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">日付</th>
+            <th class="px-4 py-2">区分</th>
+            <th class="px-4 py-2">倉庫</th>
+            <th class="px-4 py-2">商品</th>
+            <th class="px-4 py-2">増減</th>
+            <th class="px-4 py-2">メモ</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @stock_movements.each do |movement| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(movement.occurred_on) %></td>
+              <td class="px-4 py-2"><%= stock_movement_badge(movement) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= movement.warehouse.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= movement.product.name %></td>
+              <td class="px-4 py-2 font-semibold <%= movement.signed_quantity.negative? ? 'text-rose-700' : 'text-emerald-700' %>"><%= signed_stock_quantity(movement.signed_quantity) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= movement.note.presence || "-" %></td>
+              <td class="px-4 py-2 text-right">
+                <%= link_to "詳細", admin_stock_movement_path(movement), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>在庫移動はまだありません。</p>
+    </div>
+  <% end %>
+</div>

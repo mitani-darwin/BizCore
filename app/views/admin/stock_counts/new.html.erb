@@ -1,0 +1,47 @@
+<% content_for :page_title, "棚卸登録" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">棚卸を登録</h1>
+    <p class="text-sm text-slate-600">実在庫を入力すると、差異が在庫に反映されます。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= form_with model: [:admin, @stock_count], local: true, class: "space-y-6" do |f| %>
+      <% if @stock_count.errors.any? %>
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p class="font-semibold">入力内容にエラーがあります。</p>
+          <ul class="list-disc pl-5">
+            <% @stock_count.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-slate-800">棚卸対象</label>
+          <%= select_tag "stock_count[stock_item_id]", options_for_select(@stock_item_options.map { |item| [stock_item_option_label(item), item.id] }, @selected_stock_item&.id || @stock_count.stock_item_id), include_blank: "選択してください", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :counted_quantity, "実在庫数量", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.number_field :counted_quantity, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :counted_at, "棚卸日時", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.datetime_local_field :counted_at, value: @stock_count.counted_at&.strftime("%Y-%m-%dT%H:%M"), class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div class="sm:col-span-2">
+          <%= f.label :note, "メモ", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= f.submit "登録する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+        <%= link_to "キャンセル", admin_stock_counts_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+      </div>
+    <% end %>
+  </div>
+</div>

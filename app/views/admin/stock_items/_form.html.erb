@@ -37,20 +37,30 @@
       </div>
     <% end %>
 
-    <div>
-      <%= f.label :quantity_on_hand, "在庫数量", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.number_field :quantity_on_hand, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
-    </div>
     <% if stock_item.persisted? %>
+      <div>
+        <div class="block text-sm font-medium text-slate-800">現在庫数量</div>
+        <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= stock_item.quantity_on_hand %></div>
+      </div>
       <div>
         <div class="block text-sm font-medium text-slate-800">引当数量</div>
         <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= stock_item.quantity_reserved %></div>
       </div>
+    <% else %>
+      <div>
+        <%= f.label :quantity_on_hand, "初期在庫数量", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :quantity_on_hand, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      </div>
     <% end %>
+
+    <div>
+      <%= f.label :safety_stock, "安全在庫", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :safety_stock, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
   </div>
 
   <div class="flex items-center gap-3">
     <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
-    <%= link_to "キャンセル", admin_stock_items_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+    <%= link_to "キャンセル", stock_item.persisted? ? admin_stock_item_path(stock_item) : admin_stock_items_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
   </div>
 <% end %>

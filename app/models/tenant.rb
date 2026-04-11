@@ -7,6 +7,7 @@ class Tenant < ApplicationRecord
   has_many :warehouses, dependent: :destroy
   has_many :stock_items, dependent: :destroy
   has_many :stock_movements, dependent: :destroy
+  has_many :stock_counts, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :deliveries, dependent: :destroy
   has_many :invoices, dependent: :destroy

@@ -3,13 +3,30 @@ class StockItem < ApplicationRecord
   belongs_to :warehouse
   belongs_to :product
 
+  has_many :stock_counts, dependent: :restrict_with_exception
+
   validates :product_id, uniqueness: { scope: [:tenant_id, :warehouse_id] }
-  validates :quantity_on_hand, :quantity_reserved, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+  validates :quantity_on_hand, :quantity_reserved, :safety_stock, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validate :tenant_consistency
   validate :quantity_on_hand_must_cover_reserved
 
   def available_quantity
     quantity_on_hand - quantity_reserved
+  end
+
+  def low_stock?
+    available_quantity <= safety_stock
+  end
+
+  def adjust_on_hand!(delta)
+    adjustment = delta.to_i
+    raise ArgumentError, "adjustment must not be zero" if adjustment.zero?
+
+    next_quantity = quantity_on_hand + adjustment
+    raise ArgumentError, "quantity must not be negative" if next_quantity.negative?
+    raise ArgumentError, "quantity must not be lower than reserved stock" if next_quantity < quantity_reserved
+
+    update!(quantity_on_hand: next_quantity)
   end
 
   def reserve!(quantity)
