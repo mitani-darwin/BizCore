@@ -1,0 +1,12 @@
+<% content_for :page_title, "倉庫編集" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">倉庫を編集</h1>
+    <p class="text-sm text-slate-600"><%= @warehouse.name %> の利用状態を更新します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", warehouse: @warehouse %>
+  </div>
+</div>

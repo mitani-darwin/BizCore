@@ -30,6 +30,29 @@ Rails.application.routes.draw do
     resources :tenants, only: [:index, :show, :edit, :update]
     resources :roles, only: [:index, :show, :new, :create, :edit, :update]
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
+    resources :customers, only: [:index, :show, :new, :create, :edit, :update]
+    resources :products, only: [:index, :show, :new, :create, :edit, :update]
+    resources :warehouses, only: [:index, :show, :new, :create, :edit, :update]
+    resources :stock_items, only: [:index, :new, :create, :edit, :update]
+    resources :orders, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        patch :send_order
+        patch :accept_order
+        patch :reserve_stock
+        patch :issue_delivery
+      end
+    end
+    resources :deliveries, only: [:index, :show]
+    resources :invoices, only: [:index, :show] do
+      collection do
+        post :issue_monthly
+      end
+    end
+    resources :payments, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        patch :reconcile
+      end
+    end
     root to: "dashboard#index"
   end
 end

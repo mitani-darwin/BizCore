@@ -1,0 +1,48 @@
+<%= form_with model: [:admin, product], local: true, class: "space-y-6" do |f| %>
+  <% if product.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :code, "商品コード", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :name, "商品名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :unit_name, "単位", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :unit_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :standard_price, "標準単価", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :standard_price, step: 1, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :tax_category, "税区分", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :tax_category, options_for_select(tax_category_options, product.tax_category), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div class="flex items-center gap-2 pt-7">
+      <%= f.check_box :active, class: "h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" %>
+      <%= f.label :active, "有効な商品として扱う", class: "text-sm text-slate-800" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :note, "備考", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", product.persisted? ? admin_product_path(product) : admin_products_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

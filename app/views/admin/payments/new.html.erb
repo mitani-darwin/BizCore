@@ -1,0 +1,12 @@
+<% content_for :page_title, "入金作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">入金を登録</h1>
+    <p class="text-sm text-slate-600">登録後、詳細画面から請求書へ消し込みます。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", payment: @payment %>
+  </div>
+</div>

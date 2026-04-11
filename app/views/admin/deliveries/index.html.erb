@@ -1,0 +1,45 @@
+<% content_for :page_title, "納品一覧" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">納品一覧</h1>
+    <p class="text-sm text-slate-600">発行済の納品書と請求状況を確認します。</p>
+  </div>
+
+  <% if @deliveries.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">納品番号</th>
+            <th class="px-4 py-2">注文番号</th>
+            <th class="px-4 py-2">得意先</th>
+            <th class="px-4 py-2">納品日</th>
+            <th class="px-4 py-2">金額</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @deliveries.each do |delivery| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= delivery.delivery_number %></td>
+              <td class="px-4 py-2 text-slate-700"><%= link_to delivery.order.order_number, admin_order_path(delivery.order), class: "hover:underline" %></td>
+              <td class="px-4 py-2 text-slate-700"><%= delivery.customer.name %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(delivery.delivery_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= money(delivery.total_amount) %></td>
+              <td class="px-4 py-2"><%= delivery_status_badge(delivery) %></td>
+              <td class="px-4 py-2 text-right">
+                <%= link_to "詳細", admin_delivery_path(delivery), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>納品書はまだ発行されていません。</p>
+    </div>
+  <% end %>
+</div>

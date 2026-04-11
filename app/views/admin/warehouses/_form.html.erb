@@ -1,0 +1,32 @@
+<%= form_with model: [:admin, warehouse], local: true, class: "space-y-6" do |f| %>
+  <% if warehouse.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% warehouse.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :code, "倉庫コード", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :name, "倉庫名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div class="flex items-center gap-2 pt-7">
+      <%= f.check_box :active, class: "h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" %>
+      <%= f.label :active, "稼働中の倉庫として扱う", class: "text-sm text-slate-800" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", warehouse.persisted? ? admin_warehouse_path(warehouse) : admin_warehouses_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

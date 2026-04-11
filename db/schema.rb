@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_090000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -51,6 +51,177 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
 
+  create_table "customers", force: :cascade do |t|
+    t.string "address1"
+    t.string "address2"
+    t.integer "closing_day"
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "invoice_delivery_method"
+    t.string "name", null: false
+    t.string "name_kana"
+    t.text "note"
+    t.string "payment_due_rule"
+    t.string "payment_method"
+    t.string "postal_code"
+    t.string "tel"
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "code"], name: "index_customers_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id"], name: "index_customers_on_tenant_id"
+  end
+
+  create_table "deliveries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "delivery_address"
+    t.date "delivery_date", null: false
+    t.string "delivery_number", null: false
+    t.datetime "issued_at"
+    t.bigint "order_id", null: false
+    t.text "remarks"
+    t.string "status", default: "issued", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_deliveries_on_customer_id"
+    t.index ["order_id"], name: "index_deliveries_on_order_id"
+    t.index ["tenant_id", "delivery_number"], name: "index_deliveries_on_tenant_id_and_delivery_number", unique: true
+    t.index ["tenant_id"], name: "index_deliveries_on_tenant_id"
+  end
+
+  create_table "delivery_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.integer "delivered_quantity", null: false
+    t.bigint "delivery_id", null: false
+    t.bigint "order_item_id", null: false
+    t.string "product_code_snapshot", null: false
+    t.bigint "product_id", null: false
+    t.string "product_name_snapshot", null: false
+    t.bigint "tenant_id", null: false
+    t.string "unit_name_snapshot", null: false
+    t.decimal "unit_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["delivery_id"], name: "index_delivery_items_on_delivery_id"
+    t.index ["order_item_id"], name: "index_delivery_items_on_order_item_id"
+    t.index ["product_id"], name: "index_delivery_items_on_product_id"
+    t.index ["tenant_id"], name: "index_delivery_items_on_tenant_id"
+  end
+
+  create_table "invoice_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.bigint "invoice_id", null: false
+    t.integer "quantity", null: false
+    t.bigint "source_id"
+    t.string "source_type"
+    t.string "tax_category", default: "taxable_10", null: false
+    t.bigint "tenant_id", null: false
+    t.decimal "unit_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_invoice_items_on_invoice_id"
+    t.index ["source_type", "source_id"], name: "index_invoice_items_on_source"
+    t.index ["tenant_id", "source_type", "source_id"], name: "index_invoice_items_on_tenant_and_source"
+    t.index ["tenant_id"], name: "index_invoice_items_on_tenant_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.decimal "balance_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.date "billing_period_from", null: false
+    t.date "billing_period_to", null: false
+    t.date "closing_date", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.date "due_date", null: false
+    t.date "invoice_date", null: false
+    t.string "invoice_number", null: false
+    t.decimal "paid_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.text "remarks"
+    t.string "status", default: "issued", null: false
+    t.decimal "subtotal_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "tax_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.bigint "tenant_id", null: false
+    t.decimal "total_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_invoices_on_customer_id"
+    t.index ["tenant_id", "invoice_number"], name: "index_invoices_on_tenant_id_and_invoice_number", unique: true
+    t.index ["tenant_id"], name: "index_invoices_on_tenant_id"
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.integer "line_no", null: false
+    t.bigint "order_id", null: false
+    t.string "product_code_snapshot", null: false
+    t.bigint "product_id", null: false
+    t.string "product_name_snapshot", null: false
+    t.integer "quantity", null: false
+    t.string "status", default: "pending", null: false
+    t.string "tax_category_snapshot", default: "taxable_10", null: false
+    t.bigint "tenant_id", null: false
+    t.string "unit_name_snapshot", null: false
+    t.decimal "unit_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "line_no"], name: "index_order_items_on_order_id_and_line_no", unique: true
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+    t.index ["tenant_id"], name: "index_order_items_on_tenant_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "delivery_address"
+    t.date "order_date", null: false
+    t.string "order_number", null: false
+    t.string "ordered_by_name"
+    t.text "remarks"
+    t.date "requested_delivery_date"
+    t.datetime "sent_at"
+    t.string "status", default: "draft", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["tenant_id", "order_number"], name: "index_orders_on_tenant_id_and_order_number", unique: true
+    t.index ["tenant_id"], name: "index_orders_on_tenant_id"
+  end
+
+  create_table "payment_allocations", force: :cascade do |t|
+    t.decimal "allocated_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "allocated_at", null: false
+    t.datetime "created_at", null: false
+    t.bigint "invoice_id", null: false
+    t.bigint "payment_id", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_payment_allocations_on_invoice_id"
+    t.index ["payment_id", "invoice_id"], name: "index_payment_allocations_on_payment_id_and_invoice_id", unique: true
+    t.index ["payment_id"], name: "index_payment_allocations_on_payment_id"
+    t.index ["tenant_id"], name: "index_payment_allocations_on_tenant_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.string "account_name"
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "bank_name"
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.date "payment_date", null: false
+    t.string "payment_method"
+    t.string "payment_number", null: false
+    t.string "reference_note"
+    t.string "status", default: "pending", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_payments_on_customer_id"
+    t.index ["tenant_id", "payment_number"], name: "index_payments_on_tenant_id_and_payment_number", unique: true
+    t.index ["tenant_id"], name: "index_payments_on_tenant_id"
+  end
+
   create_table "permissions", force: :cascade do |t|
     t.string "action", null: false
     t.string "category"
@@ -61,6 +232,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
     t.string "resource", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_permissions_on_key", unique: true
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.text "note"
+    t.decimal "standard_price", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "tax_category", default: "taxable_10", null: false
+    t.bigint "tenant_id", null: false
+    t.string "unit_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "code"], name: "index_products_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id"], name: "index_products_on_tenant_id"
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -85,6 +271,57 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "key"], name: "index_roles_on_tenant_id_and_key", unique: true
     t.index ["tenant_id"], name: "index_roles_on_tenant_id"
+  end
+
+  create_table "stock_allocations", force: :cascade do |t|
+    t.datetime "allocated_at", null: false
+    t.integer "allocated_quantity", null: false
+    t.datetime "created_at", null: false
+    t.bigint "order_item_id", null: false
+    t.bigint "product_id", null: false
+    t.datetime "released_at"
+    t.string "status", default: "reserved", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "warehouse_id", null: false
+    t.index ["order_item_id"], name: "index_stock_allocations_on_order_item_id"
+    t.index ["product_id"], name: "index_stock_allocations_on_product_id"
+    t.index ["tenant_id", "order_item_id"], name: "index_stock_allocations_on_tenant_id_and_order_item_id"
+    t.index ["tenant_id"], name: "index_stock_allocations_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_stock_allocations_on_warehouse_id"
+  end
+
+  create_table "stock_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity_on_hand", default: 0, null: false
+    t.integer "quantity_reserved", default: 0, null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "warehouse_id", null: false
+    t.index ["product_id"], name: "index_stock_items_on_product_id"
+    t.index ["tenant_id", "warehouse_id", "product_id"], name: "index_stock_items_on_tenant_id_and_warehouse_id_and_product_id", unique: true
+    t.index ["tenant_id"], name: "index_stock_items_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_stock_items_on_warehouse_id"
+  end
+
+  create_table "stock_movements", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "movement_type", null: false
+    t.text "note"
+    t.date "occurred_on", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity", null: false
+    t.bigint "reference_id"
+    t.string "reference_type"
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "warehouse_id", null: false
+    t.index ["product_id"], name: "index_stock_movements_on_product_id"
+    t.index ["reference_type", "reference_id"], name: "index_stock_movements_on_reference"
+    t.index ["tenant_id", "occurred_on"], name: "index_stock_movements_on_tenant_id_and_occurred_on"
+    t.index ["tenant_id"], name: "index_stock_movements_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_stock_movements_on_warehouse_id"
   end
 
   create_table "tenant_user_roles", force: :cascade do |t|
@@ -151,17 +388,62 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_19_002000) do
     t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
 
+  create_table "warehouses", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "code"], name: "index_warehouses_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id"], name: "index_warehouses_on_tenant_id"
+  end
+
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "tenants"
   add_foreign_key "assignments", "users"
   add_foreign_key "audit_logs", "tenants"
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "customers", "tenants"
+  add_foreign_key "deliveries", "customers"
+  add_foreign_key "deliveries", "orders"
+  add_foreign_key "deliveries", "tenants"
+  add_foreign_key "delivery_items", "deliveries"
+  add_foreign_key "delivery_items", "order_items"
+  add_foreign_key "delivery_items", "products"
+  add_foreign_key "delivery_items", "tenants"
+  add_foreign_key "invoice_items", "invoices"
+  add_foreign_key "invoice_items", "tenants"
+  add_foreign_key "invoices", "customers"
+  add_foreign_key "invoices", "tenants"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "products"
+  add_foreign_key "order_items", "tenants"
+  add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "tenants"
+  add_foreign_key "payment_allocations", "invoices"
+  add_foreign_key "payment_allocations", "payments"
+  add_foreign_key "payment_allocations", "tenants"
+  add_foreign_key "payments", "customers"
+  add_foreign_key "payments", "tenants"
+  add_foreign_key "products", "tenants"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "roles", "tenants"
+  add_foreign_key "stock_allocations", "order_items"
+  add_foreign_key "stock_allocations", "products"
+  add_foreign_key "stock_allocations", "tenants"
+  add_foreign_key "stock_allocations", "warehouses"
+  add_foreign_key "stock_items", "products"
+  add_foreign_key "stock_items", "tenants"
+  add_foreign_key "stock_items", "warehouses"
+  add_foreign_key "stock_movements", "products"
+  add_foreign_key "stock_movements", "tenants"
+  add_foreign_key "stock_movements", "warehouses"
   add_foreign_key "tenant_user_roles", "roles"
   add_foreign_key "tenant_user_roles", "users", column: "tenant_user_id"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
   add_foreign_key "users", "tenants"
+  add_foreign_key "warehouses", "tenants"
 end

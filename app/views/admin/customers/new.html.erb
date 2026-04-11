@@ -1,0 +1,12 @@
+<% content_for :page_title, "得意先作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">新しい得意先を作成</h1>
+    <p class="text-sm text-slate-600">注文先・請求先・入金先として利用します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", customer: @customer %>
+  </div>
+</div>
