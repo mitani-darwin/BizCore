@@ -1,32 +1,55 @@
 module Admin
   class StockItemsController < BaseController
-    before_action :set_stock_item, only: [:edit, :update]
+    before_action :set_stock_item, only: [:show, :edit, :update]
     before_action :set_options, only: [:new, :create, :edit, :update]
 
     def index
       @stock_items = current_tenant.stock_items.includes(:warehouse, :product).joins(:warehouse, :product).order("warehouses.name ASC, products.name ASC")
+      @low_stock_items = @stock_items.select(&:low_stock?)
+    end
+
+    def show
+      @recent_movements = current_tenant.stock_movements.where(warehouse_id: @stock_item.warehouse_id, product_id: @stock_item.product_id).recent.limit(20)
+      @recent_counts = @stock_item.stock_counts.recent.limit(10)
     end
 
     def new
-      @stock_item = current_tenant.stock_items.build(quantity_on_hand: 0, quantity_reserved: 0)
+      @stock_item = current_tenant.stock_items.build(quantity_on_hand: 0, quantity_reserved: 0, safety_stock: 0)
     end
 
     def create
-      @stock_item = current_tenant.stock_items.build(stock_item_create_params)
+      initial_quantity = stock_item_create_params[:quantity_on_hand].to_i
+      @stock_item = current_tenant.stock_items.build(
+        stock_item_create_params.except(:quantity_on_hand)
+      )
+      @stock_item.quantity_on_hand = 0
       @stock_item.quantity_reserved = 0
 
       if @stock_item.save
-        redirect_to admin_stock_items_path, notice: "在庫を登録しました。"
+        if initial_quantity.positive?
+          Inventory::RecordMovement.call(
+            stock_item: @stock_item,
+            movement_type: "inbound",
+            quantity: initial_quantity,
+            occurred_on: Date.current,
+            note: "初期在庫登録"
+          )
+        end
+
+        redirect_to admin_stock_item_path(@stock_item), notice: "在庫を登録しました。"
       else
         render :new, status: :unprocessable_entity
       end
+    rescue StandardError => e
+      @stock_item.errors.add(:base, e.message)
+      render :new, status: :unprocessable_entity
     end
 
     def edit; end
 
     def update
       if @stock_item.update(stock_item_update_params)
-        redirect_to admin_stock_items_path, notice: "在庫を更新しました。"
+        redirect_to admin_stock_item_path(@stock_item), notice: "在庫設定を更新しました。"
       else
         render :edit, status: :unprocessable_entity
       end
@@ -47,11 +70,11 @@ module Admin
     end
 
     def stock_item_create_params
-      params.require(:stock_item).permit(:warehouse_id, :product_id, :quantity_on_hand)
+      params.require(:stock_item).permit(:warehouse_id, :product_id, :quantity_on_hand, :safety_stock)
     end
 
     def stock_item_update_params
-      params.require(:stock_item).permit(:quantity_on_hand)
+      params.require(:stock_item).permit(:safety_stock)
     end
   end
 end

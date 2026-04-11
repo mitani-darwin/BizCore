@@ -1,0 +1,51 @@
+<% content_for :page_title, "棚卸一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">棚卸一覧</h1>
+      <p class="text-sm text-slate-600">実在庫確認と差異反映の履歴を確認します。</p>
+    </div>
+    <% if can?("admin.stock_counts.create") %>
+      <%= link_to "棚卸を登録", new_admin_stock_count_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <% if @stock_counts.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">棚卸日時</th>
+            <th class="px-4 py-2">倉庫</th>
+            <th class="px-4 py-2">商品</th>
+            <th class="px-4 py-2">帳簿在庫</th>
+            <th class="px-4 py-2">実在庫</th>
+            <th class="px-4 py-2">差異</th>
+            <th class="px-4 py-2">メモ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @stock_counts.each do |stock_count| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 text-slate-700"><%= stock_count.counted_at.strftime("%Y/%m/%d %H:%M") %></td>
+              <td class="px-4 py-2 text-slate-700"><%= stock_count.warehouse.name %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= link_to stock_count.product.name, admin_stock_item_path(stock_count.stock_item), class: "hover:underline" %></div>
+                <div class="text-xs text-slate-500"><%= stock_count.product.code %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= stock_count.quantity_before %></td>
+              <td class="px-4 py-2 text-slate-700"><%= stock_count.counted_quantity %></td>
+              <td class="px-4 py-2"><%= stock_count_adjustment_badge(stock_count) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= stock_count.note.presence || "-" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>棚卸履歴はまだありません。</p>
+    </div>
+  <% end %>
+</div>

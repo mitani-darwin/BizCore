@@ -1,0 +1,55 @@
+<% content_for :page_title, "在庫移動登録" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">在庫移動を登録</h1>
+    <p class="text-sm text-slate-600">入庫と手動調整を履歴付きで登録します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= form_with model: [:admin, @movement], local: true, class: "space-y-6" do |f| %>
+      <% if @movement.errors.any? %>
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p class="font-semibold">入力内容にエラーがあります。</p>
+          <ul class="list-disc pl-5">
+            <% @movement.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :warehouse_id, "倉庫", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.collection_select :warehouse_id, @warehouse_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :product_id, "商品", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.collection_select :product_id, @product_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :movement_type, "移動区分", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.select :movement_type, options_for_select(stock_movement_options, @movement.movement_type), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :quantity, "数量", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.number_field :quantity, min: 1, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :occurred_on, "移動日", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.date_field :occurred_on, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+        <div class="sm:col-span-2">
+          <%= f.label :note, "理由・メモ", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= f.submit "登録する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+        <%= link_to "キャンセル", admin_stock_movements_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+      </div>
+    <% end %>
+  </div>
+</div>

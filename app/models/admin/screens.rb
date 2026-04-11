@@ -55,7 +55,15 @@ module Admin
       },
       stock_items: {
         index_path: :admin_stock_items_path,
-        actions: %i[index new create edit update]
+        actions: %i[index show new create edit update]
+      },
+      stock_movements: {
+        index_path: :admin_stock_movements_path,
+        actions: %i[index show new create]
+      },
+      stock_counts: {
+        index_path: :admin_stock_counts_path,
+        actions: %i[index new create]
       },
       orders: {
         index_path: :admin_orders_path,

@@ -7,7 +7,9 @@ class StockMovement < ApplicationRecord
   MOVEMENT_TYPES = {
     inbound: "inbound",
     outbound: "outbound",
-    adjustment: "adjustment"
+    adjustment: "adjustment",
+    adjustment_increase: "adjustment_increase",
+    adjustment_decrease: "adjustment_decrease"
   }.freeze
 
   enum :movement_type, MOVEMENT_TYPES
@@ -15,6 +17,12 @@ class StockMovement < ApplicationRecord
   validates :movement_type, :quantity, :occurred_on, presence: true
   validates :quantity, numericality: { greater_than: 0, only_integer: true }
   validate :tenant_consistency
+
+  scope :recent, -> { order(occurred_on: :desc, id: :desc) }
+
+  def signed_quantity
+    outbound? || adjustment_decrease? ? -quantity : quantity
+  end
 
   private
 

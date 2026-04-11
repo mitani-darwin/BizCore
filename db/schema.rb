@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_130000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -291,11 +291,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_090000) do
     t.index ["warehouse_id"], name: "index_stock_allocations_on_warehouse_id"
   end
 
+  create_table "stock_counts", force: :cascade do |t|
+    t.integer "adjustment_quantity", default: 0, null: false
+    t.datetime "counted_at", null: false
+    t.integer "counted_quantity", null: false
+    t.datetime "created_at", null: false
+    t.text "note"
+    t.integer "product_id", null: false
+    t.integer "quantity_before", null: false
+    t.integer "stock_item_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id", null: false
+    t.index ["product_id"], name: "index_stock_counts_on_product_id"
+    t.index ["stock_item_id"], name: "index_stock_counts_on_stock_item_id"
+    t.index ["tenant_id", "counted_at"], name: "index_stock_counts_on_tenant_id_and_counted_at"
+    t.index ["tenant_id"], name: "index_stock_counts_on_tenant_id"
+    t.index ["warehouse_id"], name: "index_stock_counts_on_warehouse_id"
+  end
+
   create_table "stock_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "product_id", null: false
     t.integer "quantity_on_hand", default: 0, null: false
     t.integer "quantity_reserved", default: 0, null: false
+    t.integer "safety_stock", default: 0, null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "warehouse_id", null: false
@@ -434,6 +454,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_090000) do
   add_foreign_key "stock_allocations", "products"
   add_foreign_key "stock_allocations", "tenants"
   add_foreign_key "stock_allocations", "warehouses"
+  add_foreign_key "stock_counts", "products"
+  add_foreign_key "stock_counts", "stock_items"
+  add_foreign_key "stock_counts", "tenants"
+  add_foreign_key "stock_counts", "warehouses"
   add_foreign_key "stock_items", "products"
   add_foreign_key "stock_items", "tenants"
   add_foreign_key "stock_items", "warehouses"

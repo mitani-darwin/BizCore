@@ -33,7 +33,9 @@ Rails.application.routes.draw do
     resources :customers, only: [:index, :show, :new, :create, :edit, :update]
     resources :products, only: [:index, :show, :new, :create, :edit, :update]
     resources :warehouses, only: [:index, :show, :new, :create, :edit, :update]
-    resources :stock_items, only: [:index, :new, :create, :edit, :update]
+    resources :stock_items, only: [:index, :show, :new, :create, :edit, :update]
+    resources :stock_movements, only: [:index, :show, :new, :create]
+    resources :stock_counts, only: [:index, :new, :create]
     resources :orders, only: [:index, :show, :new, :create, :edit, :update] do
       member do
         patch :send_order

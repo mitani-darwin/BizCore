@@ -63,12 +63,32 @@ module Admin
               path: :admin_warehouses_path,
               required_keys: %w[admin.warehouses.read],
               children: []
-            ),
+            )
+          ]
+        ),
+        Section.new(
+          id: :inventory,
+          label: "在庫管理",
+          items: [
             Item.new(
               id: :stock_items,
-              label: "在庫",
+              label: "在庫一覧",
               path: :admin_stock_items_path,
               required_keys: %w[admin.stock_items.read],
+              children: []
+            ),
+            Item.new(
+              id: :stock_movements,
+              label: "在庫移動履歴",
+              path: :admin_stock_movements_path,
+              required_keys: %w[admin.stock_movements.read],
+              children: []
+            ),
+            Item.new(
+              id: :stock_counts,
+              label: "棚卸",
+              path: :admin_stock_counts_path,
+              required_keys: %w[admin.stock_counts.read],
               children: []
             )
           ]

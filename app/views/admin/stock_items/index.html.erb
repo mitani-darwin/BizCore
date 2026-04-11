@@ -4,11 +4,34 @@
   <div class="flex items-center justify-between gap-3">
     <div>
       <h1 class="text-xl font-semibold text-slate-900">在庫一覧</h1>
-      <p class="text-sm text-slate-600">倉庫ごとの在庫と引当状況を確認します。</p>
+      <p class="text-sm text-slate-600">倉庫ごとの在庫、引当、安全在庫アラートを確認します。</p>
     </div>
-    <% if can?("admin.stock_items.create") %>
-      <%= link_to "在庫を追加", new_admin_stock_item_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
-    <% end %>
+    <div class="flex flex-wrap gap-2">
+      <% if can?("admin.stock_movements.create") %>
+        <%= link_to "入庫・調整を登録", new_admin_stock_movement_path, class: "rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+      <% end %>
+      <% if can?("admin.stock_counts.create") %>
+        <%= link_to "棚卸を登録", new_admin_stock_count_path, class: "rounded-lg border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <% if can?("admin.stock_items.create") %>
+        <%= link_to "在庫を追加", new_admin_stock_item_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">在庫品目数</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900"><%= @stock_items.size %></p>
+    </div>
+    <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
+      <p class="text-xs font-semibold text-rose-500">安全在庫割れ</p>
+      <p class="mt-2 text-3xl font-bold text-rose-700"><%= @low_stock_items.size %></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <p class="text-xs font-semibold text-slate-500">引当済在庫</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900"><%= @stock_items.sum(&:quantity_reserved) %></p>
+    </div>
   </div>
 
   <% if @stock_items.any? %>
@@ -21,6 +44,8 @@
             <th class="px-4 py-2">在庫</th>
             <th class="px-4 py-2">引当</th>
             <th class="px-4 py-2">利用可能</th>
+            <th class="px-4 py-2">安全在庫</th>
+            <th class="px-4 py-2">状態</th>
             <th class="px-4 py-2 text-right">操作</th>
           </tr>
         </thead>
@@ -35,10 +60,15 @@
               <td class="px-4 py-2 text-slate-700"><%= stock_item.quantity_on_hand %></td>
               <td class="px-4 py-2 text-slate-700"><%= stock_item.quantity_reserved %></td>
               <td class="px-4 py-2 text-slate-700"><%= stock_item.available_quantity %></td>
+              <td class="px-4 py-2 text-slate-700"><%= stock_item.safety_stock %></td>
+              <td class="px-4 py-2"><%= stock_alert_badge(stock_item) %></td>
               <td class="px-4 py-2 text-right">
-                <% if can?("admin.stock_items.update") %>
-                  <%= link_to "編集", edit_admin_stock_item_path(stock_item), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
-                <% end %>
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_stock_item_path(stock_item), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.stock_items.update") %>
+                    <%= link_to "編集", edit_admin_stock_item_path(stock_item), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>

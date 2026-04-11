@@ -26,6 +26,12 @@ module Admin
       ["個別設定", "custom"]
     ].freeze
 
+    STOCK_MOVEMENT_OPTIONS = [
+      ["入庫", "inbound"],
+      ["棚卸増加", "adjustment_increase"],
+      ["棚卸減少", "adjustment_decrease"]
+    ].freeze
+
     def jp_date(value)
       return "-" if value.blank?
 
@@ -46,6 +52,10 @@ module Admin
 
     def payment_due_rule_options
       PAYMENT_DUE_RULE_OPTIONS
+    end
+
+    def stock_movement_options
+      STOCK_MOVEMENT_OPTIONS
     end
 
     def money(value)
@@ -126,6 +136,56 @@ module Admin
 
     def payment_due_rule_label(value)
       PAYMENT_DUE_RULE_OPTIONS.to_h.invert.fetch(value, value.to_s.presence || "-")
+    end
+
+    def stock_movement_label(value)
+      case value.to_s
+      when "inbound" then "入庫"
+      when "outbound" then "出庫"
+      when "adjustment" then "調整"
+      when "adjustment_increase" then "棚卸増加"
+      when "adjustment_decrease" then "棚卸減少"
+      else value.to_s
+      end
+    end
+
+    def stock_movement_badge(movement)
+      label, tone = case movement.movement_type
+      when "inbound" then ["入庫", "emerald"]
+      when "outbound" then ["出庫", "rose"]
+      when "adjustment", "adjustment_increase" then ["増加調整", "sky"]
+      when "adjustment_decrease" then ["減少調整", "amber"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def stock_alert_badge(stock_item)
+      if stock_item.low_stock?
+        status_badge("安全在庫割れ", "rose")
+      else
+        status_badge("適正", "emerald")
+      end
+    end
+
+    def signed_stock_quantity(value)
+      quantity = value.to_i
+      return "+#{quantity}" if quantity.positive?
+
+      quantity.to_s
+    end
+
+    def stock_count_adjustment_badge(stock_count)
+      adjustment = stock_count.adjustment_quantity.to_i
+      return status_badge("差異なし", "slate") if adjustment.zero?
+
+      tone = adjustment.positive? ? "sky" : "amber"
+      status_badge(signed_stock_quantity(adjustment), tone)
+    end
+
+    def stock_item_option_label(stock_item)
+      "#{stock_item.warehouse.name} / #{stock_item.product.name} (在庫 #{stock_item.quantity_on_hand}, 利用可能 #{stock_item.available_quantity})"
     end
 
     private
