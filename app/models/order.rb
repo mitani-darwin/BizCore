@@ -1,0 +1,61 @@
+class Order < ApplicationRecord
+  include DocumentNumbering
+
+  STATUSES = {
+    draft: "draft",
+    sent: "sent",
+    accepted: "accepted",
+    allocated: "allocated",
+    delivered: "delivered",
+    billed: "billed",
+    cancelled: "cancelled"
+  }.freeze
+
+  belongs_to :tenant
+  belongs_to :customer
+
+  has_many :order_items, dependent: :destroy
+  has_many :deliveries, dependent: :restrict_with_exception
+
+  enum :status, STATUSES
+
+  accepts_nested_attributes_for :order_items, allow_destroy: true
+
+  generates_document_number :order_number, prefix: "ORD"
+
+  validates :order_number, :order_date, :status, presence: true
+  validate :tenant_consistency
+
+  before_validation :set_defaults
+
+  def total_amount
+    order_items.sum { |item| item.amount.to_d }
+  end
+
+  def mark_as_sent!(sent_at: Time.current)
+    raise ArgumentError, "order has no items" if order_items.empty?
+    raise ArgumentError, "only draft orders can be sent" unless draft?
+
+    update!(status: "sent", sent_at: sent_at)
+  end
+
+  def mark_as_accepted!(accepted_at: Time.current)
+    raise ArgumentError, "only sent orders can be accepted" unless sent?
+
+    update!(status: "accepted", accepted_at: accepted_at)
+  end
+
+  private
+
+  def set_defaults
+    self.order_date ||= Date.current
+    self.status ||= "draft"
+    self.delivery_address ||= customer&.full_address
+  end
+
+  def tenant_consistency
+    return if tenant_id.blank? || customer.blank?
+
+    errors.add(:tenant, "と取引先の所属が一致しません") if tenant_id != customer.tenant_id
+  end
+end

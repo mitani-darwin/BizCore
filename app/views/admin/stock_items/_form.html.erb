@@ -1,0 +1,56 @@
+<%= form_with model: [:admin, stock_item], local: true, class: "space-y-6" do |f| %>
+  <% if stock_item.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% stock_item.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @warehouse_options.blank? || @product_options.blank? %>
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      在庫を登録するには、先に倉庫と商品を登録してください。
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <% if stock_item.persisted? %>
+      <div>
+        <div class="block text-sm font-medium text-slate-800">倉庫</div>
+        <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= stock_item.warehouse.name %></div>
+      </div>
+      <div>
+        <div class="block text-sm font-medium text-slate-800">商品</div>
+        <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= stock_item.product.name %></div>
+      </div>
+    <% else %>
+      <div>
+        <%= f.label :warehouse_id, "倉庫", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :warehouse_id, @warehouse_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :product_id, "商品", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :product_id, @product_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :quantity_on_hand, "在庫数量", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :quantity_on_hand, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <% if stock_item.persisted? %>
+      <div>
+        <div class="block text-sm font-medium text-slate-800">引当数量</div>
+        <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"><%= stock_item.quantity_reserved %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", admin_stock_items_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

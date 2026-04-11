@@ -1,0 +1,48 @@
+<%= form_with model: [:admin, payment], local: true, class: "space-y-6" do |f| %>
+  <% if payment.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% payment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :customer_id, "得意先", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :payment_date, "入金日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :payment_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :amount, "入金額", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :amount, min: 1, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :payment_method, "入金方法", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :payment_method, options_for_select(payment_method_options, payment.payment_method), { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :bank_name, "銀行名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :bank_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :account_name, "口座名義", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :account_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :reference_note, "参照メモ", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :reference_note, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", payment.persisted? ? admin_payment_path(payment) : admin_payments_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

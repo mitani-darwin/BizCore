@@ -2,6 +2,15 @@ class Tenant < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :roles, dependent: :destroy
   has_many :assignments, dependent: :destroy
+  has_many :customers, dependent: :destroy
+  has_many :products, dependent: :destroy
+  has_many :warehouses, dependent: :destroy
+  has_many :stock_items, dependent: :destroy
+  has_many :stock_movements, dependent: :destroy
+  has_many :orders, dependent: :destroy
+  has_many :deliveries, dependent: :destroy
+  has_many :invoices, dependent: :destroy
+  has_many :payments, dependent: :destroy
 
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true

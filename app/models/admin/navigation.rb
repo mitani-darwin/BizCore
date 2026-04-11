@@ -40,6 +40,74 @@ module Admin
           ]
         ),
         Section.new(
+          id: :ordering_master,
+          label: "受発注マスタ",
+          items: [
+            Item.new(
+              id: :customers,
+              label: "得意先",
+              path: :admin_customers_path,
+              required_keys: %w[admin.customers.read],
+              children: []
+            ),
+            Item.new(
+              id: :products,
+              label: "商品",
+              path: :admin_products_path,
+              required_keys: %w[admin.products.read],
+              children: []
+            ),
+            Item.new(
+              id: :warehouses,
+              label: "倉庫",
+              path: :admin_warehouses_path,
+              required_keys: %w[admin.warehouses.read],
+              children: []
+            ),
+            Item.new(
+              id: :stock_items,
+              label: "在庫",
+              path: :admin_stock_items_path,
+              required_keys: %w[admin.stock_items.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
+          id: :ordering_flow,
+          label: "受発注業務",
+          items: [
+            Item.new(
+              id: :orders,
+              label: "注文",
+              path: :admin_orders_path,
+              required_keys: %w[admin.orders.read],
+              children: []
+            ),
+            Item.new(
+              id: :deliveries,
+              label: "納品",
+              path: :admin_deliveries_path,
+              required_keys: %w[admin.deliveries.read],
+              children: []
+            ),
+            Item.new(
+              id: :invoices,
+              label: "請求",
+              path: :admin_invoices_path,
+              required_keys: %w[admin.invoices.read],
+              children: []
+            ),
+            Item.new(
+              id: :payments,
+              label: "入金",
+              path: :admin_payments_path,
+              required_keys: %w[admin.payments.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :access,
           label: "権限管理",
           items: [

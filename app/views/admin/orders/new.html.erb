@@ -1,0 +1,12 @@
+<% content_for :page_title, "注文作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">新しい注文を作成</h1>
+    <p class="text-sm text-slate-600">下書き作成後、画面から注文書送信と後続処理を進めます。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <%= render "form", order: @order %>
+  </div>
+</div>
