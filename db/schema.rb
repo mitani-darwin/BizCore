@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_143000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -56,6 +56,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_130000) do
     t.string "address2"
     t.integer "closing_day"
     t.string "code", null: false
+    t.string "contact_person_department"
+    t.string "contact_person_email"
+    t.string "contact_person_name"
+    t.string "contact_person_tel"
     t.datetime "created_at", null: false
     t.string "email"
     t.string "invoice_delivery_method"
@@ -65,10 +69,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_130000) do
     t.string "payment_due_rule"
     t.string "payment_method"
     t.string "postal_code"
+    t.string "status", default: "active", null: false
     t.string "tel"
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "code"], name: "index_customers_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id", "status"], name: "index_customers_on_tenant_id_and_status"
     t.index ["tenant_id"], name: "index_customers_on_tenant_id"
   end
 

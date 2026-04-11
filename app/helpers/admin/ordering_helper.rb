@@ -26,6 +26,11 @@ module Admin
       ["個別設定", "custom"]
     ].freeze
 
+    CUSTOMER_STATUS_OPTIONS = [
+      ["取引中", "active"],
+      ["停止", "inactive"]
+    ].freeze
+
     STOCK_MOVEMENT_OPTIONS = [
       ["入庫", "inbound"],
       ["棚卸増加", "adjustment_increase"],
@@ -52,6 +57,10 @@ module Admin
 
     def payment_due_rule_options
       PAYMENT_DUE_RULE_OPTIONS
+    end
+
+    def customer_status_options
+      CUSTOMER_STATUS_OPTIONS
     end
 
     def stock_movement_options
@@ -116,6 +125,19 @@ module Admin
       end
 
       status_badge(label, tone)
+    end
+
+    def customer_status_label(value)
+      case value.to_s
+      when "active" then "取引中"
+      when "inactive" then "停止"
+      else value.to_s.presence || "-"
+      end
+    end
+
+    def customer_status_badge(customer)
+      tone = customer.active? ? "emerald" : "slate"
+      status_badge(customer_status_label(customer.status), tone)
     end
 
     def active_badge(active)
