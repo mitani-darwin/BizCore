@@ -109,11 +109,20 @@ module Admin
         index_path: :admin_deliveries_path,
         actions: %i[index show]
       },
+      billing_batches: {
+        index_path: :admin_billing_batches_path,
+        actions: %i[index show cancel],
+        action_overrides: {
+          cancel: { permission_action: :update, label: "締め解除", breadcrumb_label: "締め解除", page_title: "%{resource}詳細" }
+        }
+      },
       invoices: {
         index_path: :admin_invoices_path,
-        actions: %i[index show issue_monthly],
+        actions: %i[index show issue_monthly cancel reissue],
         action_overrides: {
-          issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" }
+          issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" },
+          cancel: { permission_action: :update, label: "請求取消", breadcrumb_label: "請求取消", page_title: "%{resource}詳細" },
+          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" }
         }
       },
       payments: {
@@ -243,6 +252,7 @@ module Admin
       return record.purchase_order_number if record.respond_to?(:purchase_order_number) && record.purchase_order_number.present?
       return record.purchase_receipt_number if record.respond_to?(:purchase_receipt_number) && record.purchase_receipt_number.present?
       return record.adjustment_number if record.respond_to?(:adjustment_number) && record.adjustment_number.present?
+      return record.batch_number if record.respond_to?(:batch_number) && record.batch_number.present?
       return record.quotation_number if record.respond_to?(:quotation_number) && record.quotation_number.present?
       return record.delivery_number if record.respond_to?(:delivery_number) && record.delivery_number.present?
       return record.invoice_number if record.respond_to?(:invoice_number) && record.invoice_number.present?

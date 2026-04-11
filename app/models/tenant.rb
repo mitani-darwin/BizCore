@@ -15,6 +15,7 @@ class Tenant < ApplicationRecord
   has_many :quotations, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :deliveries, dependent: :destroy
+  has_many :billing_batches, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :payments, dependent: :destroy
 

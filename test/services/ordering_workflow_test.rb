@@ -94,32 +94,98 @@ class OrderingWorkflowTest < ActiveSupport::TestCase
     Inventory::ReserveOrder.call(order: order, warehouse: @warehouse)
     delivery = Deliveries::IssueFromOrder.call(order: order, delivery_date: Date.new(2026, 4, 12))
 
-    invoices = Invoicing::IssueMonthlyInvoices.call(
+    batch = Invoicing::IssueMonthlyInvoices.call(
       tenant: @tenant,
       closing_date: Date.new(2026, 4, 30),
       billing_period_from: Date.new(2026, 4, 1),
       billing_period_to: Date.new(2026, 4, 30),
       invoice_date: Date.new(2026, 4, 30),
-      due_date: Date.new(2026, 5, 31)
+      default_due_date: Date.new(2026, 5, 31)
     )
 
-    invoice = invoices.first
-    assert_equal 1, invoices.size
+    invoice = batch.invoices.first
+    assert_equal 1, batch.invoices.size
+    assert_equal 1, batch.invoice_count
     assert_equal BigDecimal("3000"), invoice.subtotal_amount
     assert_equal BigDecimal("300"), invoice.tax_amount
     assert_equal BigDecimal("3300"), invoice.total_amount
+    assert_equal Date.new(2026, 5, 31), invoice.due_date
     assert delivery.reload.billed?
     assert order.reload.billed?
 
-    second_run = Invoicing::IssueMonthlyInvoices.call(
+    assert_raises(Invoicing::IssueMonthlyInvoices::AlreadyClosedError) do
+      Invoicing::IssueMonthlyInvoices.call(
+        tenant: @tenant,
+        closing_date: Date.new(2026, 4, 30),
+        billing_period_from: Date.new(2026, 4, 1),
+        billing_period_to: Date.new(2026, 4, 30),
+        invoice_date: Date.new(2026, 4, 30),
+        default_due_date: Date.new(2026, 5, 31)
+      )
+    end
+  end
+
+  test "cancel and reissue invoice preserves billing history" do
+    order = create_order(quantity: 2)
+    order.mark_as_sent!
+    order.mark_as_accepted!
+    Inventory::ReserveOrder.call(order: order, warehouse: @warehouse)
+    delivery = Deliveries::IssueFromOrder.call(order: order, delivery_date: Date.new(2026, 4, 12))
+
+    batch = Invoicing::IssueMonthlyInvoices.call(
       tenant: @tenant,
       closing_date: Date.new(2026, 4, 30),
       billing_period_from: Date.new(2026, 4, 1),
       billing_period_to: Date.new(2026, 4, 30),
       invoice_date: Date.new(2026, 4, 30),
-      due_date: Date.new(2026, 5, 31)
+      default_due_date: Date.new(2026, 5, 31)
     )
-    assert_equal [], second_run
+    invoice = batch.invoices.first
+
+    Invoicing::CancelInvoice.call(invoice: invoice)
+
+    assert invoice.reload.cancelled?
+    assert delivery.reload.issued?
+    assert order.reload.delivered?
+
+    reissued = Invoicing::ReissueInvoice.call(invoice: invoice, invoice_date: Date.new(2026, 5, 1))
+
+    assert reissued.persisted?
+    assert_equal invoice.id, reissued.reissued_from_id
+    assert reissued.issued?
+    assert delivery.reload.billed?
+    assert order.reload.billed?
+  end
+
+  test "cancelled billing batch can be rerun for the same closing period" do
+    order = create_order(quantity: 1)
+    order.mark_as_sent!
+    order.mark_as_accepted!
+    Inventory::ReserveOrder.call(order: order, warehouse: @warehouse)
+    Deliveries::IssueFromOrder.call(order: order, delivery_date: Date.new(2026, 4, 12))
+
+    batch = Invoicing::IssueMonthlyInvoices.call(
+      tenant: @tenant,
+      closing_date: Date.new(2026, 4, 30),
+      billing_period_from: Date.new(2026, 4, 1),
+      billing_period_to: Date.new(2026, 4, 30),
+      invoice_date: Date.new(2026, 4, 30),
+      default_due_date: Date.new(2026, 5, 31)
+    )
+
+    Invoicing::CancelBillingBatch.call(billing_batch: batch)
+    rerun = Invoicing::IssueMonthlyInvoices.call(
+      tenant: @tenant,
+      closing_date: Date.new(2026, 4, 30),
+      billing_period_from: Date.new(2026, 4, 1),
+      billing_period_to: Date.new(2026, 4, 30),
+      invoice_date: Date.new(2026, 5, 1),
+      default_due_date: Date.new(2026, 5, 31)
+    )
+
+    assert batch.reload.cancelled?
+    assert rerun.persisted?
+    assert_equal 1, rerun.invoice_count
   end
 
   test "payment reconciliation allocates money to invoices" do

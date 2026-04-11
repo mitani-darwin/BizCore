@@ -62,7 +62,16 @@ Rails.application.routes.draw do
       end
     end
     resources :deliveries, only: [:index, :show]
+    resources :billing_batches, only: [:index, :show] do
+      member do
+        patch :cancel
+      end
+    end
     resources :invoices, only: [:index, :show] do
+      member do
+        patch :cancel
+        post :reissue
+      end
       collection do
         post :issue_monthly
       end

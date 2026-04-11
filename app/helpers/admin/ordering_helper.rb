@@ -205,6 +205,16 @@ module Admin
       status_badge(label, tone)
     end
 
+    def billing_batch_status_badge(billing_batch)
+      label, tone = case billing_batch.status
+      when "issued" then ["締め済", "violet"]
+      when "cancelled" then ["締め解除", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
     def payment_status_badge(payment)
       label, tone = case payment.status
       when "pending" then ["未消込", "amber"]

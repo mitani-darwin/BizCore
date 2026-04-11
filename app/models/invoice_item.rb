@@ -3,6 +3,10 @@ class InvoiceItem < ApplicationRecord
   belongs_to :invoice
   belongs_to :source, polymorphic: true, optional: true
 
+  scope :active_for_source, lambda {
+    joins(:invoice).where.not(invoices: { status: "cancelled" })
+  }
+
   validates :description, :quantity, :unit_price, :amount, :tax_category, presence: true
   validates :quantity, numericality: { greater_than: 0, only_integer: true }
   validates :unit_price, :amount, numericality: { greater_than_or_equal_to: 0 }

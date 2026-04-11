@@ -36,6 +36,7 @@ module Payments
       raise OverAllocationError, "allocation amount must be positive" if amount <= 0
       raise OverAllocationError, "invoice belongs to another tenant" if invoice.tenant_id != payment.tenant_id
       raise OverAllocationError, "invoice belongs to another customer" if invoice.customer_id != payment.customer_id
+      raise OverAllocationError, "cancelled invoice cannot be allocated" if invoice.cancelled?
       raise OverAllocationError, "allocation exceeds unapplied payment amount" if amount > payment.unapplied_amount
       raise OverAllocationError, "allocation exceeds invoice balance" if amount > invoice.outstanding_amount
 

@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :roles, through: :assignments
   has_many :role_permissions, through: :roles
   has_many :permissions, through: :role_permissions
+  has_many :executed_billing_batches, class_name: "BillingBatch", foreign_key: :executed_by_id, dependent: :nullify, inverse_of: :executed_by
+  has_many :cancelled_billing_batches, class_name: "BillingBatch", foreign_key: :cancelled_by_id, dependent: :nullify, inverse_of: :cancelled_by
 
   validates :tenant, presence: { message: "を選択してください" }
   validates :name, presence: { message: "を入力してください" }

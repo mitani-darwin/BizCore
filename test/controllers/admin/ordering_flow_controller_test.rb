@@ -127,6 +127,9 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     get admin_invoices_path
     assert_response :success
 
+    get admin_billing_batches_path
+    assert_response :success
+
     get admin_payments_path
     assert_response :success
 
@@ -253,17 +256,20 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     get admin_delivery_path(delivery)
     assert_response :success
 
-    assert_difference("Invoice.count", 1) do
+    assert_difference(["BillingBatch.count", "Invoice.count"], 1) do
       post issue_monthly_admin_invoices_path, params: {
         billing_period_from: "2026-04-01",
         billing_period_to: "2026-04-30",
         closing_date: "2026-04-30",
         invoice_date: "2026-04-30",
-        due_date: "2026-05-31"
+        default_due_date: "2026-05-31"
       }
     end
 
-    assert_redirected_to admin_invoices_path
+    billing_batch = BillingBatch.order(:id).last
+    assert_redirected_to admin_billing_batch_path(billing_batch)
+    get admin_billing_batch_path(billing_batch)
+    assert_response :success
 
     invoice = Invoice.order(:id).last
     get admin_invoice_path(invoice)
@@ -353,6 +359,48 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_equal invoice.id, payment.payment_allocations.last.invoice_id
     assert payment.reload.applied?
     assert invoice.reload.paid?
+  end
+
+  test "invoice can be cancelled and reissued from the admin screen" do
+    invoice = @tenant.invoices.create!(
+      customer: @customer,
+      closing_date: Date.new(2026, 4, 30),
+      billing_period_from: Date.new(2026, 4, 1),
+      billing_period_to: Date.new(2026, 4, 30),
+      invoice_date: Date.new(2026, 4, 30),
+      due_date: Date.new(2026, 5, 31),
+      status: "issued",
+      subtotal_amount: 2000,
+      tax_amount: 200,
+      total_amount: 2200,
+      paid_amount: 0,
+      balance_amount: 2200
+    )
+    invoice.invoice_items.create!(
+      tenant: @tenant,
+      description: "標準商品",
+      quantity: 2,
+      unit_price: 1000,
+      amount: 2000,
+      tax_category: "taxable_10"
+    )
+
+    get admin_invoice_path(invoice)
+    assert_response :success
+    assert_select "form[action='#{cancel_admin_invoice_path(invoice)}']"
+
+    patch cancel_admin_invoice_path(invoice)
+    assert_redirected_to admin_invoice_path(invoice)
+    assert invoice.reload.cancelled?
+
+    assert_difference("Invoice.count", 1) do
+      post reissue_admin_invoice_path(invoice), params: { invoice_date: "2026-05-01", default_due_date: "2026-05-31" }
+    end
+
+    reissued = Invoice.order(:id).last
+    assert_redirected_to admin_invoice_path(reissued)
+    assert_equal invoice.id, reissued.reissued_from_id
+    assert reissued.issued?
   end
 
   private

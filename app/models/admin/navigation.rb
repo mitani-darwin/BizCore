@@ -132,6 +132,13 @@ module Admin
               children: []
             ),
             Item.new(
+              id: :billing_batches,
+              label: "請求締め",
+              path: :admin_billing_batches_path,
+              required_keys: %w[admin.billing_batches.read],
+              children: []
+            ),
+            Item.new(
               id: :invoices,
               label: "請求",
               path: :admin_invoices_path,

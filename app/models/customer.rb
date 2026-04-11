@@ -78,6 +78,34 @@ class Customer < ApplicationRecord
     association(:payments).loaded? ? payments.map(&:payment_date).compact.max : payments.maximum(:payment_date)
   end
 
+  def billing_closes_on?(date)
+    return true if closing_day.blank?
+
+    date.day == effective_closing_day_for(date)
+  end
+
+  def effective_closing_day_for(date)
+    configured_day = closing_day.to_i
+    return date.end_of_month.day if configured_day <= 0
+
+    [configured_day, date.end_of_month.day].min
+  end
+
+  def due_date_for(closing_date:, default_due_date: nil)
+    case payment_due_rule
+    when "end_of_month"
+      closing_date.end_of_month
+    when "next_month_end"
+      closing_date.next_month.end_of_month
+    when "next_two_month_end"
+      closing_date.next_month.next_month.end_of_month
+    when "custom"
+      default_due_date || closing_date.next_month.end_of_month
+    else
+      default_due_date || closing_date.next_month.end_of_month
+    end
+  end
+
   private
 
   def set_defaults

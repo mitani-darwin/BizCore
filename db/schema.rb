@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_093000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -49,6 +49,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
     t.index ["request_id"], name: "index_audit_logs_on_request_id"
     t.index ["tenant_id"], name: "index_audit_logs_on_tenant_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
+  create_table "billing_batches", force: :cascade do |t|
+    t.string "batch_number", null: false
+    t.date "billing_period_from", null: false
+    t.date "billing_period_to", null: false
+    t.datetime "cancelled_at"
+    t.integer "cancelled_by_id"
+    t.date "closing_date", null: false
+    t.datetime "created_at", null: false
+    t.integer "customer_count", default: 0, null: false
+    t.date "default_due_date"
+    t.datetime "executed_at"
+    t.integer "executed_by_id"
+    t.integer "invoice_count", default: 0, null: false
+    t.date "invoice_date", null: false
+    t.text "note"
+    t.string "status", default: "issued", null: false
+    t.integer "tenant_id", null: false
+    t.decimal "total_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cancelled_by_id"], name: "index_billing_batches_on_cancelled_by_id"
+    t.index ["executed_by_id"], name: "index_billing_batches_on_executed_by_id"
+    t.index ["tenant_id", "batch_number"], name: "index_billing_batches_on_tenant_id_and_batch_number", unique: true
+    t.index ["tenant_id", "billing_period_from", "billing_period_to"], name: "idx_on_tenant_id_billing_period_from_billing_period_ccd1591ff1"
+    t.index ["tenant_id", "closing_date"], name: "index_billing_batches_on_tenant_id_and_closing_date"
+    t.index ["tenant_id"], name: "index_billing_batches_on_tenant_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -135,15 +162,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
 
   create_table "invoices", force: :cascade do |t|
     t.decimal "balance_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.integer "billing_batch_id"
     t.date "billing_period_from", null: false
     t.date "billing_period_to", null: false
+    t.datetime "cancelled_at"
     t.date "closing_date", null: false
+    t.integer "closing_day_snapshot"
     t.datetime "created_at", null: false
     t.bigint "customer_id", null: false
     t.date "due_date", null: false
     t.date "invoice_date", null: false
+    t.string "invoice_delivery_method_snapshot"
     t.string "invoice_number", null: false
     t.decimal "paid_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "payment_due_rule_snapshot"
+    t.integer "reissued_from_id"
     t.text "remarks"
     t.string "status", default: "issued", null: false
     t.decimal "subtotal_amount", precision: 14, scale: 2, default: "0.0", null: false
@@ -151,7 +184,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
     t.bigint "tenant_id", null: false
     t.decimal "total_amount", precision: 14, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
+    t.index ["billing_batch_id"], name: "index_invoices_on_billing_batch_id"
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
+    t.index ["reissued_from_id"], name: "index_invoices_on_reissued_from_id"
     t.index ["tenant_id", "invoice_number"], name: "index_invoices_on_tenant_id_and_invoice_number", unique: true
     t.index ["tenant_id"], name: "index_invoices_on_tenant_id"
   end
@@ -618,6 +653,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
   add_foreign_key "assignments", "users"
   add_foreign_key "audit_logs", "tenants"
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "billing_batches", "tenants"
+  add_foreign_key "billing_batches", "users", column: "cancelled_by_id"
+  add_foreign_key "billing_batches", "users", column: "executed_by_id"
   add_foreign_key "customers", "tenants"
   add_foreign_key "deliveries", "customers"
   add_foreign_key "deliveries", "orders"
@@ -628,7 +666,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_203000) do
   add_foreign_key "delivery_items", "tenants"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "tenants"
+  add_foreign_key "invoices", "billing_batches"
   add_foreign_key "invoices", "customers"
+  add_foreign_key "invoices", "invoices", column: "reissued_from_id"
   add_foreign_key "invoices", "tenants"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
