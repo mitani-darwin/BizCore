@@ -10,6 +10,7 @@
       <p class="text-sm text-slate-600"><%= @purchase_bill.supplier.name %> / 請求日 <%= jp_date(@purchase_bill.bill_date) %></p>
     </div>
     <div class="flex flex-wrap gap-2">
+      <%= link_to "Excel出力", download_excel_admin_purchase_bill_path(@purchase_bill), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
       <% if can?("admin.supplier_payments.create") && @purchase_bill.outstanding_amount.positive? && !@purchase_bill.cancelled? %>
         <%= link_to "この請求の支払を登録", new_admin_supplier_payment_path(source_purchase_bill_id: @purchase_bill.id), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
       <% end %>

@@ -1,6 +1,6 @@
 module Admin
   class InvoicesController < BaseController
-    before_action :set_invoice, only: [:show, :cancel, :reissue]
+    before_action :set_invoice, only: [:show, :download_excel, :cancel, :reissue]
 
     def index
       @invoices = current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc)
@@ -9,6 +9,15 @@ module Admin
     end
 
     def show; end
+
+    def download_excel
+      send_data(
+        Invoicing::ExportInvoiceXlsx.call(invoice: @invoice),
+        filename: "#{@invoice.invoice_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
 
     def issue_monthly
       values = billing_values

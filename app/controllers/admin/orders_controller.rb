@@ -2,7 +2,7 @@ module Admin
   class OrdersController < BaseController
     MINIMUM_ORDER_ITEM_ROWS = 1
 
-    before_action :set_order, only: [:show, :edit, :update, :send_order, :accept_order, :reserve_stock, :issue_delivery]
+    before_action :set_order, only: [:show, :edit, :update, :download_excel, :send_order, :accept_order, :reserve_stock, :issue_delivery]
     before_action :set_form_options, only: [:new, :create, :edit, :update]
     before_action :ensure_editable_order!, only: [:edit, :update]
 
@@ -45,6 +45,15 @@ module Admin
         build_order_item_rows(@order)
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def download_excel
+      send_data(
+        Orders::ExportXlsx.call(order: @order),
+        filename: "#{@order.order_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
     end
 
     def send_order

@@ -10,6 +10,7 @@
       <p class="text-sm text-slate-600"><%= @purchase_order.supplier.name %> / 発注日 <%= jp_date(@purchase_order.order_date) %></p>
     </div>
     <div class="flex flex-wrap gap-2">
+      <%= link_to "Excel出力", download_excel_admin_purchase_order_path(@purchase_order), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
       <% if can?("admin.purchase_orders.update") && @purchase_order.draft? %>
         <%= link_to "編集", edit_admin_purchase_order_path(@purchase_order), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
         <%= button_to "発注書を送信", send_purchase_order_admin_purchase_order_path(@purchase_order), method: :patch, class: "rounded bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>

@@ -43,11 +43,16 @@ Rails.application.routes.draw do
     resources :stock_counts, only: [:index, :new, :create]
     resources :purchase_orders, only: [:index, :show, :new, :create, :edit, :update] do
       member do
+        get :download_excel
         patch :send_purchase_order
         patch :receive_items
       end
     end
-    resources :purchase_receipts, only: [:index, :show]
+    resources :purchase_receipts, only: [:index, :show] do
+      member do
+        get :download_excel
+      end
+    end
     resources :purchase_adjustments, only: [:index, :show, :create]
     resources :purchase_bill_batches, only: [:index, :show] do
       member do
@@ -56,6 +61,7 @@ Rails.application.routes.draw do
     end
     resources :purchase_bills, only: [:index, :show] do
       member do
+        get :download_excel
         patch :cancel
         post :reissue
       end
@@ -78,13 +84,18 @@ Rails.application.routes.draw do
     end
     resources :orders, only: [:index, :show, :new, :create, :edit, :update] do
       member do
+        get :download_excel
         patch :send_order
         patch :accept_order
         patch :reserve_stock
         patch :issue_delivery
       end
     end
-    resources :deliveries, only: [:index, :show]
+    resources :deliveries, only: [:index, :show] do
+      member do
+        get :download_excel
+      end
+    end
     resources :billing_batches, only: [:index, :show] do
       member do
         patch :cancel
@@ -92,6 +103,7 @@ Rails.application.routes.draw do
     end
     resources :invoices, only: [:index, :show] do
       member do
+        get :download_excel
         patch :cancel
         post :reissue
       end

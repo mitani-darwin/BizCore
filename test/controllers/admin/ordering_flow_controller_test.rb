@@ -102,13 +102,13 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_quotation_path(@quotation)
     assert_response :success
+    assert_select "a", text: "Excel出力"
 
-    get download_excel_admin_quotation_path(@quotation)
-    assert_response :success
-    assert_equal "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.media_type
-    assert_includes response.headers["Content-Disposition"], "#{@quotation.quotation_number}.xlsx"
-    assert_equal "PK", response.body.byteslice(0, 2)
-    assert_includes zip_entry_content(response.body, "xl/worksheets/sheet1.xml"), @quotation.quotation_number
+    assert_xlsx_download(
+      download_excel_admin_quotation_path(@quotation),
+      filename: "#{@quotation.quotation_number}.xlsx",
+      includes: [@quotation.quotation_number, @customer.name]
+    )
 
     get new_admin_quotation_path
     assert_response :success
@@ -173,12 +173,11 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     get admin_quotation_path(quotation)
     assert_response :success
 
-    get download_excel_admin_quotation_path(quotation)
-    assert_response :success
-    assert_equal "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.media_type
-    assert_includes response.headers["Content-Disposition"], "#{quotation.quotation_number}.xlsx"
-    assert_equal "PK", response.body.byteslice(0, 2)
-    assert_includes zip_entry_content(response.body, "xl/worksheets/sheet1.xml"), quotation.quotation_number
+    assert_xlsx_download(
+      download_excel_admin_quotation_path(quotation),
+      filename: "#{quotation.quotation_number}.xlsx",
+      includes: [quotation.quotation_number, quotation.customer.name]
+    )
 
     patch send_quotation_admin_quotation_path(quotation)
     assert_redirected_to admin_quotation_path(quotation)
@@ -202,6 +201,11 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_order_path(order)
     assert_response :success
+    assert_xlsx_download(
+      download_excel_admin_order_path(order),
+      filename: "#{order.order_number}.xlsx",
+      includes: [order.order_number, order.customer.name]
+    )
   end
 
   test "admin ordering flow proceeds from order to reconciliation" do
@@ -257,6 +261,11 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_delivery_path(delivery)
     assert_response :success
+    assert_xlsx_download(
+      download_excel_admin_delivery_path(delivery),
+      filename: "#{delivery.delivery_number}.xlsx",
+      includes: [delivery.delivery_number, delivery.customer.name]
+    )
 
     assert_difference(["BillingBatch.count", "Invoice.count"], 1) do
       post issue_monthly_admin_invoices_path, params: {
@@ -276,6 +285,11 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     invoice = Invoice.order(:id).last
     get admin_invoice_path(invoice)
     assert_response :success
+    assert_xlsx_download(
+      download_excel_admin_invoice_path(invoice),
+      filename: "#{invoice.invoice_number}.xlsx",
+      includes: [invoice.invoice_number, invoice.customer.name]
+    )
 
     assert_difference("Payment.count", 1) do
       post admin_payments_path, params: {
@@ -406,6 +420,19 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def assert_xlsx_download(path, filename:, includes:)
+    get path
+    assert_response :success
+    assert_equal Reports::BaseXlsx::MIME_TYPE, response.media_type
+    assert_includes response.headers["Content-Disposition"], filename
+    assert_equal "PK", response.body.byteslice(0, 2)
+
+    sheet_xml = zip_entry_content(response.body, "xl/worksheets/sheet1.xml").force_encoding("UTF-8")
+    Array(includes).each do |value|
+      assert_includes sheet_xml, value
+    end
+  end
 
   def zip_entry_content(body, entry_name)
     content = nil

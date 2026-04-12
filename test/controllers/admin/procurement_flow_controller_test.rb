@@ -1,3 +1,5 @@
+require "zip"
+
 require "test_helper"
 
 class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
@@ -128,6 +130,11 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_purchase_order_path(purchase_order)
     assert_response :success
+    assert_xlsx_download(
+      download_excel_admin_purchase_order_path(purchase_order),
+      filename: "#{purchase_order.purchase_order_number}.xlsx",
+      includes: [purchase_order.purchase_order_number, purchase_order.supplier.name]
+    )
 
     patch send_purchase_order_admin_purchase_order_path(purchase_order)
     assert_redirected_to admin_purchase_order_path(purchase_order)
@@ -153,6 +160,11 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_purchase_receipt_path(first_receipt)
     assert_response :success
+    assert_xlsx_download(
+      download_excel_admin_purchase_receipt_path(first_receipt),
+      filename: "#{first_receipt.purchase_receipt_number}.xlsx",
+      includes: [first_receipt.purchase_receipt_number, first_receipt.supplier.name]
+    )
 
     assert_difference(["PurchaseReceipt.count", "PurchaseReceiptItem.count", "StockMovement.count"], 1) do
       patch receive_items_admin_purchase_order_path(purchase_order), params: {
@@ -245,6 +257,11 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     get admin_purchase_bill_path(purchase_bill)
     assert_response :success
     assert_select "a", text: "この請求の支払を登録"
+    assert_xlsx_download(
+      download_excel_admin_purchase_bill_path(purchase_bill),
+      filename: "#{purchase_bill.bill_number}.xlsx",
+      includes: [purchase_bill.bill_number, purchase_bill.supplier.name]
+    )
 
     get new_admin_supplier_payment_path(source_purchase_bill_id: purchase_bill.id)
     assert_response :success
@@ -274,5 +291,35 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
 
     get admin_supplier_payment_path(supplier_payment)
     assert_response :success
+  end
+
+  private
+
+  def assert_xlsx_download(path, filename:, includes:)
+    get path
+    assert_response :success
+    assert_equal Reports::BaseXlsx::MIME_TYPE, response.media_type
+    assert_includes response.headers["Content-Disposition"], filename
+    assert_equal "PK", response.body.byteslice(0, 2)
+
+    sheet_xml = zip_entry_content(response.body, "xl/worksheets/sheet1.xml").force_encoding("UTF-8")
+    Array(includes).each do |value|
+      assert_includes sheet_xml, value
+    end
+  end
+
+  def zip_entry_content(body, entry_name)
+    content = nil
+
+    Zip::InputStream.open(StringIO.new(body.b)) do |stream|
+      while (entry = stream.get_next_entry)
+        next unless entry.name == entry_name
+
+        content = stream.read
+        break
+      end
+    end
+
+    content.to_s
   end
 end

@@ -1,6 +1,6 @@
 module Admin
   class PurchaseReceiptsController < BaseController
-    before_action :set_purchase_receipt, only: [:show]
+    before_action :set_purchase_receipt, only: [:show, :download_excel]
 
     def index
       @filters = {
@@ -23,6 +23,15 @@ module Admin
     def show
       @purchase_adjustments = @purchase_receipt.purchase_adjustments.ordered_for_admin
       @returnable_receipt_items = @purchase_receipt.purchase_receipt_items.select { |item| item.returnable_quantity.positive? }
+    end
+
+    def download_excel
+      send_data(
+        Purchases::ExportPurchaseReceiptXlsx.call(purchase_receipt: @purchase_receipt),
+        filename: "#{@purchase_receipt.purchase_receipt_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
     end
 
     private

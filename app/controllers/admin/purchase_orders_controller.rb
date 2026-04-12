@@ -2,7 +2,7 @@ module Admin
   class PurchaseOrdersController < BaseController
     MINIMUM_PURCHASE_ORDER_ITEM_ROWS = 1
 
-    before_action :set_purchase_order, only: [:show, :edit, :update, :send_purchase_order, :receive_items]
+    before_action :set_purchase_order, only: [:show, :edit, :update, :download_excel, :send_purchase_order, :receive_items]
     before_action :set_form_options, only: [:new, :create, :edit, :update]
     before_action :ensure_editable_purchase_order!, only: [:edit, :update]
 
@@ -62,6 +62,15 @@ module Admin
         build_purchase_order_item_rows(@purchase_order)
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def download_excel
+      send_data(
+        Purchases::ExportPurchaseOrderXlsx.call(purchase_order: @purchase_order),
+        filename: "#{@purchase_order.purchase_order_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
     end
 
     def send_purchase_order
