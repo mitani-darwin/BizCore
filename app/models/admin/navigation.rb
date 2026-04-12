@@ -67,6 +67,19 @@ module Admin
           ]
         ),
         Section.new(
+          id: :procurement_master,
+          label: "仕入マスタ",
+          items: [
+            Item.new(
+              id: :suppliers,
+              label: "仕入先",
+              path: :admin_suppliers_path,
+              required_keys: %w[admin.suppliers.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :inventory,
           label: "在庫管理",
           items: [
@@ -98,6 +111,13 @@ module Admin
           label: "受発注業務",
           items: [
             Item.new(
+              id: :quotations,
+              label: "見積",
+              path: :admin_quotations_path,
+              required_keys: %w[admin.quotations.read],
+              children: []
+            ),
+            Item.new(
               id: :orders,
               label: "注文",
               path: :admin_orders_path,
@@ -112,6 +132,13 @@ module Admin
               children: []
             ),
             Item.new(
+              id: :billing_batches,
+              label: "請求締め",
+              path: :admin_billing_batches_path,
+              required_keys: %w[admin.billing_batches.read],
+              children: []
+            ),
+            Item.new(
               id: :invoices,
               label: "請求",
               path: :admin_invoices_path,
@@ -123,6 +150,82 @@ module Admin
               label: "入金",
               path: :admin_payments_path,
               required_keys: %w[admin.payments.read],
+              children: []
+            ),
+            Item.new(
+              id: :receivables,
+              label: "売掛残高",
+              path: :admin_receivables_path,
+              required_keys: %w[admin.receivables.read],
+              children: []
+            ),
+            Item.new(
+              id: :collection_schedules,
+              label: "回収予定表",
+              path: :admin_collection_schedules_path,
+              required_keys: %w[admin.collection_schedules.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
+          id: :procurement_flow,
+          label: "発注業務",
+          items: [
+            Item.new(
+              id: :purchase_orders,
+              label: "発注",
+              path: :admin_purchase_orders_path,
+              required_keys: %w[admin.purchase_orders.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_receipts,
+              label: "入荷",
+              path: :admin_purchase_receipts_path,
+              required_keys: %w[admin.purchase_receipts.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_adjustments,
+              label: "返品/値引き",
+              path: :admin_purchase_adjustments_path,
+              required_keys: %w[admin.purchase_adjustments.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_bill_batches,
+              label: "仕入締め",
+              path: :admin_purchase_bill_batches_path,
+              required_keys: %w[admin.purchase_bill_batches.read],
+              children: []
+            ),
+            Item.new(
+              id: :purchase_bills,
+              label: "仕入請求",
+              path: :admin_purchase_bills_path,
+              required_keys: %w[admin.purchase_bills.read],
+              children: []
+            ),
+            Item.new(
+              id: :supplier_payments,
+              label: "支払",
+              path: :admin_supplier_payments_path,
+              required_keys: %w[admin.supplier_payments.read],
+              children: []
+            ),
+            Item.new(
+              id: :payables,
+              label: "買掛残高",
+              path: :admin_payables_path,
+              required_keys: %w[admin.payables.read],
+              children: []
+            ),
+            Item.new(
+              id: :payment_schedules,
+              label: "支払予定表",
+              path: :admin_payment_schedules_path,
+              required_keys: %w[admin.payment_schedules.read],
               children: []
             )
           ]

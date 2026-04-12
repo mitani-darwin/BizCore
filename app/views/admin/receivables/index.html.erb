@@ -1,0 +1,110 @@
+<% content_for :page_title, "売掛残高一覧" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">売掛残高一覧</h1>
+    <p class="text-sm text-slate-600">得意先別の未入金請求、滞留状況、年齢表を確認します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_receivables_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_220px_180px_180px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・得意先名・担当者・メールで検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :status, "取引状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + customer_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :balance_scope, "残高条件", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :balance_scope, options_for_select(balance_scope_options, @filters[:balance_scope]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :as_of, "基準日", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.date_field :as_of, value: @filters[:as_of], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_receivables_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対象得意先</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">未入金請求</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:unpaid_invoice_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">売掛残高</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@summary[:outstanding_amount]) %></div>
+      </div>
+      <div class="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3">
+        <div class="text-xs text-rose-500">滞留件数</div>
+        <div class="mt-1 text-xl font-semibold text-rose-700"><%= @summary[:overdue_invoice_count] %></div>
+      </div>
+      <div class="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3">
+        <div class="text-xs text-rose-500">滞留残高</div>
+        <div class="mt-1 text-xl font-semibold text-rose-700"><%= money(@summary[:overdue_amount]) %></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @receivable_rows.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">コード</th>
+            <th class="px-4 py-2">得意先名</th>
+            <th class="px-4 py-2 text-right">未入金件数</th>
+            <th class="px-4 py-2 text-right">売掛残高</th>
+            <th class="px-4 py-2 text-right">滞留残高</th>
+            <th class="px-4 py-2 text-right">当月内</th>
+            <th class="px-4 py-2 text-right">1-30日超</th>
+            <th class="px-4 py-2 text-right">31-60日超</th>
+            <th class="px-4 py-2 text-right">61日超</th>
+            <th class="px-4 py-2">最終請求</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @receivable_rows.each do |row| %>
+            <% customer = row[:customer] %>
+            <% aging = row[:aging] %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2"><%= customer_status_badge(customer) %></td>
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= customer.code %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= customer.name %></div>
+                <div class="text-xs text-slate-500"><%= customer.primary_contact.presence || customer.email.presence || "-" %></div>
+              </td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= row[:unpaid_invoice_count] %></td>
+              <td class="px-4 py-2 text-right font-semibold text-slate-900"><%= money(row[:outstanding_amount]) %></td>
+              <td class="px-4 py-2 text-right <%= row[:overdue_amount].positive? ? 'font-semibold text-rose-700' : 'text-slate-700' %>"><%= money(row[:overdue_amount]) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= money(aging[:current]) %></td>
+              <td class="px-4 py-2 text-right text-amber-700"><%= money(aging[:overdue_1_30]) %></td>
+              <td class="px-4 py-2 text-right text-rose-700"><%= money(aging[:overdue_31_60]) %></td>
+              <td class="px-4 py-2 text-right text-rose-800"><%= money(aging[:overdue_61_over]) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(row[:last_invoice_date]) %></td>
+              <td class="px-4 py-2 text-right">
+                <%= link_to "得意先詳細", admin_customer_path(customer), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>条件に一致する売掛残高はありません。</p>
+    </div>
+  <% end %>
+</div>

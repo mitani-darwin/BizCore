@@ -1,12 +1,21 @@
 module Admin
   class DeliveriesController < BaseController
-    before_action :set_delivery, only: [:show]
+    before_action :set_delivery, only: [:show, :download_excel]
 
     def index
       @deliveries = current_tenant.deliveries.includes(:customer, :order).order(delivery_date: :desc, id: :desc)
     end
 
     def show; end
+
+    def download_excel
+      send_data(
+        Deliveries::ExportXlsx.call(delivery: @delivery),
+        filename: "#{@delivery.delivery_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
 
     private
 

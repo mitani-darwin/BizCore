@@ -4,7 +4,7 @@
   <div class="mb-6 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 px-6 py-5 text-white shadow-lg">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p class="text-xs font-semibold tracking-wide text-slate-200 uppercase">Tenant Scoped RBAC</p>
+        <p class="text-xs font-semibold tracking-wide text-slate-200 uppercase">テナント別権限管理</p>
         <h1 class="text-2xl font-bold leading-tight">権限管理</h1>
         <p class="mt-1 text-sm text-slate-200">
           現在のテナントで利用できるロールに対して、リソース別の権限を割り当てます。画面表示だけでなく、URL直打ちも Pundit で遮断します。
@@ -54,7 +54,7 @@
     <%= form_with url: admin_authorization_path, method: :patch, local: true do %>
       <div class="mb-4 flex items-center justify-between">
         <div>
-          <p class="text-xs font-semibold uppercase text-slate-500">Role Matrix</p>
+          <p class="text-xs font-semibold uppercase text-slate-500">ロール別権限マトリクス</p>
           <p class="text-sm text-slate-700">ロール列にチェックを入れて保存すると、対応する RolePermission が登録されます。</p>
         </div>
         <%= submit_tag "権限を保存", class: "inline-flex items-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700" %>
@@ -64,7 +64,7 @@
         <div class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <div>
-              <p class="text-sm font-semibold text-slate-900"><%= resource.titleize %></p>
+              <p class="text-sm font-semibold text-slate-900"><%= Permissions::Catalog.resource_label(resource) %></p>
               <p class="text-[11px] text-slate-500">リソース単位の権限を設定します。</p>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -73,7 +73,7 @@
                 <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 <%= locked ? "bg-slate-100 text-slate-500 ring-slate-200" : "bg-sky-50 text-sky-800 ring-sky-200" %>">
                   <%= role.name %>
                   <% if locked %>
-                    <span class="text-[10px] font-semibold text-slate-500">LOCK</span>
+                    <span class="text-[10px] font-semibold text-slate-500">固定</span>
                   <% end %>
                 </span>
               <% end %>

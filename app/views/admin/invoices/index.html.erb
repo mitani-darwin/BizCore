@@ -4,14 +4,19 @@
   <div class="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <h1 class="text-xl font-semibold text-slate-900">請求一覧</h1>
-      <p class="mt-1 text-sm text-slate-600">月末請求を実行し、発行済の請求書を確認します。</p>
+      <p class="mt-1 text-sm text-slate-600">請求締めを実行し、発行済の請求書と締め履歴を確認します。</p>
+      <% if can?("admin.billing_batches.read") %>
+        <div class="mt-4">
+          <%= link_to "請求締め履歴へ", admin_billing_batches_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+        </div>
+      <% end %>
     </div>
 
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-sm font-semibold text-slate-900">4. 月末に請求</h2>
-          <p class="text-xs text-slate-500">納品済かつ未請求のデータから請求書を発行します。</p>
+          <h2 class="text-sm font-semibold text-slate-900">4. 月次請求を締める</h2>
+          <p class="text-xs text-slate-500">期間を締め、対象顧客ごとに請求書を作成します。締め済み期間は再実行できません。</p>
         </div>
       </div>
 
@@ -34,11 +39,15 @@
             <%= date_field_tag :invoice_date, @billing_defaults[:invoice_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700">支払期日</label>
-            <%= date_field_tag :due_date, @billing_defaults[:due_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+            <label class="block text-xs font-semibold text-slate-700">個別期日用デフォルト</label>
+            <%= date_field_tag :default_due_date, @billing_defaults[:default_due_date], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
           </div>
           <div class="sm:col-span-2 xl:col-span-5">
-            <%= submit_tag "月末請求を実行", class: "rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700" %>
+            <label class="block text-xs font-semibold text-slate-700">締めメモ</label>
+            <%= text_area_tag :note, @billing_defaults[:note], rows: 2, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", placeholder: "今回の締めに残すメモ" %>
+          </div>
+          <div class="sm:col-span-2 xl:col-span-5">
+            <%= submit_tag "請求締めを実行", class: "rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700" %>
           </div>
         <% end %>
       <% else %>
@@ -47,12 +56,43 @@
     </div>
   </div>
 
+  <% if @recent_billing_batches.any? %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-slate-900">最近の請求締め</h2>
+        <% if can?("admin.billing_batches.read") %>
+          <%= link_to "すべて見る", admin_billing_batches_path, class: "text-xs font-semibold text-sky-700 hover:underline" %>
+        <% end %>
+      </div>
+      <div class="mt-3 space-y-2">
+        <% @recent_billing_batches.each do |billing_batch| %>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <%= billing_batch_status_badge(billing_batch) %>
+                  <%= link_to billing_batch.batch_number, admin_billing_batch_path(billing_batch), class: "font-semibold text-slate-900 hover:underline" %>
+                </div>
+                <div class="mt-1 text-xs text-slate-500"><%= jp_date(billing_batch.billing_period_from) %> 〜 <%= jp_date(billing_batch.billing_period_to) %> / 請求 <%= billing_batch.invoice_count %>件</div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold text-slate-900"><%= money(billing_batch.total_amount) %></div>
+                <div class="text-xs text-slate-500"><%= billing_batch.executed_by&.name.presence || "システム" %></div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <% if @invoices.any? %>
     <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
       <table class="min-w-full text-left text-sm">
         <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
             <th class="px-4 py-2">請求番号</th>
+            <th class="px-4 py-2">締め番号</th>
             <th class="px-4 py-2">得意先</th>
             <th class="px-4 py-2">請求日</th>
             <th class="px-4 py-2">支払期日</th>
@@ -66,6 +106,13 @@
           <% @invoices.each do |invoice| %>
             <tr class="hover:bg-slate-50">
               <td class="px-4 py-2 font-semibold text-slate-900"><%= invoice.invoice_number %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <% if invoice.billing_batch.present? %>
+                  <%= link_to invoice.billing_batch.batch_number, admin_billing_batch_path(invoice.billing_batch), class: "hover:underline" %>
+                <% else %>
+                  -
+                <% end %>
+              </td>
               <td class="px-4 py-2 text-slate-700"><%= invoice.customer.name %></td>
               <td class="px-4 py-2 text-slate-700"><%= jp_date(invoice.invoice_date) %></td>
               <td class="px-4 py-2 text-slate-700"><%= jp_date(invoice.due_date) %></td>

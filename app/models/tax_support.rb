@@ -10,6 +10,6 @@ module TaxSupport
   end
 
   def self.tax_amount_for(amount, category)
-    (BigDecimal(amount.to_s) * rate_for(category)).round(2)
+    (BigDecimal(amount.to_s) * rate_for(category)).round(0, :half_up)
   end
 end

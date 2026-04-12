@@ -37,6 +37,10 @@ module Admin
         index_path: :admin_users_path,
         actions: %i[index show new create edit update]
       },
+      suppliers: {
+        index_path: :admin_suppliers_path,
+        actions: %i[index show new create edit update]
+      },
       roles: {
         index_path: :admin_roles_path,
         actions: %i[index show new create edit update]
@@ -44,6 +48,14 @@ module Admin
       customers: {
         index_path: :admin_customers_path,
         actions: %i[index show new create edit update]
+      },
+      receivables: {
+        index_path: :admin_receivables_path,
+        actions: %i[index]
+      },
+      collection_schedules: {
+        index_path: :admin_collection_schedules_path,
+        actions: %i[index]
       },
       products: {
         index_path: :admin_products_path,
@@ -65,10 +77,73 @@ module Admin
         index_path: :admin_stock_counts_path,
         actions: %i[index new create]
       },
+      purchase_orders: {
+        index_path: :admin_purchase_orders_path,
+        actions: %i[index show new create edit update download_excel send_purchase_order receive_items],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
+          send_purchase_order: { permission_action: :update, label: "発注書送信", breadcrumb_label: "発注書送信", page_title: "%{resource}詳細" },
+          receive_items: { permission_action: :update, label: "入荷登録", breadcrumb_label: "入荷登録", page_title: "%{resource}詳細" }
+        }
+      },
+      purchase_receipts: {
+        index_path: :admin_purchase_receipts_path,
+        actions: %i[index show download_excel],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" }
+        }
+      },
+      purchase_adjustments: {
+        index_path: :admin_purchase_adjustments_path,
+        actions: %i[index show create]
+      },
+      purchase_bill_batches: {
+        index_path: :admin_purchase_bill_batches_path,
+        actions: %i[index show cancel],
+        action_overrides: {
+          cancel: { permission_action: :update, label: "締め解除", breadcrumb_label: "締め解除", page_title: "%{resource}詳細" }
+        }
+      },
+      purchase_bills: {
+        index_path: :admin_purchase_bills_path,
+        actions: %i[index show download_excel issue_monthly cancel reissue],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
+          issue_monthly: { permission_action: :create, label: "月次仕入請求", breadcrumb_label: "月次仕入請求", page_title: "%{resource}一覧" },
+          cancel: { permission_action: :update, label: "請求取消", breadcrumb_label: "請求取消", page_title: "%{resource}詳細" },
+          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" }
+        }
+      },
+      supplier_payments: {
+        index_path: :admin_supplier_payments_path,
+        actions: %i[index show new create edit update reconcile],
+        action_overrides: {
+          reconcile: { permission_action: :update, label: "消し込み", breadcrumb_label: "消し込み", page_title: "%{resource}詳細" }
+        }
+      },
+      payables: {
+        index_path: :admin_payables_path,
+        actions: %i[index]
+      },
+      payment_schedules: {
+        index_path: :admin_payment_schedules_path,
+        actions: %i[index]
+      },
+      quotations: {
+        index_path: :admin_quotations_path,
+        actions: %i[index show new create edit update download_excel send_quotation accept_quotation create_order],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
+          send_quotation: { permission_action: :update, label: "見積書送信", breadcrumb_label: "見積書送信", page_title: "%{resource}詳細" },
+          accept_quotation: { permission_action: :update, label: "採用", breadcrumb_label: "採用", page_title: "%{resource}詳細" },
+          create_order: { permission_action: :update, label: "注文へ変換", breadcrumb_label: "注文へ変換", page_title: "%{resource}詳細" }
+        }
+      },
       orders: {
         index_path: :admin_orders_path,
-        actions: %i[index show new create edit update send_order accept_order reserve_stock issue_delivery],
+        actions: %i[index show new create edit update download_excel send_order accept_order reserve_stock issue_delivery],
         action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
           send_order: { permission_action: :update, label: "注文書送信", breadcrumb_label: "注文書送信", page_title: "%{resource}詳細" },
           accept_order: { permission_action: :update, label: "受注確定", breadcrumb_label: "受注確定", page_title: "%{resource}詳細" },
           reserve_stock: { permission_action: :update, label: "在庫確保", breadcrumb_label: "在庫確保", page_title: "%{resource}詳細" },
@@ -77,13 +152,26 @@ module Admin
       },
       deliveries: {
         index_path: :admin_deliveries_path,
-        actions: %i[index show]
+        actions: %i[index show download_excel],
+        action_overrides: {
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" }
+        }
+      },
+      billing_batches: {
+        index_path: :admin_billing_batches_path,
+        actions: %i[index show cancel],
+        action_overrides: {
+          cancel: { permission_action: :update, label: "締め解除", breadcrumb_label: "締め解除", page_title: "%{resource}詳細" }
+        }
       },
       invoices: {
         index_path: :admin_invoices_path,
-        actions: %i[index show issue_monthly],
+        actions: %i[index show download_excel issue_monthly cancel reissue],
         action_overrides: {
-          issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" }
+          download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
+          issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" },
+          cancel: { permission_action: :update, label: "請求取消", breadcrumb_label: "請求取消", page_title: "%{resource}詳細" },
+          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" }
         }
       },
       payments: {
@@ -210,6 +298,12 @@ module Admin
       return record.name if record.respond_to?(:name) && record.name.present?
       return record.title if record.respond_to?(:title) && record.title.present?
       return record.order_number if record.respond_to?(:order_number) && record.order_number.present?
+      return record.purchase_order_number if record.respond_to?(:purchase_order_number) && record.purchase_order_number.present?
+      return record.purchase_receipt_number if record.respond_to?(:purchase_receipt_number) && record.purchase_receipt_number.present?
+      return record.adjustment_number if record.respond_to?(:adjustment_number) && record.adjustment_number.present?
+      return record.batch_number if record.respond_to?(:batch_number) && record.batch_number.present?
+      return record.bill_number if record.respond_to?(:bill_number) && record.bill_number.present?
+      return record.quotation_number if record.respond_to?(:quotation_number) && record.quotation_number.present?
       return record.delivery_number if record.respond_to?(:delivery_number) && record.delivery_number.present?
       return record.invoice_number if record.respond_to?(:invoice_number) && record.invoice_number.present?
       return record.payment_number if record.respond_to?(:payment_number) && record.payment_number.present?

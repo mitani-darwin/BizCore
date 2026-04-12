@@ -1,0 +1,194 @@
+<% content_for :page_title, "見積詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @quotation.quotation_number %></h1>
+        <%= quotation_status_badge(@quotation) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= @quotation.customer.name %> / 見積日 <%= jp_date(@quotation.quotation_date) %></p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if can?("admin.quotations.read") %>
+        <%= link_to "Excel出力", download_excel_admin_quotation_path(@quotation), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+      <% end %>
+      <% if can?("admin.quotations.update") && @quotation.draft? %>
+        <%= link_to "編集", edit_admin_quotation_path(@quotation), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+        <%= button_to "見積書を送信", send_quotation_admin_quotation_path(@quotation), method: :patch, class: "rounded bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <% end %>
+      <% if can?("admin.quotations.update") && @quotation.sent? %>
+        <%= button_to "採用を記録", accept_quotation_admin_quotation_path(@quotation), method: :patch, class: "rounded bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700" %>
+      <% end %>
+      <% if can?("admin.quotations.update") && can?("admin.orders.create") && @quotation.accepted? %>
+        <%= button_to "注文へ変換", create_order_admin_quotation_path(@quotation), method: :post, class: "rounded bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+    <div class="space-y-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">見積情報</h2>
+        <dl class="mt-3 grid gap-4 sm:grid-cols-2 text-sm text-slate-800">
+          <div>
+            <dt class="text-xs text-slate-500">件名</dt>
+            <dd><%= @quotation.subject.presence || "-" %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">有効期限</dt>
+            <dd><%= jp_date(@quotation.expiration_date) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">得意先担当者</dt>
+            <dd><%= @quotation.customer.primary_contact.presence || "-" %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">社内担当者</dt>
+            <dd><%= @quotation.quoted_by_name.presence || "-" %></dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt class="text-xs text-slate-500">備考</dt>
+            <dd><%= @quotation.remarks.presence || "-" %></dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-100 px-4 py-3">
+          <h2 class="text-sm font-semibold text-slate-900">見積明細</h2>
+        </div>
+        <table class="min-w-full text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-4 py-2">商品</th>
+              <th class="px-4 py-2">数量</th>
+              <th class="px-4 py-2">単価</th>
+              <th class="px-4 py-2">税額</th>
+              <th class="px-4 py-2">金額</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @quotation.quotation_items.each do |item| %>
+              <tr>
+                <td class="px-4 py-2 text-slate-700">
+                  <div class="font-semibold text-slate-900"><%= item.product_name_snapshot %></div>
+                  <div class="text-xs text-slate-500"><%= item.product_code_snapshot %></div>
+                </td>
+                <td class="px-4 py-2 text-slate-700"><%= item.quantity %> <%= item.unit_name_snapshot %></td>
+                <td class="px-4 py-2 text-slate-700"><%= money(item.unit_price) %></td>
+                <td class="px-4 py-2 text-slate-700"><%= money(item.tax_amount) %></td>
+                <td class="px-4 py-2 text-slate-700"><%= money(item.amount) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot class="bg-slate-50">
+            <tr>
+              <td colspan="4" class="px-4 py-2 text-right text-sm text-slate-700">小計</td>
+              <td class="px-4 py-2 text-sm font-semibold text-slate-900"><%= money(@quotation.subtotal_amount) %></td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-4 py-2 text-right text-sm text-slate-700">税額</td>
+              <td class="px-4 py-2 text-sm font-semibold text-slate-900"><%= money(@quotation.tax_amount) %></td>
+            </tr>
+            <tr>
+              <td colspan="4" class="px-4 py-3 text-right text-sm font-semibold text-slate-700">合計</td>
+              <td class="px-4 py-3 text-sm font-semibold text-slate-900"><%= money(@quotation.total_amount) %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">関連注文</h2>
+          <% if @orders.any? %>
+            <%= link_to "注文一覧へ", admin_orders_path, class: "text-xs font-semibold text-sky-700 hover:underline" %>
+          <% end %>
+        </div>
+        <% if @orders.any? %>
+          <div class="mt-3 space-y-2">
+            <% @orders.each do |order| %>
+              <div class="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3 text-sm">
+                <div>
+                  <div class="font-semibold text-slate-900"><%= link_to order.order_number, admin_order_path(order), class: "hover:underline" %></div>
+                  <div class="text-xs text-slate-500">注文日 <%= jp_date(order.order_date) %></div>
+                </div>
+                <%= order_status_badge(order) %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">まだ注文へ変換されていません。</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">進行アクション</h2>
+        <div class="mt-3 space-y-3">
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs font-semibold text-slate-500">1. 見積書を送る</div>
+            <% if can?("admin.quotations.update") && @quotation.draft? %>
+              <div class="mt-2">
+                <%= button_to "見積書を送信", send_quotation_admin_quotation_path(@quotation), method: :patch, class: "rounded bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+              </div>
+            <% else %>
+              <div class="mt-2 text-sm text-slate-600">現在の状態: <%= quotation_status_label(@quotation.status) %></div>
+            <% end %>
+          </div>
+
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs font-semibold text-slate-500">2. 採用を記録</div>
+            <% if can?("admin.quotations.update") && @quotation.sent? %>
+              <div class="mt-2">
+                <%= button_to "採用を記録", accept_quotation_admin_quotation_path(@quotation), method: :patch, class: "rounded bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700" %>
+              </div>
+            <% else %>
+              <div class="mt-2 text-sm text-slate-600">提示済の見積で採用を記録できます。</div>
+            <% end %>
+          </div>
+
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs font-semibold text-slate-500">3. 注文へ変換</div>
+            <% if can?("admin.quotations.update") && can?("admin.orders.create") && @quotation.accepted? %>
+              <div class="mt-2">
+                <%= button_to "注文へ変換", create_order_admin_quotation_path(@quotation), method: :post, class: "rounded bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+              </div>
+            <% elsif @quotation.converted? %>
+              <div class="mt-2 text-sm text-slate-600">注文変換済みです。</div>
+            <% else %>
+              <div class="mt-2 text-sm text-slate-600">採用後に注文へ変換できます。</div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">金額サマリ</h2>
+        <div class="mt-3 grid gap-3">
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs text-slate-500">小計</div>
+            <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@quotation.subtotal_amount) %></div>
+          </div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs text-slate-500">税額</div>
+            <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@quotation.tax_amount) %></div>
+          </div>
+          <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+            <div class="text-xs text-slate-500">合計</div>
+            <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@quotation.total_amount) %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_quotations_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.quotations.update") && @quotation.draft? %>
+      <%= link_to "編集", edit_admin_quotation_path(@quotation), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+  </div>
+</div>

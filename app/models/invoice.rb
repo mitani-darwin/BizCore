@@ -10,9 +10,12 @@ class Invoice < ApplicationRecord
 
   belongs_to :tenant
   belongs_to :customer
+  belongs_to :billing_batch, optional: true
+  belongs_to :reissued_from, class_name: "Invoice", optional: true
 
   has_many :invoice_items, dependent: :destroy
   has_many :payment_allocations, dependent: :destroy
+  has_many :reissues, class_name: "Invoice", foreign_key: :reissued_from_id, dependent: :nullify, inverse_of: :reissued_from
 
   enum :status, STATUSES
 
@@ -45,13 +48,28 @@ class Invoice < ApplicationRecord
   end
 
   def outstanding_amount
+    return 0.to_d if cancelled?
+
     total_amount.to_d - paid_amount.to_d
+  end
+
+  def cancellable?
+    !cancelled? && payment_allocations.empty?
+  end
+
+  def reissuable?
+    cancelled? &&
+      reissues.where.not(status: "cancelled").none? &&
+      invoice_items.none? { |item| item.source.present? && item.source.invoice_items.active_for_source.exists? }
   end
 
   private
 
   def set_defaults
     self.status ||= "issued"
+    self.closing_day_snapshot ||= customer&.effective_closing_day_for(closing_date || Date.current)
+    self.payment_due_rule_snapshot ||= customer&.payment_due_rule
+    self.invoice_delivery_method_snapshot ||= customer&.invoice_delivery_method
     self.subtotal_amount ||= 0
     self.tax_amount ||= 0
     self.total_amount ||= 0
@@ -66,6 +84,9 @@ class Invoice < ApplicationRecord
   def tenant_consistency
     return if tenant_id.blank? || customer.blank?
 
-    errors.add(:tenant, "と取引先の所属が一致しません") if tenant_id != customer.tenant_id
+    mismatch = tenant_id != customer.tenant_id
+    mismatch ||= billing_batch.present? && tenant_id != billing_batch.tenant_id
+    mismatch ||= reissued_from.present? && tenant_id != reissued_from.tenant_id
+    errors.add(:tenant, "と取引先の所属が一致しません") if mismatch
   end
 end

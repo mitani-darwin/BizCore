@@ -6,6 +6,7 @@ class Customer < ApplicationRecord
 
   belongs_to :tenant
 
+  has_many :quotations, dependent: :restrict_with_exception
   has_many :orders, dependent: :restrict_with_exception
   has_many :deliveries, dependent: :restrict_with_exception
   has_many :invoices, dependent: :restrict_with_exception
@@ -55,6 +56,24 @@ class Customer < ApplicationRecord
     open_invoices_scope.size
   end
 
+  def overdue_invoice_amount(as_of: Date.current)
+    sum_decimal(overdue_invoices(as_of: as_of), :balance_amount)
+  end
+
+  def overdue_invoice_count(as_of: Date.current)
+    overdue_invoices(as_of: as_of).size
+  end
+
+  def receivable_aging(as_of: Date.current)
+    open_invoices_scope.each_with_object(default_aging_hash) do |invoice, aging|
+      balance = invoice.balance_amount.to_d
+      next if balance <= 0
+
+      bucket = aging_bucket_for(invoice.due_date, as_of)
+      aging[bucket] += balance
+    end
+  end
+
   def total_billed_amount
     invoice_records = association(:invoices).loaded? ? invoices.reject(&:cancelled?) : invoices.where.not(status: "cancelled")
     sum_decimal(invoice_records, :total_amount)
@@ -77,6 +96,34 @@ class Customer < ApplicationRecord
     association(:payments).loaded? ? payments.map(&:payment_date).compact.max : payments.maximum(:payment_date)
   end
 
+  def billing_closes_on?(date)
+    return true if closing_day.blank?
+
+    date.day == effective_closing_day_for(date)
+  end
+
+  def effective_closing_day_for(date)
+    configured_day = closing_day.to_i
+    return date.end_of_month.day if configured_day <= 0
+
+    [configured_day, date.end_of_month.day].min
+  end
+
+  def due_date_for(closing_date:, default_due_date: nil)
+    case payment_due_rule
+    when "end_of_month"
+      closing_date.end_of_month
+    when "next_month_end"
+      closing_date.next_month.end_of_month
+    when "next_two_month_end"
+      closing_date.next_month.next_month.end_of_month
+    when "custom"
+      default_due_date || closing_date.next_month.end_of_month
+    else
+      default_due_date || closing_date.next_month.end_of_month
+    end
+  end
+
   private
 
   def set_defaults
@@ -85,14 +132,38 @@ class Customer < ApplicationRecord
 
   def open_invoices_scope
     if association(:invoices).loaded?
-      invoices.select { |invoice| %w[issued partially_paid].include?(invoice.status) }
+      invoices.select { |invoice| %w[issued partially_paid].include?(invoice.status) && invoice.balance_amount.to_d.positive? }
     else
-      invoices.where(status: %w[issued partially_paid])
+      invoices.where(status: %w[issued partially_paid]).where("balance_amount > 0")
     end
+  end
+
+  def overdue_invoices(as_of:)
+    open_invoices_scope.select { |invoice| invoice.due_date.present? && invoice.due_date < as_of }
   end
 
   def open_invoices_sum(attribute)
     sum_decimal(open_invoices_scope, attribute)
+  end
+
+  def default_aging_hash
+    {
+      current: 0.to_d,
+      overdue_1_30: 0.to_d,
+      overdue_31_60: 0.to_d,
+      overdue_61_over: 0.to_d
+    }
+  end
+
+  def aging_bucket_for(due_date, as_of)
+    return :current if due_date.blank?
+
+    days_overdue = (as_of - due_date).to_i
+    return :current if days_overdue <= 0
+    return :overdue_1_30 if days_overdue <= 30
+    return :overdue_31_60 if days_overdue <= 60
+
+    :overdue_61_over
   end
 
   def sum_decimal(records, attribute)

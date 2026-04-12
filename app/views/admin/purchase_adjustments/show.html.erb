@@ -1,0 +1,86 @@
+<% content_for :page_title, "返品/値引き詳細" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @purchase_adjustment.adjustment_number %></h1>
+        <%= purchase_adjustment_status_badge(@purchase_adjustment) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= @purchase_adjustment.supplier.name %> / 調整日 <%= jp_date(@purchase_adjustment.adjustment_date) %></p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "入荷へ", admin_purchase_receipt_path(@purchase_adjustment.purchase_receipt), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <%= link_to "一覧へ戻る", admin_purchase_adjustments_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">調整金額</div>
+      <div class="mt-2 text-3xl font-bold <%= @purchase_adjustment.purchase_return? ? 'text-rose-700' : 'text-amber-700' %>"><%= purchase_adjustment_signed_amount(@purchase_adjustment) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">数量</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @purchase_adjustment.display_quantity || "-" %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">登録日時</div>
+      <div class="mt-2 text-lg font-semibold text-slate-900"><%= @purchase_adjustment.issued_at.present? ? @purchase_adjustment.issued_at.strftime("%Y/%m/%d %H:%M") : "-" %></div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">調整情報</h2>
+      <dl class="mt-3 grid gap-4 sm:grid-cols-2 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">区分</dt>
+          <dd><%= purchase_adjustment_type_label(@purchase_adjustment.adjustment_type) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">担当者</dt>
+          <dd><%= @purchase_adjustment.processed_by_name.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">発注番号</dt>
+          <dd><%= link_to @purchase_adjustment.purchase_order.purchase_order_number, admin_purchase_order_path(@purchase_adjustment.purchase_order), class: "text-sky-700 hover:underline" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">入荷番号</dt>
+          <dd><%= link_to @purchase_adjustment.purchase_receipt.purchase_receipt_number, admin_purchase_receipt_path(@purchase_adjustment.purchase_receipt), class: "text-sky-700 hover:underline" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">倉庫</dt>
+          <dd><%= @purchase_adjustment.warehouse.name %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">商品</dt>
+          <dd><%= @purchase_adjustment.product_name_snapshot.presence || "入荷全体値引き" %></dd>
+        </div>
+        <div class="sm:col-span-2">
+          <dt class="text-xs text-slate-500">理由</dt>
+          <dd><%= @purchase_adjustment.reason.presence || "-" %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">金額内訳</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">単価</dt>
+          <dd><%= money(@purchase_adjustment.unit_cost) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">数量</dt>
+          <dd><%= @purchase_adjustment.display_quantity || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">調整金額</dt>
+          <dd class="<%= @purchase_adjustment.purchase_return? ? 'text-rose-700' : 'text-amber-700' %> font-semibold"><%= purchase_adjustment_signed_amount(@purchase_adjustment) %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

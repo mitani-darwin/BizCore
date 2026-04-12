@@ -45,7 +45,7 @@
                 <%= check_box_tag "role[permission_ids][]", permission.id, role.permissions.exists?(permission.id), class: "mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" %>
                 <div>
                   <div class="font-semibold"><%= permission.key %></div>
-                  <div class="text-xs text-slate-500"><%= permission.description.presence || "#{permission.resource} #{permission.action}" %></div>
+                  <div class="text-xs text-slate-500"><%= permission.description.presence || "#{Permissions::Catalog.resource_label(permission.resource)} #{Permissions::Catalog.action_label(permission.action)}" %></div>
                 </div>
               </label>
             <% end %>

@@ -2,7 +2,7 @@ module Admin
   class OrdersController < BaseController
     MINIMUM_ORDER_ITEM_ROWS = 1
 
-    before_action :set_order, only: [:show, :edit, :update, :send_order, :accept_order, :reserve_stock, :issue_delivery]
+    before_action :set_order, only: [:show, :edit, :update, :download_excel, :send_order, :accept_order, :reserve_stock, :issue_delivery]
     before_action :set_form_options, only: [:new, :create, :edit, :update]
     before_action :ensure_editable_order!, only: [:edit, :update]
 
@@ -47,6 +47,15 @@ module Admin
       end
     end
 
+    def download_excel
+      send_data(
+        Orders::ExportXlsx.call(order: @order),
+        filename: "#{@order.order_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
     def send_order
       Orders::SendOrder.call(order: @order)
       audit!(action_key: required_permission_key, auditable: @order, metadata: { status: @order.status, sent_at: @order.sent_at })
@@ -85,7 +94,7 @@ module Admin
     private
 
     def set_order
-      @order = current_tenant.orders.includes(order_items: [product: [], stock_allocations: :warehouse]).find_by(id: params[:id])
+      @order = current_tenant.orders.includes(:quotation, order_items: [product: [], stock_allocations: :warehouse]).find_by(id: params[:id])
       return if @order
 
       render_not_found and return false

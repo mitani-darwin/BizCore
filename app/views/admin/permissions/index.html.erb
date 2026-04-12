@@ -4,7 +4,7 @@
   <div class="mb-6 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 px-6 py-5 text-white shadow-lg">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p class="text-xs font-semibold tracking-wide text-slate-200 uppercase">Permission Registry</p>
+        <p class="text-xs font-semibold tracking-wide text-slate-200 uppercase">権限定義一覧</p>
         <h1 class="text-2xl font-bold leading-tight">権限定義</h1>
         <p class="mt-1 text-sm text-slate-200">
           画面や API で参照する Permission キーを登録・更新します。ロールとの紐付けは「権限管理」で行います。
@@ -29,9 +29,9 @@
         <table class="min-w-full text-left text-xs">
           <thead class="bg-slate-50 text-slate-500">
             <tr>
-              <th class="px-3 py-2 font-medium">Key</th>
-              <th class="px-3 py-2 font-medium">Resource</th>
-              <th class="px-3 py-2 font-medium">Action</th>
+              <th class="px-3 py-2 font-medium">権限キー</th>
+              <th class="px-3 py-2 font-medium">リソース</th>
+              <th class="px-3 py-2 font-medium">操作種別</th>
               <th class="px-3 py-2 font-medium">表示名</th>
               <th class="px-3 py-2 font-medium">説明</th>
               <th class="px-3 py-2 font-medium text-right">操作</th>
@@ -82,16 +82,16 @@
       <div class="p-4">
         <%= form_with model: [:admin, @permission], url: admin_permissions_path, local: true, class: "space-y-3" do |f| %>
           <div>
-            <label class="mb-1 block text-[11px] font-semibold text-slate-700">Key</label>
+            <label class="mb-1 block text-[11px] font-semibold text-slate-700">権限キー</label>
             <%= f.text_field :key, placeholder: "例: admin:dashboard", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
           </div>
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
-              <label class="mb-1 block text-[11px] font-semibold text-slate-700">Resource</label>
+              <label class="mb-1 block text-[11px] font-semibold text-slate-700">リソース</label>
               <%= f.text_field :resource, placeholder: "例: admin", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
             </div>
             <div>
-              <label class="mb-1 block text-[11px] font-semibold text-slate-700">Action</label>
+              <label class="mb-1 block text-[11px] font-semibold text-slate-700">操作種別</label>
               <%= f.text_field :action, placeholder: "例: dashboard", class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-sky-500" %>
             </div>
           </div>

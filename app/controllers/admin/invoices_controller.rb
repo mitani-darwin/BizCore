@@ -1,46 +1,89 @@
 module Admin
   class InvoicesController < BaseController
-    before_action :set_invoice, only: [:show]
+    before_action :set_invoice, only: [:show, :download_excel, :cancel, :reissue]
 
     def index
-      @invoices = current_tenant.invoices.includes(:customer, :payment_allocations).order(invoice_date: :desc, id: :desc)
+      @invoices = current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc)
+      @recent_billing_batches = current_tenant.billing_batches.includes(:executed_by, :invoices).recent.limit(5)
       @billing_defaults = billing_defaults
     end
 
     def show; end
 
+    def download_excel
+      send_data(
+        Invoicing::ExportInvoiceXlsx.call(invoice: @invoice),
+        filename: "#{@invoice.invoice_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
     def issue_monthly
       values = billing_values
-      invoices = Invoicing::IssueMonthlyInvoices.call(
+      billing_batch = Invoicing::IssueMonthlyInvoices.call(
         tenant: current_tenant,
         closing_date: values[:closing_date],
         billing_period_from: values[:billing_period_from],
         billing_period_to: values[:billing_period_to],
         invoice_date: values[:invoice_date],
-        due_date: values[:due_date]
+        default_due_date: values[:default_due_date],
+        requested_by: current_admin_user,
+        note: values[:note]
       )
 
       audit!(
         action_key: required_permission_key,
-        auditable: invoices.last,
+        auditable: billing_batch,
         metadata: {
-          invoice_ids: invoices.map(&:id),
+          billing_batch_id: billing_batch.id,
+          invoice_ids: billing_batch.invoices.pluck(:id),
           closing_date: values[:closing_date],
           billing_period_from: values[:billing_period_from],
           billing_period_to: values[:billing_period_to]
         }
       )
 
-      message = invoices.any? ? "#{invoices.size}件の請求書を発行しました。" : "請求対象の納品データはありませんでした。"
-      redirect_to admin_invoices_path, notice: message
+      message = billing_batch.invoice_count.positive? ? "#{billing_batch.invoice_count}件の請求書を発行しました。" : "請求対象の納品データはありませんでしたが、締め処理は記録しました。"
+      redirect_to admin_billing_batch_path(billing_batch), notice: message
+    rescue Invoicing::IssueMonthlyInvoices::AlreadyClosedError => e
+      redirect_to admin_invoices_path, alert: e.message
     rescue StandardError => e
       redirect_to admin_invoices_path, alert: "月末請求に失敗しました: #{e.message}"
+    end
+
+    def cancel
+      Invoicing::CancelInvoice.call(invoice: @invoice, cancelled_by: current_admin_user)
+      audit!(
+        action_key: required_permission_key,
+        auditable: @invoice,
+        metadata: { invoice_id: @invoice.id, status: @invoice.status }
+      )
+      redirect_to admin_invoice_path(@invoice), notice: "請求書を取消しました。"
+    rescue StandardError => e
+      redirect_to admin_invoice_path(@invoice), alert: "請求取消に失敗しました: #{e.message}"
+    end
+
+    def reissue
+      invoice = Invoicing::ReissueInvoice.call(
+        invoice: @invoice,
+        invoice_date: parse_date!(params[:invoice_date], default: Date.current),
+        default_due_date: parse_date!(params[:default_due_date], default: @invoice.due_date)
+      )
+      audit!(
+        action_key: required_permission_key,
+        auditable: invoice,
+        metadata: { original_invoice_id: @invoice.id, reissued_invoice_id: invoice.id }
+      )
+      redirect_to admin_invoice_path(invoice), notice: "請求書を再発行しました。"
+    rescue StandardError => e
+      redirect_to admin_invoice_path(@invoice), alert: "請求再発行に失敗しました: #{e.message}"
     end
 
     private
 
     def set_invoice
-      @invoice = current_tenant.invoices.includes(:customer, :invoice_items, payment_allocations: :payment).find_by(id: params[:id])
+      @invoice = current_tenant.invoices.includes(:customer, :billing_batch, :reissued_from, :reissues, invoice_items: :source, payment_allocations: :payment).find_by(id: params[:id])
       return if @invoice
 
       render_not_found and return false
@@ -53,7 +96,8 @@ module Admin
         billing_period_to: closing_date.end_of_month,
         closing_date: closing_date,
         invoice_date: closing_date,
-        due_date: closing_date.next_month.end_of_month
+        default_due_date: closing_date.next_month.end_of_month,
+        note: nil
       }
     end
 
@@ -64,7 +108,8 @@ module Admin
         billing_period_to: parse_date!(params[:billing_period_to], default: defaults[:billing_period_to]),
         closing_date: parse_date!(params[:closing_date], default: defaults[:closing_date]),
         invoice_date: parse_date!(params[:invoice_date], default: defaults[:invoice_date]),
-        due_date: parse_date!(params[:due_date], default: defaults[:due_date])
+        default_due_date: parse_date!(params[:default_due_date], default: defaults[:default_due_date]),
+        note: params[:note].to_s.strip.presence
       }
     end
 
