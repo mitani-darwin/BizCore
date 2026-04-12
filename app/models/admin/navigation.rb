@@ -158,6 +158,13 @@ module Admin
               path: :admin_receivables_path,
               required_keys: %w[admin.receivables.read],
               children: []
+            ),
+            Item.new(
+              id: :collection_schedules,
+              label: "回収予定表",
+              path: :admin_collection_schedules_path,
+              required_keys: %w[admin.collection_schedules.read],
+              children: []
             )
           ]
         ),
@@ -212,6 +219,13 @@ module Admin
               label: "買掛残高",
               path: :admin_payables_path,
               required_keys: %w[admin.payables.read],
+              children: []
+            ),
+            Item.new(
+              id: :payment_schedules,
+              label: "支払予定表",
+              path: :admin_payment_schedules_path,
+              required_keys: %w[admin.payment_schedules.read],
               children: []
             )
           ]

@@ -53,6 +53,10 @@ module Admin
         index_path: :admin_receivables_path,
         actions: %i[index]
       },
+      collection_schedules: {
+        index_path: :admin_collection_schedules_path,
+        actions: %i[index]
+      },
       products: {
         index_path: :admin_products_path,
         actions: %i[index show new create edit update]
@@ -114,6 +118,10 @@ module Admin
       },
       payables: {
         index_path: :admin_payables_path,
+        actions: %i[index]
+      },
+      payment_schedules: {
+        index_path: :admin_payment_schedules_path,
         actions: %i[index]
       },
       quotations: {

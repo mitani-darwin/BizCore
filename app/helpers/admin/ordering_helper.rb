@@ -42,6 +42,14 @@ module Admin
       ["滞留あり", "overdue"]
     ].freeze
 
+    SCHEDULE_SCOPE_OPTIONS = [
+      ["すべて", "all"],
+      ["滞留のみ", "overdue"],
+      ["本日分", "today"],
+      ["7日以内", "within_7_days"],
+      ["30日以内", "within_30_days"]
+    ].freeze
+
     PURCHASE_ADJUSTMENT_TYPE_OPTIONS = [
       ["返品", "purchase_return"],
       ["値引き", "discount"]
@@ -85,6 +93,10 @@ module Admin
 
     def balance_scope_options
       BALANCE_SCOPE_OPTIONS
+    end
+
+    def schedule_scope_options
+      SCHEDULE_SCOPE_OPTIONS
     end
 
     def purchase_adjustment_type_options
@@ -296,6 +308,33 @@ module Admin
     def supplier_status_badge(supplier)
       tone = supplier.active? ? "emerald" : "slate"
       status_badge(supplier_status_label(supplier.status), tone)
+    end
+
+    def schedule_status_badge(due_date, as_of: Date.current)
+      return status_badge("期日未設定", "slate") if due_date.blank?
+
+      days_delta = (due_date - as_of).to_i
+      label, tone =
+        if days_delta.negative?
+          ["滞留", "rose"]
+        elsif days_delta.zero?
+          ["本日", "amber"]
+        elsif days_delta <= 7
+          ["7日以内", "sky"]
+        elsif days_delta <= 30
+          ["30日以内", "indigo"]
+        else
+          ["先日付", "slate"]
+        end
+
+      status_badge(label, tone)
+    end
+
+    def schedule_days_label(days_delta)
+      return "本日" if days_delta.zero?
+      return "#{days_delta.abs}日超過" if days_delta.negative?
+
+      "#{days_delta}日後"
     end
 
     def active_badge(active)

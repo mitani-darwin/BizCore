@@ -34,6 +34,8 @@ Rails.application.routes.draw do
     resources :suppliers, only: [:index, :show, :new, :create, :edit, :update]
     resources :receivables, only: [:index]
     resources :payables, only: [:index]
+    resources :collection_schedules, only: [:index]
+    resources :payment_schedules, only: [:index]
     resources :products, only: [:index, :show, :new, :create, :edit, :update]
     resources :warehouses, only: [:index, :show, :new, :create, :edit, :update]
     resources :stock_items, only: [:index, :show, :new, :create, :edit, :update]
