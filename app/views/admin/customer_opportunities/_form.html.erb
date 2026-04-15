@@ -1,0 +1,75 @@
+<%= form_with model: [:admin, customer_opportunity], local: true, class: "space-y-6" do |f| %>
+  <% if customer_opportunity.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% customer_opportunity.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">商談情報</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :customer_id, "得意先", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :customer_inquiry_id, "元問い合わせ", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :customer_inquiry_id, @inquiry_options, :id, :subject, { include_blank: "なし" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :assigned_user_id, "担当者", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :assigned_user_id, @user_options, :id, :name, { include_blank: "未割当" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :stage, "ステージ", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.select :stage, options_for_select(customer_opportunity_stage_options, customer_opportunity.stage), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :opened_on, "開始日", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.date_field :opened_on, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :expected_close_on, "受注予定日", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.date_field :expected_close_on, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :closed_on, "確定日", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.date_field :closed_on, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :probability, "受注確度(%)", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :probability, min: 0, max: 100, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="sm:col-span-2">
+        <%= f.label :subject, "件名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :subject, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", required: true %>
+      </div>
+      <div>
+        <%= f.label :expected_amount, "見込金額", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :expected_amount, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :actual_sales_amount, "実売上", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :actual_sales_amount, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="sm:col-span-2">
+        <%= f.label :summary, "商談内容", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_area :summary, rows: 5, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="sm:col-span-2">
+        <%= f.label :next_action, "次回アクション", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_area :next_action, rows: 3, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", customer_opportunity.persisted? ? admin_customer_opportunity_path(customer_opportunity) : admin_customer_opportunities_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

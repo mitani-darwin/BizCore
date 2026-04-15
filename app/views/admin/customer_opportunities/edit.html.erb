@@ -1,0 +1,10 @@
+<% content_for :page_title, "商談編集" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">商談を編集</h1>
+    <p class="text-sm text-slate-600"><%= @customer_opportunity.opportunity_number %> の内容を更新します。</p>
+  </div>
+
+  <%= render "form", customer_opportunity: @customer_opportunity %>
+</div>

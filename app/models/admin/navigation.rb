@@ -40,16 +40,43 @@ module Admin
           ]
         ),
         Section.new(
-          id: :ordering_master,
-          label: "受発注マスタ",
+          id: :customer_management,
+          label: "顧客管理",
           items: [
+            Item.new(
+              id: :customer_inquiries,
+              label: "問い合わせ",
+              path: :admin_customer_inquiries_path,
+              required_keys: %w[admin.customer_inquiries.read],
+              children: []
+            ),
+            Item.new(
+              id: :customer_opportunities,
+              label: "商談",
+              path: :admin_customer_opportunities_path,
+              required_keys: %w[admin.customer_opportunities.read],
+              children: []
+            ),
+            Item.new(
+              id: :customer_sales,
+              label: "売上",
+              path: :admin_customer_sales_path,
+              required_keys: %w[admin.customer_sales.read],
+              children: []
+            ),
             Item.new(
               id: :customers,
               label: "得意先",
               path: :admin_customers_path,
               required_keys: %w[admin.customers.read],
               children: []
-            ),
+            )
+          ]
+        ),
+        Section.new(
+          id: :ordering_master,
+          label: "受発注マスタ",
+          items: [
             Item.new(
               id: :products,
               label: "商品",

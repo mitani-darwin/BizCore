@@ -6,6 +6,8 @@ class Customer < ApplicationRecord
 
   belongs_to :tenant
 
+  has_many :customer_inquiries, dependent: :restrict_with_exception
+  has_many :customer_opportunities, dependent: :restrict_with_exception
   has_many :quotations, dependent: :restrict_with_exception
   has_many :orders, dependent: :restrict_with_exception
   has_many :deliveries, dependent: :restrict_with_exception
@@ -48,6 +50,38 @@ class Customer < ApplicationRecord
     [contact_person_department, contact_person_name].compact_blank.join(" ")
   end
 
+  def inquiry_count
+    count_records(customer_inquiry_records)
+  end
+
+  def open_inquiry_count
+    count_records(open_customer_inquiry_records)
+  end
+
+  def last_inquiry_date
+    max_date(customer_inquiry_records, :inquiry_date)
+  end
+
+  def opportunity_count
+    count_records(customer_opportunity_records)
+  end
+
+  def open_opportunity_count
+    count_records(open_customer_opportunity_records)
+  end
+
+  def pipeline_opportunity_amount
+    sum_decimal(open_customer_opportunity_records, :expected_amount)
+  end
+
+  def won_opportunity_amount
+    sum_decimal(won_customer_opportunity_records, :actual_sales_amount)
+  end
+
+  def last_opportunity_date
+    max_date(customer_opportunity_records, :opened_on)
+  end
+
   def outstanding_invoice_amount
     open_invoices_sum(:balance_amount)
   end
@@ -82,6 +116,18 @@ class Customer < ApplicationRecord
   def total_payment_amount
     payment_records = association(:payments).loaded? ? payments.reject(&:cancelled?) : payments.where.not(status: "cancelled")
     sum_decimal(payment_records, :amount)
+  end
+
+  def sales_amount(from: nil, to: nil)
+    sum_decimal(invoice_records_in_period(from: from, to: to), :total_amount)
+  end
+
+  def sales_invoice_count(from: nil, to: nil)
+    count_records(invoice_records_in_period(from: from, to: to))
+  end
+
+  def payment_amount_in_period(from: nil, to: nil)
+    sum_decimal(payment_records_in_period(from: from, to: to), :amount)
   end
 
   def last_order_date
@@ -130,6 +176,48 @@ class Customer < ApplicationRecord
     self.status ||= "active"
   end
 
+  def customer_inquiry_records
+    association(:customer_inquiries).loaded? ? customer_inquiries : customer_inquiries.all
+  end
+
+  def open_customer_inquiry_records
+    if association(:customer_inquiries).loaded?
+      customer_inquiries.reject(&:status_closed?)
+    else
+      customer_inquiries.where.not(status: "closed")
+    end
+  end
+
+  def customer_opportunity_records
+    association(:customer_opportunities).loaded? ? customer_opportunities : customer_opportunities.all
+  end
+
+  def open_customer_opportunity_records
+    if association(:customer_opportunities).loaded?
+      customer_opportunities.select(&:open?)
+    else
+      customer_opportunities.where.not(stage: %w[won lost])
+    end
+  end
+
+  def won_customer_opportunity_records
+    if association(:customer_opportunities).loaded?
+      customer_opportunities.select(&:won?)
+    else
+      customer_opportunities.where(stage: "won")
+    end
+  end
+
+  def invoice_records_in_period(from:, to:)
+    records = association(:invoices).loaded? ? invoices.reject(&:cancelled?) : invoices.where.not(status: "cancelled")
+    filter_by_date(records, :invoice_date, from: from, to: to)
+  end
+
+  def payment_records_in_period(from:, to:)
+    records = association(:payments).loaded? ? payments.reject(&:cancelled?) : payments.where.not(status: "cancelled")
+    filter_by_date(records, :payment_date, from: from, to: to)
+  end
+
   def open_invoices_scope
     if association(:invoices).loaded?
       invoices.select { |invoice| %w[issued partially_paid].include?(invoice.status) && invoice.balance_amount.to_d.positive? }
@@ -171,6 +259,36 @@ class Customer < ApplicationRecord
       records.sum(attribute).to_d
     else
       Array(records).sum { |record| record.public_send(attribute).to_d }
+    end
+  end
+
+  def count_records(records)
+    records.is_a?(Array) ? records.size : records.count
+  end
+
+  def max_date(records, attribute)
+    if records.is_a?(Array)
+      records.map { |record| record.public_send(attribute) }.compact.max
+    else
+      records.maximum(attribute)
+    end
+  end
+
+  def filter_by_date(records, attribute, from:, to:)
+    if records.is_a?(Array)
+      records.select do |record|
+        date = record.public_send(attribute)
+        next false if date.blank?
+        next false if from.present? && date < from
+        next false if to.present? && date > to
+
+        true
+      end
+    else
+      scope = records
+      scope = scope.where("#{attribute} >= ?", from) if from.present?
+      scope = scope.where("#{attribute} <= ?", to) if to.present?
+      scope
     end
   end
 end

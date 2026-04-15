@@ -18,19 +18,15 @@ module Admin
     end
 
     def show
+      @recent_customer_inquiries = @customer.customer_inquiries.order(inquiry_date: :desc, id: :desc).limit(5)
+      @recent_customer_opportunities = @customer.customer_opportunities.order(opened_on: :desc, id: :desc).limit(5)
       @recent_orders = @customer.orders.order(order_date: :desc, id: :desc).limit(5)
       @recent_invoices = @customer.invoices.order(invoice_date: :desc, id: :desc).limit(5)
       @recent_payments = @customer.payments.order(payment_date: :desc, id: :desc).limit(5)
     end
 
     def new
-      @customer = current_tenant.customers.build(
-        closing_day: 31,
-        status: "active",
-        invoice_delivery_method: "email",
-        payment_method: "bank_transfer",
-        payment_due_rule: "next_month_end"
-      )
+      @customer = current_tenant.customers.build(default_customer_attributes.merge(prefilled_customer_attributes))
     end
 
     def create
@@ -56,7 +52,7 @@ module Admin
     private
 
     def set_customer
-      @customer = current_tenant.customers.includes(:orders, :invoices, :payments).find_by(id: params[:id])
+      @customer = current_tenant.customers.includes(:orders, :invoices, :payments, :customer_inquiries, :customer_opportunities).find_by(id: params[:id])
       return if @customer
 
       render_not_found and return false
@@ -90,6 +86,29 @@ module Admin
         :payment_due_rule,
         :payment_method,
         :invoice_delivery_method,
+        :note
+      )
+    end
+
+    def default_customer_attributes
+      {
+        closing_day: 31,
+        status: "active",
+        invoice_delivery_method: "email",
+        payment_method: "bank_transfer",
+        payment_due_rule: "next_month_end"
+      }
+    end
+
+    def prefilled_customer_attributes
+      params.fetch(:customer, {}).permit(
+        :name,
+        :email,
+        :tel,
+        :contact_person_name,
+        :contact_person_department,
+        :contact_person_email,
+        :contact_person_tel,
         :note
       )
     end

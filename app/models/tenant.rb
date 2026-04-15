@@ -3,6 +3,8 @@ class Tenant < ApplicationRecord
   has_many :roles, dependent: :destroy
   has_many :assignments, dependent: :destroy
   has_many :customers, dependent: :destroy
+  has_many :customer_inquiries, dependent: :destroy
+  has_many :customer_opportunities, dependent: :destroy
   has_many :suppliers, dependent: :destroy
   has_many :products, dependent: :destroy
   has_many :warehouses, dependent: :destroy

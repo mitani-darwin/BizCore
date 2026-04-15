@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_113000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_15_093000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -76,6 +76,59 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_113000) do
     t.index ["tenant_id", "billing_period_from", "billing_period_to"], name: "idx_on_tenant_id_billing_period_from_billing_period_ccd1591ff1"
     t.index ["tenant_id", "closing_date"], name: "index_billing_batches_on_tenant_id_and_closing_date"
     t.index ["tenant_id"], name: "index_billing_batches_on_tenant_id"
+  end
+
+  create_table "customer_inquiries", force: :cascade do |t|
+    t.integer "assigned_user_id"
+    t.string "company_name"
+    t.string "contact_email"
+    t.string "contact_person_department"
+    t.string "contact_person_name"
+    t.string "contact_tel"
+    t.datetime "created_at", null: false
+    t.integer "customer_id"
+    t.text "details"
+    t.date "inquiry_date", null: false
+    t.string "inquiry_number", null: false
+    t.date "response_due_date"
+    t.string "source", default: "email", null: false
+    t.string "status", default: "new", null: false
+    t.string "subject", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_user_id"], name: "index_customer_inquiries_on_assigned_user_id"
+    t.index ["customer_id"], name: "index_customer_inquiries_on_customer_id"
+    t.index ["tenant_id", "inquiry_date"], name: "index_customer_inquiries_on_tenant_id_and_inquiry_date"
+    t.index ["tenant_id", "inquiry_number"], name: "index_customer_inquiries_on_tenant_id_and_inquiry_number", unique: true
+    t.index ["tenant_id", "status"], name: "index_customer_inquiries_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_customer_inquiries_on_tenant_id"
+  end
+
+  create_table "customer_opportunities", force: :cascade do |t|
+    t.decimal "actual_sales_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.integer "assigned_user_id"
+    t.date "closed_on"
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.integer "customer_inquiry_id"
+    t.decimal "expected_amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.date "expected_close_on"
+    t.text "next_action"
+    t.date "opened_on", null: false
+    t.string "opportunity_number", null: false
+    t.integer "probability", default: 0, null: false
+    t.string "stage", default: "hearing", null: false
+    t.string "subject", null: false
+    t.text "summary"
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_user_id"], name: "index_customer_opportunities_on_assigned_user_id"
+    t.index ["customer_id"], name: "index_customer_opportunities_on_customer_id"
+    t.index ["customer_inquiry_id"], name: "index_customer_opportunities_on_customer_inquiry_id"
+    t.index ["tenant_id", "opened_on"], name: "index_customer_opportunities_on_tenant_id_and_opened_on"
+    t.index ["tenant_id", "opportunity_number"], name: "idx_on_tenant_id_opportunity_number_6dece9cd92", unique: true
+    t.index ["tenant_id", "stage"], name: "index_customer_opportunities_on_tenant_id_and_stage"
+    t.index ["tenant_id"], name: "index_customer_opportunities_on_tenant_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -768,6 +821,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_113000) do
   add_foreign_key "billing_batches", "tenants"
   add_foreign_key "billing_batches", "users", column: "cancelled_by_id"
   add_foreign_key "billing_batches", "users", column: "executed_by_id"
+  add_foreign_key "customer_inquiries", "customers"
+  add_foreign_key "customer_inquiries", "tenants"
+  add_foreign_key "customer_inquiries", "users", column: "assigned_user_id"
+  add_foreign_key "customer_opportunities", "customer_inquiries"
+  add_foreign_key "customer_opportunities", "customers"
+  add_foreign_key "customer_opportunities", "tenants"
+  add_foreign_key "customer_opportunities", "users", column: "assigned_user_id"
   add_foreign_key "customers", "tenants"
   add_foreign_key "deliveries", "customers"
   add_foreign_key "deliveries", "orders"

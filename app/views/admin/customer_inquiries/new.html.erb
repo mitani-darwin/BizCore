@@ -1,0 +1,10 @@
+<% content_for :page_title, "問い合わせ新規作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">問い合わせを登録</h1>
+    <p class="text-sm text-slate-600">新規問い合わせや既存顧客からの相談内容を記録します。</p>
+  </div>
+
+  <%= render "form", customer_inquiry: @customer_inquiry %>
+</div>

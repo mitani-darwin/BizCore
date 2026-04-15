@@ -1,0 +1,10 @@
+<% content_for :page_title, "問い合わせ編集" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">問い合わせを編集</h1>
+    <p class="text-sm text-slate-600"><%= @customer_inquiry.inquiry_number %> の内容を更新します。</p>
+  </div>
+
+  <%= render "form", customer_inquiry: @customer_inquiry %>
+</div>

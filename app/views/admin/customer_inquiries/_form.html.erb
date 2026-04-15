@@ -1,0 +1,81 @@
+<%= form_with model: [:admin, customer_inquiry], local: true, class: "space-y-6" do |f| %>
+  <% if customer_inquiry.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% customer_inquiry.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">問い合わせ情報</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :inquiry_date, "受付日", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.date_field :inquiry_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :response_due_date, "初回対応期限", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.date_field :response_due_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "状態", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.select :status, options_for_select(customer_inquiry_status_options, customer_inquiry.status), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :source, "流入経路", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.select :source, options_for_select(customer_inquiry_source_options, customer_inquiry.source), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :customer_id, "既存得意先", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "見込みの問い合わせ" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :assigned_user_id, "担当者", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.collection_select :assigned_user_id, @user_options, :id, :name, { include_blank: "未割当" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="sm:col-span-2">
+        <%= f.label :subject, "件名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :subject, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm", required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">問い合わせ元</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :company_name, "会社名・団体名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :company_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :contact_person_name, "担当者名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_person_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :contact_person_department, "部署名", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_person_department, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :contact_email, "メールアドレス", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.email_field :contact_email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :contact_tel, "電話番号", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_field :contact_tel, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="sm:col-span-2">
+        <%= f.label :details, "問い合わせ内容", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.text_area :details, rows: 6, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", customer_inquiry.persisted? ? admin_customer_inquiry_path(customer_inquiry) : admin_customer_inquiries_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

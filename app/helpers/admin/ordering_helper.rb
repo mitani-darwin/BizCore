@@ -36,6 +36,30 @@ module Admin
       ["停止", "inactive"]
     ].freeze
 
+    CUSTOMER_INQUIRY_STATUS_OPTIONS = [
+      ["新規", "new"],
+      ["対応中", "responding"],
+      ["商談化", "qualified"],
+      ["完了", "closed"]
+    ].freeze
+
+    CUSTOMER_INQUIRY_SOURCE_OPTIONS = [
+      ["Web", "web"],
+      ["電話", "phone"],
+      ["メール", "email"],
+      ["訪問", "visit"],
+      ["紹介", "referral"],
+      ["その他", "other"]
+    ].freeze
+
+    CUSTOMER_OPPORTUNITY_STAGE_OPTIONS = [
+      ["ヒアリング", "hearing"],
+      ["提案", "proposal"],
+      ["交渉", "negotiation"],
+      ["受注", "won"],
+      ["失注", "lost"]
+    ].freeze
+
     BALANCE_SCOPE_OPTIONS = [
       ["すべて", "all"],
       ["残高あり", "open"],
@@ -89,6 +113,18 @@ module Admin
 
     def supplier_status_options
       SUPPLIER_STATUS_OPTIONS
+    end
+
+    def customer_inquiry_status_options
+      CUSTOMER_INQUIRY_STATUS_OPTIONS
+    end
+
+    def customer_inquiry_source_options
+      CUSTOMER_INQUIRY_SOURCE_OPTIONS
+    end
+
+    def customer_opportunity_stage_options
+      CUSTOMER_OPPORTUNITY_STAGE_OPTIONS
     end
 
     def balance_scope_options
@@ -295,6 +331,43 @@ module Admin
     def customer_status_badge(customer)
       tone = customer.active? ? "emerald" : "slate"
       status_badge(customer_status_label(customer.status), tone)
+    end
+
+    def customer_inquiry_status_label(value)
+      CUSTOMER_INQUIRY_STATUS_OPTIONS.to_h.invert.fetch(value, value.to_s.presence || "-")
+    end
+
+    def customer_inquiry_source_label(value)
+      CUSTOMER_INQUIRY_SOURCE_OPTIONS.to_h.invert.fetch(value, value.to_s.presence || "-")
+    end
+
+    def customer_inquiry_status_badge(inquiry)
+      label, tone = case inquiry.status
+      when "new" then ["新規", "sky"]
+      when "responding" then ["対応中", "amber"]
+      when "qualified" then ["商談化", "indigo"]
+      when "closed" then ["完了", "emerald"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
+    end
+
+    def customer_opportunity_stage_label(value)
+      CUSTOMER_OPPORTUNITY_STAGE_OPTIONS.to_h.invert.fetch(value, value.to_s.presence || "-")
+    end
+
+    def customer_opportunity_stage_badge(opportunity)
+      label, tone = case opportunity.stage
+      when "hearing" then ["ヒアリング", "slate"]
+      when "proposal" then ["提案", "sky"]
+      when "negotiation" then ["交渉", "amber"]
+      when "won" then ["受注", "emerald"]
+      when "lost" then ["失注", "rose"]
+      else ["不明", "slate"]
+      end
+
+      status_badge(label, tone)
     end
 
     def supplier_status_label(value)
