@@ -1,0 +1,107 @@
+<% content_for :page_title, "問い合わせ一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">問い合わせ一覧</h1>
+      <p class="text-sm text-slate-600">新規の相談受付から商談化までを管理します。</p>
+    </div>
+    <% if can?("admin.customer_inquiries.create") %>
+      <%= link_to "新規問い合わせ", new_admin_customer_inquiry_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_customer_inquiries_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_180px_180px_220px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "番号・件名・会社名・担当者で検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + customer_inquiry_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :source, "流入経路", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :source, options_for_select([["すべて", ""]] + customer_inquiry_source_options, @filters[:source]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :customer_id, "得意先", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :customer_id, options_from_collection_for_select(@customer_filter_options, :id, :name, @filters[:customer_id]), { include_blank: "すべて" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_customer_inquiries_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対象件数</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対応中</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:open_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">見込み顧客</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:unlinked_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">関連商談</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:opportunity_count] %></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @customer_inquiries.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">受付日</th>
+            <th class="px-4 py-2">問い合わせ</th>
+            <th class="px-4 py-2">問い合わせ元</th>
+            <th class="px-4 py-2">流入経路</th>
+            <th class="px-4 py-2">初回対応期限</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @customer_inquiries.each do |inquiry| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2"><%= customer_inquiry_status_badge(inquiry) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(inquiry.inquiry_date) %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= inquiry.subject %></div>
+                <div class="text-xs text-slate-500"><%= inquiry.inquiry_number %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700">
+                <div><%= inquiry.company_label %></div>
+                <div class="text-xs text-slate-500"><%= inquiry.primary_contact.presence || inquiry.contact_email.presence || "-" %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= customer_inquiry_source_label(inquiry.source) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(inquiry.response_due_date) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_customer_inquiry_path(inquiry), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.customer_inquiries.update") %>
+                    <%= link_to "編集", edit_admin_customer_inquiry_path(inquiry), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>条件に一致する問い合わせはありません。</p>
+    </div>
+  <% end %>
+</div>

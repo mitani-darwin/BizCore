@@ -1,0 +1,10 @@
+<% content_for :page_title, "商談新規作成" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">商談を登録</h1>
+    <p class="text-sm text-slate-600">問い合わせから案件化した内容や継続商談を記録します。</p>
+  </div>
+
+  <%= render "form", customer_opportunity: @customer_opportunity %>
+</div>

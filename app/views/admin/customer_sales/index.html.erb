@@ -1,0 +1,102 @@
+<% content_for :page_title, "売上一覧" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">得意先別売上一覧</h1>
+    <p class="text-sm text-slate-600">請求と入金を得意先単位で確認できます。期間未指定の場合は累計です。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_customer_sales_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_180px_180px_180px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・得意先名・担当者で検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "取引状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + customer_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :from, "期間開始", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.date_field :from, value: @filters[:from], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :to, "期間終了", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.date_field :to, value: @filters[:to], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "集計する", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_customer_sales_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対象得意先</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">売上合計</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@summary[:sales_total]) %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">入金合計</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@summary[:payment_total]) %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">売掛残高</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@summary[:outstanding_total]) %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">商談見込</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= money(@summary[:pipeline_total]) %></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @customers.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">得意先</th>
+            <th class="px-4 py-2 text-right">請求件数</th>
+            <th class="px-4 py-2 text-right">売上</th>
+            <th class="px-4 py-2 text-right">入金</th>
+            <th class="px-4 py-2 text-right">売掛残高</th>
+            <th class="px-4 py-2 text-right">商談見込</th>
+            <th class="px-4 py-2">最終請求</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @customers.each do |customer| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= customer.name %></div>
+                <div class="text-xs text-slate-500"><%= customer.code %> / <%= customer.primary_contact.presence || "担当者未設定" %></div>
+              </td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= customer.sales_invoice_count(from: @period[:from], to: @period[:to]) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= money(customer.sales_amount(from: @period[:from], to: @period[:to])) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= money(customer.payment_amount_in_period(from: @period[:from], to: @period[:to])) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= money(customer.outstanding_invoice_amount) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= money(customer.pipeline_opportunity_amount) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(customer.last_invoice_date) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "得意先詳細", admin_customer_path(customer), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>条件に一致する売上データはありません。</p>
+    </div>
+  <% end %>
+</div>

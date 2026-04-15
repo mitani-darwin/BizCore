@@ -45,6 +45,18 @@ module Admin
         index_path: :admin_roles_path,
         actions: %i[index show new create edit update]
       },
+      customer_inquiries: {
+        index_path: :admin_customer_inquiries_path,
+        actions: %i[index show new create edit update]
+      },
+      customer_opportunities: {
+        index_path: :admin_customer_opportunities_path,
+        actions: %i[index show new create edit update]
+      },
+      customer_sales: {
+        index_path: :admin_customer_sales_path,
+        actions: %i[index]
+      },
       customers: {
         index_path: :admin_customers_path,
         actions: %i[index show new create edit update]
