@@ -18,7 +18,11 @@ Rails.application.routes.draw do
   
   # Defines the root path route ("/")
   authenticated :user do
-    root to: "admin/dashboard#index", as: :authenticated_root
+    root to: "portal#index", as: :authenticated_root
+    resource :my_attendance, only: [:show], controller: "self_attendance" do
+      post :clock_in
+      patch :clock_out
+    end
   end
 
 
@@ -30,6 +34,27 @@ Rails.application.routes.draw do
     resources :tenants, only: [:index, :show, :edit, :update]
     resources :roles, only: [:index, :show, :new, :create, :edit, :update]
     resources :users, only: [:index, :show, :new, :create, :edit, :update]
+    resources :employees, only: [:index, :show, :new, :create, :edit, :update]
+    resources :work_shifts, only: [:index, :show, :new, :create, :edit, :update]
+    resources :attendance_records, only: [:index, :show, :new, :create, :edit, :update] do
+      collection do
+        post :clock_in
+      end
+      member do
+        patch :clock_out
+      end
+    end
+    resources :leave_requests, only: [:index, :show, :new, :create, :edit, :update] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+    resources :payroll_runs, only: [:index, :show] do
+      collection do
+        post :generate
+      end
+    end
     resources :customers, only: [:index, :show, :new, :create, :edit, :update]
     resources :customer_inquiries, only: [:index, :show, :new, :create, :edit, :update]
     resources :customer_opportunities, only: [:index, :show, :new, :create, :edit, :update]

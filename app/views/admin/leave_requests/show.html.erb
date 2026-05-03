@@ -1,0 +1,68 @@
+<% content_for :page_title, "有給詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @leave_request.employee.name %> / <%= jp_date(@leave_request.start_date) %></h1>
+        <%= leave_status_badge(@leave_request) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= jp_date(@leave_request.start_date) %> - <%= jp_date(@leave_request.end_date) %> / <%= leave_type_label(@leave_request.leave_type) %></p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if @leave_request.status_pending? && can?("admin.leave_requests.update") %>
+        <%= button_to "承認", approve_admin_leave_request_path(@leave_request), method: :patch, class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+        <%= button_to "却下", reject_admin_leave_request_path(@leave_request), method: :patch, class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
+      <% if can?("admin.leave_requests.update") %>
+        <%= link_to "編集", edit_admin_leave_request_path(@leave_request), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <%= link_to "一覧へ戻る", admin_leave_requests_path(month: @leave_request.start_date.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">反映日数</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @leave_request.days_count.to_d %> 日</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">対象従業員の残有給</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @leave_request.employee.remaining_paid_leave_days %> 日</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">給与反映</div>
+      <div class="mt-2 text-sm font-semibold text-slate-900"><%= @leave_request.status_approved? ? "次回給与計算に自動反映" : "承認後に反映" %></div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">申請情報</h2>
+    <dl class="mt-3 grid gap-4 text-sm text-slate-800 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-slate-500">従業員</dt>
+        <dd><%= link_to @leave_request.employee.title, admin_employee_path(@leave_request.employee), class: "text-sky-700 hover:underline" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">休暇区分</dt>
+        <dd><%= leave_type_label(@leave_request.leave_type) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">開始日</dt>
+        <dd><%= jp_date(@leave_request.start_date) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">終了日</dt>
+        <dd><%= jp_date(@leave_request.end_date) %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">理由</dt>
+        <dd><%= @leave_request.reason.presence || "-" %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">備考</dt>
+        <dd><%= @leave_request.note.presence || "-" %></dd>
+      </div>
+    </dl>
+  </div>
+</div>

@@ -13,8 +13,8 @@ module Inventory
     end
 
     def call
-      raise ArgumentError, "order must be accepted before reservation" unless order.accepted? || order.allocated?
-      raise ArgumentError, "warehouse does not belong to the same tenant" unless warehouse.tenant_id == order.tenant_id
+      raise ArgumentError, "受注確定後の注文のみ在庫を確保できます" unless order.accepted? || order.allocated?
+      raise ArgumentError, "注文と同じテナントの倉庫を選択してください" unless warehouse.tenant_id == order.tenant_id
 
       order.transaction do
         order.order_items.includes(:product, :stock_allocations).find_each do |item|

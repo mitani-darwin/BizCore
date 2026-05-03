@@ -2,6 +2,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :recoverable, :rememberable, :validatable, :trackable
 
   belongs_to :tenant
+  belongs_to :employee, optional: true
 
   has_many :assignments, dependent: :destroy
   has_many :roles, through: :assignments
@@ -14,6 +15,7 @@ class User < ApplicationRecord
   validates :name, presence: { message: "を入力してください" }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validate :roles_must_be_selected
+  validate :employee_must_belong_to_same_tenant
 
   def can?(permission_key)
     Ability.new(self).can?(permission_key)
@@ -40,8 +42,15 @@ class User < ApplicationRecord
 
   def roles_must_be_selected
     return if is_owner?
+    return if employee.present?
     return if roles.any? || role_ids.reject(&:blank?).any?
 
     errors.add(:roles, "を選択してください")
+  end
+
+  def employee_must_belong_to_same_tenant
+    return if employee.blank? || tenant_id.blank?
+
+    errors.add(:employee, "は同じテナントの従業員を選択してください") if employee.tenant_id != tenant_id
   end
 end

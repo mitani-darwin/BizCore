@@ -1,0 +1,143 @@
+<% content_for :page_title, "勤怠一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">勤怠一覧</h1>
+      <p class="text-sm text-slate-600">出退勤、残業時間、シフトとの差分を月ごとに確認します。</p>
+    </div>
+    <% if can?("admin.attendance_records.create") %>
+      <%= link_to "手動登録", new_admin_attendance_record_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <% if can?("admin.attendance_records.create") %>
+    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-sm font-semibold text-slate-900">1. 出退勤</h2>
+          <p class="text-xs text-slate-600">出勤打刻はここから登録できます。退勤は詳細画面から確定します。</p>
+        </div>
+      </div>
+      <%= form_with url: clock_in_admin_attendance_records_path, method: :post, local: true, class: "mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_180px_160px_minmax(0,1fr)_auto]" do %>
+        <div>
+          <label class="block text-xs font-semibold tracking-wide text-slate-500">従業員</label>
+          <%= select_tag :employee_id, options_from_collection_for_select(@employee_options, :id, :title, @clock_in_defaults[:employee_id]), include_blank: "選択してください", class: "mt-1 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold tracking-wide text-slate-500">出勤日</label>
+          <%= date_field_tag :clock_in_on, @clock_in_defaults[:clock_in_on], class: "mt-1 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold tracking-wide text-slate-500">出勤時刻</label>
+          <%= time_field_tag :clock_in_time, @clock_in_defaults[:clock_in_time], class: "mt-1 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold tracking-wide text-slate-500">メモ</label>
+          <%= text_field_tag :note, nil, placeholder: "必要なら入力", class: "mt-1 w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-sm" %>
+        </div>
+        <div class="flex items-end">
+          <%= submit_tag "出勤打刻", class: "w-full rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_attendance_records_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[180px_minmax(0,1fr)_180px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :month, "対象月", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= month_field_tag :month, @filters[:month], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :employee_id, "従業員", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.collection_select :employee_id, @employee_options, :id, :title, { include_blank: "すべて" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + attendance_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "表示", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_attendance_records_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">勤怠件数</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @attendance_summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">勤務中</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @attendance_summary[:working_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">実働時間</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= minutes_to_hours(@attendance_summary[:worked_minutes]) %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">残業時間</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= minutes_to_hours(@attendance_summary[:overtime_minutes]) %></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @attendance_records.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">勤務日</th>
+            <th class="px-4 py-2">従業員</th>
+            <th class="px-4 py-2">出退勤</th>
+            <th class="px-4 py-2 text-right">実働</th>
+            <th class="px-4 py-2 text-right">残業</th>
+            <th class="px-4 py-2">シフト</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @attendance_records.each do |attendance_record| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2"><%= attendance_status_badge(attendance_record) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(attendance_record.work_date) %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= link_to attendance_record.employee.name, admin_employee_path(attendance_record.employee), class: "hover:underline" %></div>
+                <div class="text-xs text-slate-500"><%= attendance_record.employee.employee_code %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700">
+                <div><%= jp_datetime(attendance_record.clock_in_at) %></div>
+                <div class="text-xs text-slate-500"><%= jp_datetime(attendance_record.clock_out_at) %></div>
+              </td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= attendance_record.worked_minutes %> 分</td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= attendance_record.overtime_minutes %> 分</td>
+              <td class="px-4 py-2 text-slate-700">
+                <% if attendance_record.work_shift.present? %>
+                  <%= link_to "#{attendance_record.work_shift.work_date} #{hhmm(attendance_record.work_shift.start_time)}", admin_work_shift_path(attendance_record.work_shift), class: "text-sky-700 hover:underline" %>
+                <% else %>
+                  -
+                <% end %>
+              </td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_attendance_record_path(attendance_record), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.attendance_records.update") %>
+                    <%= link_to "編集", edit_admin_attendance_record_path(attendance_record), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>対象の勤怠はありません。</p>
+    </div>
+  <% end %>
+</div>

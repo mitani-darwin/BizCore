@@ -1,0 +1,83 @@
+<%= form_with model: [:admin, employee], local: true, class: "space-y-6" do |f| %>
+  <% if employee.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% employee.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :status, "在籍状態", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :status, options_for_select(employee_status_options, employee.status), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :employment_type, "雇用区分", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :employment_type, options_for_select(employment_type_options, employee.employment_type), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :employee_code, "従業員コード", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :employee_code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :name, "従業員名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :joined_on, "入社日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :joined_on, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :paid_leave_granted_days, "付与有給日数", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :paid_leave_granted_days, step: 0.5, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :email, "メールアドレス", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.email_field :email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :tel, "電話番号", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :tel, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <h2 class="text-sm font-semibold text-slate-900">給与条件</h2>
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :base_hourly_wage, "基本時給", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :base_hourly_wage, step: 1, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :base_monthly_salary, "基本月給", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :base_monthly_salary, step: 1, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :overtime_rate_multiplier, "残業倍率", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :overtime_rate_multiplier, step: 0.01, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :standard_daily_minutes, "所定労働時間（分）", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :standard_daily_minutes, step: 1, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :default_break_minutes, "標準休憩時間（分）", class: "block text-sm font-medium text-slate-800" %>
+        <%= f.number_field :default_break_minutes, step: 1, min: 0, class: "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :note, "備考", class: "block text-sm font-medium text-slate-800" %>
+    <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", employee.persisted? ? admin_employee_path(employee) : admin_employees_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

@@ -24,6 +24,10 @@
         <dd><%= @user.locale.presence || "未設定" %></dd>
       </div>
       <div class="rounded-lg bg-slate-50 px-4 py-3 sm:col-span-2">
+        <dt class="text-xs text-slate-500">紐付け従業員</dt>
+        <dd><%= @user.employee&.title || "未設定" %></dd>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3 sm:col-span-2">
         <dt class="text-xs text-slate-500">ロール</dt>
         <dd class="mt-2">
           <% if @user.roles.any? %>

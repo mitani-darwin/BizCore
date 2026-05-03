@@ -37,6 +37,37 @@ module Admin
         index_path: :admin_users_path,
         actions: %i[index show new create edit update]
       },
+      employees: {
+        index_path: :admin_employees_path,
+        actions: %i[index show new create edit update]
+      },
+      work_shifts: {
+        index_path: :admin_work_shifts_path,
+        actions: %i[index show new create edit update]
+      },
+      attendance_records: {
+        index_path: :admin_attendance_records_path,
+        actions: %i[index show new create edit update clock_in clock_out],
+        action_overrides: {
+          clock_in: { permission_action: :create, label: "出勤打刻", breadcrumb_label: "出勤打刻", page_title: "%{resource}一覧" },
+          clock_out: { permission_action: :update, label: "退勤打刻", breadcrumb_label: "退勤打刻", page_title: "%{resource}詳細" }
+        }
+      },
+      leave_requests: {
+        index_path: :admin_leave_requests_path,
+        actions: %i[index show new create edit update approve reject],
+        action_overrides: {
+          approve: { permission_action: :update, label: "承認", breadcrumb_label: "承認", page_title: "%{resource}詳細" },
+          reject: { permission_action: :update, label: "却下", breadcrumb_label: "却下", page_title: "%{resource}詳細" }
+        }
+      },
+      payroll_runs: {
+        index_path: :admin_payroll_runs_path,
+        actions: %i[index show generate],
+        action_overrides: {
+          generate: { permission_action: :create, label: "給与反映", breadcrumb_label: "給与反映", page_title: "%{resource}一覧" }
+        }
+      },
       suppliers: {
         index_path: :admin_suppliers_path,
         actions: %i[index show new create edit update]

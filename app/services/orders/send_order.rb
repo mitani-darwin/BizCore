@@ -11,7 +11,7 @@ module Orders
 
     def call
       order.transaction do
-        raise ArgumentError, "order has no items" if order.order_items.empty?
+        raise ArgumentError, "注文明細がありません" if order.order_items.empty?
 
         order.order_items.each do |item|
           item.update!(status: "pending") if item.pending?

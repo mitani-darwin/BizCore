@@ -11,7 +11,7 @@ module Purchases
 
     def call
       purchase_order.transaction do
-        raise ArgumentError, "purchase order has no items" if purchase_order.purchase_order_items.empty?
+        raise ArgumentError, "発注明細がありません" if purchase_order.purchase_order_items.empty?
 
         purchase_order.mark_as_sent!(sent_at: sent_at)
       end

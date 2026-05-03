@@ -2,9 +2,10 @@ module Admin
   class UsersController < BaseController
     before_action :set_user, only: [:show, :edit, :update]
     before_action :set_role_options, only: [:new, :create, :edit, :update]
+    before_action :set_employee_options, only: [:new, :create, :edit, :update]
 
     def index
-      @users = current_tenant.users.includes(:roles).order(:id)
+      @users = current_tenant.users.includes(:roles, :employee).order(:id)
     end
 
     def show; end
@@ -53,6 +54,14 @@ module Admin
       @role_options = current_tenant.roles.order(:name)
     end
 
+    def set_employee_options
+      @employee_options = current_tenant.employees.ordered_for_admin.to_a
+      return unless @user&.employee.present?
+
+      @employee_options |= [@user.employee]
+      @employee_options.sort_by! { |employee| [employee.employee_code.to_s, employee.id] }
+    end
+
     def assign_roles(user)
       selected_ids = role_ids_param
       allowed_ids = @role_options.pluck(:id)
@@ -67,6 +76,7 @@ module Admin
       permitted = params.require(:user).permit(
         :name,
         :email,
+        :employee_id,
         :line_id,
         :password,
         :password_confirmation,

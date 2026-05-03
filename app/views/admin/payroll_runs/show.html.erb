@@ -1,0 +1,72 @@
+<% content_for :page_title, "給与計算詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @payroll_run.run_number %></h1>
+        <%= payroll_run_status_badge(@payroll_run) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= @payroll_run.payroll_month.strftime("%Y年%m月") %> 分 / 生成日時 <%= jp_datetime(@payroll_run.generated_at) %></p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "一覧へ戻る", admin_payroll_runs_path(month: @payroll_run.payroll_month.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">対象人数</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @payroll_run.employee_count %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">支給総額</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= money(@payroll_run.total_gross_pay) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">メモ</div>
+      <div class="mt-2 text-sm font-semibold text-slate-900"><%= @payroll_run.note.presence || "-" %></div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">給与反映明細</h2>
+    <% if @payroll_entries.any? %>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-4 py-2">従業員</th>
+              <th class="px-4 py-2 text-right">実働</th>
+              <th class="px-4 py-2 text-right">残業</th>
+              <th class="px-4 py-2 text-right">有給</th>
+              <th class="px-4 py-2 text-right">基本給</th>
+              <th class="px-4 py-2 text-right">残業代</th>
+              <th class="px-4 py-2 text-right">有給分</th>
+              <th class="px-4 py-2 text-right">支給額</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @payroll_entries.each do |payroll_entry| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-4 py-2 text-slate-700">
+                  <div class="font-semibold text-slate-900"><%= link_to payroll_entry.employee.name, admin_employee_path(payroll_entry.employee), class: "hover:underline" %></div>
+                  <div class="text-xs text-slate-500"><%= payroll_entry.employee.employee_code %></div>
+                </td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= payroll_entry.worked_minutes %> 分</td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= payroll_entry.overtime_minutes %> 分</td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= payroll_entry.paid_leave_days.to_d %> 日</td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= money(payroll_entry.base_pay) %></td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= money(payroll_entry.overtime_pay) %></td>
+                <td class="px-4 py-2 text-right text-slate-700"><%= money(payroll_entry.paid_leave_pay) %></td>
+                <td class="px-4 py-2 text-right font-semibold text-slate-900"><%= money(payroll_entry.gross_pay) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500">対象従業員はありません。</p>
+    <% end %>
+  </div>
+</div>
