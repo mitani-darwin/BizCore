@@ -20,6 +20,7 @@
           <tr>
             <th class="px-4 py-2">氏名</th>
             <th class="px-4 py-2">メール</th>
+            <th class="px-4 py-2">紐付け従業員</th>
             <th class="px-4 py-2">ロール</th>
             <th class="px-4 py-2 text-right">操作</th>
           </tr>
@@ -29,6 +30,7 @@
             <tr class="hover:bg-slate-50">
               <td class="px-4 py-2 text-slate-900 font-semibold"><%= user.name %></td>
               <td class="px-4 py-2 text-slate-700"><%= user.email %></td>
+              <td class="px-4 py-2 text-slate-700"><%= user.employee&.title || "-" %></td>
               <td class="px-4 py-2 text-slate-700">
                 <% if user.roles.any? %>
                   <div class="flex flex-wrap gap-1">

@@ -11,9 +11,9 @@ module Quotations
 
     def call
       quotation.transaction do
-        raise ArgumentError, "quotation has no items" if quotation.quotation_items.empty?
-        raise ArgumentError, "only accepted quotations can be converted" unless quotation.accepted?
-        raise ArgumentError, "order already exists for quotation" if quotation.orders.exists?
+        raise ArgumentError, "見積明細がありません" if quotation.quotation_items.empty?
+        raise ArgumentError, "採用済みの見積のみ注文へ変換できます" unless quotation.accepted?
+        raise ArgumentError, "この見積から作成済みの注文がすでに存在します" if quotation.orders.exists?
 
         order = quotation.tenant.orders.create!(
           quotation: quotation,

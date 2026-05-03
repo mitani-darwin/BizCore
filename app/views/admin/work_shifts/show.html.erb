@@ -1,0 +1,66 @@
+<% content_for :page_title, "シフト詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @work_shift.employee.name %> / <%= jp_date(@work_shift.work_date) %></h1>
+        <%= work_shift_status_badge(@work_shift) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= hhmm(@work_shift.start_time) %> - <%= hhmm(@work_shift.end_time) %> / 休憩 <%= @work_shift.break_minutes %> 分</p>
+    </div>
+    <div class="flex gap-2">
+      <% if can?("admin.work_shifts.update") %>
+        <%= link_to "編集", edit_admin_work_shift_path(@work_shift), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <%= link_to "一覧へ戻る", admin_work_shifts_path(month: @work_shift.work_date.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">所定時間</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= minutes_to_hours(@work_shift.scheduled_minutes) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">休憩時間</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @work_shift.break_minutes %> 分</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">勤怠連携</div>
+      <div class="mt-2 text-sm font-semibold text-slate-900">
+        <% if @work_shift.attendance_record.present? %>
+          <%= link_to "勤怠あり", admin_attendance_record_path(@work_shift.attendance_record), class: "text-sky-700 hover:underline" %>
+        <% else %>
+          未登録
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">シフト情報</h2>
+    <dl class="mt-3 grid gap-4 text-sm text-slate-800 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-slate-500">従業員</dt>
+        <dd><%= link_to @work_shift.employee.title, admin_employee_path(@work_shift.employee), class: "text-sky-700 hover:underline" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">勤務日</dt>
+        <dd><%= jp_date(@work_shift.work_date) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">開始時刻</dt>
+        <dd><%= hhmm(@work_shift.start_time) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">終了時刻</dt>
+        <dd><%= hhmm(@work_shift.end_time) %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">備考</dt>
+        <dd><%= @work_shift.note.presence || "-" %></dd>
+      </div>
+    </dl>
+  </div>
+</div>

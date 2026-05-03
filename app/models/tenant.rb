@@ -5,6 +5,12 @@ class Tenant < ApplicationRecord
   has_many :customers, dependent: :destroy
   has_many :customer_inquiries, dependent: :destroy
   has_many :customer_opportunities, dependent: :destroy
+  has_many :employees, dependent: :destroy
+  has_many :work_shifts, dependent: :destroy
+  has_many :attendance_records, dependent: :destroy
+  has_many :leave_requests, dependent: :destroy
+  has_many :payroll_runs, dependent: :destroy
+  has_many :payroll_entries, dependent: :destroy
   has_many :suppliers, dependent: :destroy
   has_many :products, dependent: :destroy
   has_many :warehouses, dependent: :destroy

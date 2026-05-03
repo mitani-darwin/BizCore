@@ -19,7 +19,7 @@ module Purchases
     end
 
     def call
-      raise ArgumentError, "purchase order is not receivable" unless purchase_order.receivable?
+      raise ArgumentError, "入荷登録できる状態の発注ではありません" unless purchase_order.receivable?
 
       receipt_quantities = normalize_quantities
       raise ArgumentError, "入荷数量を入力してください" if receipt_quantities.empty?

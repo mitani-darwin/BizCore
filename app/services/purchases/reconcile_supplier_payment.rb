@@ -12,7 +12,7 @@ module Purchases
     end
 
     def call
-      raise ArgumentError, "allocations are required" if allocations.blank?
+      raise ArgumentError, "消し込み金額を入力してください" if allocations.blank?
 
       supplier_payment.transaction do
         allocations.each do |entry|
@@ -33,12 +33,12 @@ module Purchases
       purchase_bill = entry.fetch(:purchase_bill)
       amount = BigDecimal(entry.fetch(:amount).to_s)
 
-      raise OverAllocationError, "allocation amount must be positive" if amount <= 0
-      raise OverAllocationError, "purchase bill belongs to another tenant" if purchase_bill.tenant_id != supplier_payment.tenant_id
-      raise OverAllocationError, "purchase bill belongs to another supplier" if purchase_bill.supplier_id != supplier_payment.supplier_id
-      raise OverAllocationError, "cancelled purchase bill cannot be allocated" if purchase_bill.cancelled?
-      raise OverAllocationError, "allocation exceeds unapplied payment amount" if amount > supplier_payment.unapplied_amount
-      raise OverAllocationError, "allocation exceeds purchase bill balance" if amount > purchase_bill.outstanding_amount
+      raise OverAllocationError, "消し込み金額は0より大きく入力してください" if amount <= 0
+      raise OverAllocationError, "別テナントの仕入請求書には消し込めません" if purchase_bill.tenant_id != supplier_payment.tenant_id
+      raise OverAllocationError, "別の仕入先の請求書には消し込めません" if purchase_bill.supplier_id != supplier_payment.supplier_id
+      raise OverAllocationError, "取消済みの仕入請求書には消し込めません" if purchase_bill.cancelled?
+      raise OverAllocationError, "消し込み金額が未消込支払額を超えています" if amount > supplier_payment.unapplied_amount
+      raise OverAllocationError, "消し込み金額が仕入請求残高を超えています" if amount > purchase_bill.outstanding_amount
 
       allocation = SupplierPaymentAllocation.find_or_initialize_by(
         tenant: supplier_payment.tenant,

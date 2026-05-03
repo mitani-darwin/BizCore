@@ -6,10 +6,10 @@ module Seeds
       end
 
       def call
-        keys = Permissions::Catalog.admin_keys
+        keys = ::Permissions::Catalog.admin_keys
         existing_keys = Permission.where(key: keys).pluck(:key).to_set
 
-        Permissions::Catalog.seed_admin!
+        ::Permissions::Catalog.seed_admin!
 
         created_count = keys.count { |k| !existing_keys.include?(k) }
         updated_count = existing_keys.size

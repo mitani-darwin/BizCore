@@ -33,8 +33,8 @@ class PurchaseOrderItem < ApplicationRecord
 
   def register_receipt!(quantity)
     qty = quantity.to_i
-    raise ArgumentError, "receipt quantity must be positive" if qty <= 0
-    raise ArgumentError, "receipt quantity exceeds remaining quantity" if qty > remaining_quantity
+    raise ArgumentError, "入荷数量は1以上で入力してください" if qty <= 0
+    raise ArgumentError, "入荷数量が残数量を超えています" if qty > remaining_quantity
 
     new_received_quantity = received_quantity + qty
     update!(

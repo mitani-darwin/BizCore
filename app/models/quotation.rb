@@ -39,20 +39,20 @@ class Quotation < ApplicationRecord
   end
 
   def mark_as_sent!(sent_at: Time.current)
-    raise ArgumentError, "quotation has no items" if quotation_items.empty?
-    raise ArgumentError, "only draft quotations can be sent" unless draft?
+    raise ArgumentError, "見積明細がありません" if quotation_items.empty?
+    raise ArgumentError, "下書き状態の見積のみ送信できます" unless draft?
 
     update!(status: "sent", sent_at: sent_at)
   end
 
   def mark_as_accepted!(accepted_at: Time.current)
-    raise ArgumentError, "only sent quotations can be accepted" unless sent?
+    raise ArgumentError, "送信済みの見積のみ採用できます" unless sent?
 
     update!(status: "accepted", accepted_at: accepted_at)
   end
 
   def mark_as_converted!(converted_at: Time.current)
-    raise ArgumentError, "only accepted quotations can be converted" unless accepted?
+    raise ArgumentError, "採用済みの見積のみ注文へ変換できます" unless accepted?
 
     update!(status: "converted", converted_at: converted_at)
   end

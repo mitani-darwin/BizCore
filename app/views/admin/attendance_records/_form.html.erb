@@ -1,0 +1,49 @@
+<%= form_with model: [:admin, attendance_record], local: true, class: "space-y-6" do |f| %>
+  <% if attendance_record.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% attendance_record.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :employee_id, "従業員", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.collection_select :employee_id, @employee_options, :id, :title, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-800">出勤日</label>
+      <%= date_field_tag "attendance_record[clock_in_on]", attendance_record.clock_in_at&.to_date || attendance_record.work_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-800">出勤時刻</label>
+      <%= time_field_tag "attendance_record[clock_in_time]", attendance_record.clock_in_at&.strftime("%H:%M"), class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-800">退勤日</label>
+      <%= date_field_tag "attendance_record[clock_out_on]", attendance_record.clock_out_at&.to_date || attendance_record.work_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-800">退勤時刻</label>
+      <%= time_field_tag "attendance_record[clock_out_time]", attendance_record.clock_out_at&.strftime("%H:%M"), class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <%= f.label :break_minutes, "休憩時間（分）", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :break_minutes, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :note, "備考", class: "block text-sm font-medium text-slate-800" %>
+    <%= f.text_area :note, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", attendance_record.persisted? ? admin_attendance_record_path(attendance_record) : admin_attendance_records_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

@@ -11,7 +11,7 @@ module Quotations
 
     def call
       quotation.transaction do
-        raise ArgumentError, "quotation has no items" if quotation.quotation_items.empty?
+        raise ArgumentError, "見積明細がありません" if quotation.quotation_items.empty?
 
         quotation.mark_as_sent!(sent_at: sent_at)
       end

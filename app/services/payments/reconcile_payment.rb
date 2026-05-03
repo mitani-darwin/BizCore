@@ -12,7 +12,7 @@ module Payments
     end
 
     def call
-      raise ArgumentError, "allocations are required" if allocations.blank?
+      raise ArgumentError, "消し込み金額を入力してください" if allocations.blank?
 
       payment.transaction do
         allocations.each do |entry|
@@ -33,12 +33,12 @@ module Payments
       invoice = entry.fetch(:invoice)
       amount = BigDecimal(entry.fetch(:amount).to_s)
 
-      raise OverAllocationError, "allocation amount must be positive" if amount <= 0
-      raise OverAllocationError, "invoice belongs to another tenant" if invoice.tenant_id != payment.tenant_id
-      raise OverAllocationError, "invoice belongs to another customer" if invoice.customer_id != payment.customer_id
-      raise OverAllocationError, "cancelled invoice cannot be allocated" if invoice.cancelled?
-      raise OverAllocationError, "allocation exceeds unapplied payment amount" if amount > payment.unapplied_amount
-      raise OverAllocationError, "allocation exceeds invoice balance" if amount > invoice.outstanding_amount
+      raise OverAllocationError, "消し込み金額は0より大きく入力してください" if amount <= 0
+      raise OverAllocationError, "別テナントの請求書には消し込めません" if invoice.tenant_id != payment.tenant_id
+      raise OverAllocationError, "別の得意先の請求書には消し込めません" if invoice.customer_id != payment.customer_id
+      raise OverAllocationError, "取消済みの請求書には消し込めません" if invoice.cancelled?
+      raise OverAllocationError, "消し込み金額が未消込入金額を超えています" if amount > payment.unapplied_amount
+      raise OverAllocationError, "消し込み金額が請求残高を超えています" if amount > invoice.outstanding_amount
 
       allocation = PaymentAllocation.find_or_initialize_by(
         tenant: payment.tenant,

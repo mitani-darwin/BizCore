@@ -17,7 +17,7 @@ module Inventory
     end
 
     def call
-      raise ArgumentError, "counted quantity must be non-negative" if counted_quantity.negative?
+      raise ArgumentError, "棚卸数量は0以上で入力してください" if counted_quantity.negative?
 
       stock_count = nil
       stock_item.transaction do

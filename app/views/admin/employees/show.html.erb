@@ -1,0 +1,201 @@
+<% content_for :page_title, "従業員詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @employee.employee_code %> <%= @employee.name %></h1>
+        <%= employee_status_badge(@employee) %>
+        <%= employment_type_badge(@employee) %>
+      </div>
+      <p class="text-sm text-slate-600">入社日 <%= jp_date(@employee.joined_on) %> / 今月 <%= @current_month.strftime("%Y年%m月") %> の勤怠サマリ</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if can?("admin.work_shifts.create") %>
+        <%= link_to "シフト作成", new_admin_work_shift_path(employee_id: @employee.id), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+      <% end %>
+      <% if can?("admin.attendance_records.create") %>
+        <%= link_to "勤怠登録", new_admin_attendance_record_path(employee_id: @employee.id), class: "rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100" %>
+      <% end %>
+      <% if can?("admin.leave_requests.create") %>
+        <%= link_to "有給申請", new_admin_leave_request_path(employee_id: @employee.id), class: "rounded border border-violet-200 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-100" %>
+      <% end %>
+      <% if can?("admin.employees.update") %>
+        <%= link_to "編集", edit_admin_employee_path(@employee), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <%= link_to "一覧へ戻る", admin_employees_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">今月の実働</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= minutes_to_hours(@monthly_summary[:worked_minutes]) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">今月の残業</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= minutes_to_hours(@monthly_summary[:overtime_minutes]) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">今月の有給取得</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @monthly_summary[:paid_leave_days].to_d %> 日</div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">残有給</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900"><%= @employee.remaining_paid_leave_days %> 日</div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[360px_1fr]">
+    <div class="space-y-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">基本情報</h2>
+        <dl class="mt-3 space-y-3 text-sm text-slate-800">
+          <div>
+            <dt class="text-xs text-slate-500">メールアドレス</dt>
+            <dd><%= @employee.email.presence || "-" %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">電話番号</dt>
+            <dd><%= @employee.tel.presence || "-" %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">所定労働時間</dt>
+            <dd><%= minutes_to_hours(@employee.standard_daily_minutes) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">標準休憩</dt>
+            <dd><%= @employee.default_break_minutes %> 分</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">残業倍率</dt>
+            <dd><%= @employee.overtime_rate_multiplier.to_d %> 倍</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">備考</dt>
+            <dd><%= @employee.note.presence || "-" %></dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">給与条件</h2>
+        <dl class="mt-3 space-y-3 text-sm text-slate-800">
+          <div>
+            <dt class="text-xs text-slate-500">基本時給</dt>
+            <dd><%= money(@employee.base_hourly_wage) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">基本月給</dt>
+            <dd><%= money(@employee.base_monthly_salary) %></dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">換算時給</dt>
+            <dd><%= money(@employee.effective_hourly_rate) %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">今月のシフト</h2>
+          <%= link_to "シフト一覧", admin_work_shifts_path(month: @current_month.strftime("%Y-%m"), employee_id: @employee.id), class: "text-xs font-semibold text-sky-700 hover:text-sky-800" %>
+        </div>
+        <% if @current_month_shifts.any? %>
+          <div class="mt-3 space-y-2">
+            <% @current_month_shifts.each do |work_shift| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-slate-900"><%= link_to jp_date(work_shift.work_date), admin_work_shift_path(work_shift), class: "hover:underline" %></div>
+                    <div class="text-xs text-slate-500"><%= hhmm(work_shift.start_time) %> - <%= hhmm(work_shift.end_time) %> / 休憩 <%= work_shift.break_minutes %> 分</div>
+                  </div>
+                  <div><%= work_shift_status_badge(work_shift) %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">今月のシフトはありません。</p>
+        <% end %>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">今月の勤怠</h2>
+          <%= link_to "勤怠一覧", admin_attendance_records_path(month: @current_month.strftime("%Y-%m"), employee_id: @employee.id), class: "text-xs font-semibold text-sky-700 hover:text-sky-800" %>
+        </div>
+        <% if @current_month_attendances.any? %>
+          <div class="mt-3 space-y-2">
+            <% @current_month_attendances.each do |attendance_record| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-slate-900"><%= link_to jp_date(attendance_record.work_date), admin_attendance_record_path(attendance_record), class: "hover:underline" %></div>
+                    <div class="text-xs text-slate-500"><%= jp_datetime(attendance_record.clock_in_at) %> - <%= jp_datetime(attendance_record.clock_out_at) %></div>
+                  </div>
+                  <div class="text-right">
+                    <div><%= attendance_status_badge(attendance_record) %></div>
+                    <div class="mt-1 text-xs text-slate-500">残業 <%= attendance_record.overtime_minutes %> 分</div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">今月の勤怠実績はありません。</p>
+        <% end %>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">今月の有給申請</h2>
+          <%= link_to "有給一覧", admin_leave_requests_path(month: @current_month.strftime("%Y-%m"), employee_id: @employee.id), class: "text-xs font-semibold text-sky-700 hover:text-sky-800" %>
+        </div>
+        <% if @current_month_leave_requests.any? %>
+          <div class="mt-3 space-y-2">
+            <% @current_month_leave_requests.each do |leave_request| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-slate-900"><%= link_to "#{jp_date(leave_request.start_date)} - #{jp_date(leave_request.end_date)}", admin_leave_request_path(leave_request), class: "hover:underline" %></div>
+                    <div class="text-xs text-slate-500"><%= leave_type_label(leave_request.leave_type) %> / <%= leave_request.days_count.to_d %> 日</div>
+                  </div>
+                  <div><%= leave_status_badge(leave_request) %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">今月の有給申請はありません。</p>
+        <% end %>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">最近の給与反映</h2>
+          <%= link_to "給与計算一覧", admin_payroll_runs_path, class: "text-xs font-semibold text-sky-700 hover:text-sky-800" %>
+        </div>
+        <% if @recent_payroll_entries.any? %>
+          <div class="mt-3 space-y-2">
+            <% @recent_payroll_entries.each do |payroll_entry| %>
+              <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-slate-900"><%= link_to payroll_entry.payroll_run.run_number, admin_payroll_run_path(payroll_entry.payroll_run), class: "hover:underline" %></div>
+                    <div class="text-xs text-slate-500"><%= payroll_entry.payroll_run.payroll_month.strftime("%Y年%m月") %></div>
+                  </div>
+                  <div class="font-semibold text-slate-900"><%= money(payroll_entry.gross_pay) %></div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-3 text-sm text-slate-500">まだ給与反映はありません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

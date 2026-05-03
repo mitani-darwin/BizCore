@@ -1,0 +1,96 @@
+<% content_for :page_title, "有給一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">有給一覧</h1>
+      <p class="text-sm text-slate-600">申請、承認、給与反映対象となる有給を管理します。</p>
+    </div>
+    <% if can?("admin.leave_requests.create") %>
+      <%= link_to "有給申請", new_admin_leave_request_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_leave_requests_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[180px_minmax(0,1fr)_180px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :month, "対象月", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= month_field_tag :month, @filters[:month], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :employee_id, "従業員", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.collection_select :employee_id, @employee_options, :id, :title, { include_blank: "すべて" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div>
+        <%= f.label :status, "状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + leave_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "表示", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "条件をクリア", admin_leave_requests_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-3">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">申請件数</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @leave_summary[:count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">承認待ち</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @leave_summary[:pending_count] %></div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">承認済み日数</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @leave_summary[:approved_days].to_d %> 日</div>
+      </div>
+    </div>
+  </div>
+
+  <% if @leave_requests.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">従業員</th>
+            <th class="px-4 py-2">期間</th>
+            <th class="px-4 py-2">区分</th>
+            <th class="px-4 py-2 text-right">日数</th>
+            <th class="px-4 py-2">理由</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @leave_requests.each do |leave_request| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2"><%= leave_status_badge(leave_request) %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= link_to leave_request.employee.name, admin_employee_path(leave_request.employee), class: "hover:underline" %></div>
+                <div class="text-xs text-slate-500"><%= leave_request.employee.employee_code %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(leave_request.start_date) %> - <%= jp_date(leave_request.end_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= leave_type_label(leave_request.leave_type) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= leave_request.days_count.to_d %> 日</td>
+              <td class="px-4 py-2 text-slate-700"><%= truncate(leave_request.reason.to_s, length: 40) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_leave_request_path(leave_request), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.leave_requests.update") %>
+                    <%= link_to "編集", edit_admin_leave_request_path(leave_request), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>対象の有給申請はありません。</p>
+    </div>
+  <% end %>
+</div>

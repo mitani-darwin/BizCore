@@ -23,8 +23,8 @@ module Inventory
     end
 
     def call
-      raise ArgumentError, "unsupported movement type" unless ALLOWED_TYPES.include?(movement_type)
-      raise ArgumentError, "quantity must be positive" if quantity <= 0
+      raise ArgumentError, "在庫移動区分が正しくありません" unless ALLOWED_TYPES.include?(movement_type)
+      raise ArgumentError, "数量は1以上で入力してください" if quantity <= 0
 
       movement = nil
       stock_item.transaction do
@@ -55,7 +55,7 @@ module Inventory
       when "outbound", "adjustment_decrease"
         -quantity
       else
-        raise ArgumentError, "unsupported movement type"
+        raise ArgumentError, "在庫移動区分が正しくありません"
       end
     end
   end

@@ -34,14 +34,14 @@ class Order < ApplicationRecord
   end
 
   def mark_as_sent!(sent_at: Time.current)
-    raise ArgumentError, "order has no items" if order_items.empty?
-    raise ArgumentError, "only draft orders can be sent" unless draft?
+    raise ArgumentError, "注文明細がありません" if order_items.empty?
+    raise ArgumentError, "下書き状態の注文のみ送信できます" unless draft?
 
     update!(status: "sent", sent_at: sent_at)
   end
 
   def mark_as_accepted!(accepted_at: Time.current)
-    raise ArgumentError, "only sent orders can be accepted" unless sent?
+    raise ArgumentError, "送信済みの注文のみ受注確定できます" unless sent?
 
     update!(status: "accepted", accepted_at: accepted_at)
   end

@@ -1,10 +1,12 @@
 class ApplicationController < ActionController::Base
   include AuthorizationHelper
   helper Admin::SidebarHelper
+  helper Admin::WorkforceHelper
 
-  helper_method :current_user, :current_tenant, :current_ability
+  helper_method :current_user, :current_tenant, :current_employee, :current_ability
 
   before_action :set_current_context
+  before_action :set_locale
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -16,8 +18,16 @@ class ApplicationController < ActionController::Base
 
   def set_current_context
     Current.reset
-  Current.user = warden.user(:user)
-  Current.tenant = Current.user&.tenant
+    Current.user = warden.user(:user)
+    Current.tenant = Current.user&.tenant
+  end
+
+  def set_locale
+    preferred_locale = current_user&.locale.presence || I18n.default_locale
+    locale = preferred_locale.to_sym
+    I18n.locale = I18n.available_locales.include?(locale) ? locale : I18n.default_locale
+  rescue NoMethodError
+    I18n.locale = I18n.default_locale
   end
 
   def current_user
@@ -26,6 +36,10 @@ class ApplicationController < ActionController::Base
 
   def current_tenant
     Current.tenant
+  end
+
+  def current_employee
+    current_user&.employee
   end
 
   def current_ability

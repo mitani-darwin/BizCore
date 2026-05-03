@@ -74,6 +74,47 @@ module Admin
           ]
         ),
         Section.new(
+          id: :workforce,
+          label: "勤怠給与",
+          items: [
+            Item.new(
+              id: :employees,
+              label: "従業員",
+              path: :admin_employees_path,
+              required_keys: %w[admin.employees.read],
+              children: []
+            ),
+            Item.new(
+              id: :work_shifts,
+              label: "シフト",
+              path: :admin_work_shifts_path,
+              required_keys: %w[admin.work_shifts.read],
+              children: []
+            ),
+            Item.new(
+              id: :attendance_records,
+              label: "勤怠",
+              path: :admin_attendance_records_path,
+              required_keys: %w[admin.attendance_records.read],
+              children: []
+            ),
+            Item.new(
+              id: :leave_requests,
+              label: "有給",
+              path: :admin_leave_requests_path,
+              required_keys: %w[admin.leave_requests.read],
+              children: []
+            ),
+            Item.new(
+              id: :payroll_runs,
+              label: "給与計算",
+              path: :admin_payroll_runs_path,
+              required_keys: %w[admin.payroll_runs.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :ordering_master,
           label: "受発注マスタ",
           items: [

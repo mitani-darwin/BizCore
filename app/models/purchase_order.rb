@@ -71,8 +71,8 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def mark_as_sent!(sent_at: Time.current)
-    raise ArgumentError, "purchase order has no items" if purchase_order_items.empty?
-    raise ArgumentError, "only draft purchase orders can be sent" unless draft?
+    raise ArgumentError, "発注明細がありません" if purchase_order_items.empty?
+    raise ArgumentError, "下書き状態の発注のみ送信できます" unless draft?
 
     update!(status: "sent", sent_at: sent_at)
   end
