@@ -1,6 +1,6 @@
 module Orders
   class ExportXlsx < Reports::BaseXlsx
-    COLUMN_WIDTHS = [14, 26, 10, 12, 14, 10, 10, 14].freeze
+    COLUMN_WIDTHS = [ 14, 26, 10, 12, 14, 10, 10, 14 ].freeze
 
     def initialize(order:)
       @order = order

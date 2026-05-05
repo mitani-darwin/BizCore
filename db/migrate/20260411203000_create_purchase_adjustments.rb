@@ -25,8 +25,8 @@ class CreatePurchaseAdjustments < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :purchase_adjustments, [:tenant_id, :adjustment_number], unique: true
-    add_index :purchase_adjustments, [:tenant_id, :adjustment_type]
-    add_index :purchase_adjustments, [:tenant_id, :adjustment_date]
+    add_index :purchase_adjustments, [ :tenant_id, :adjustment_number ], unique: true
+    add_index :purchase_adjustments, [ :tenant_id, :adjustment_type ]
+    add_index :purchase_adjustments, [ :tenant_id, :adjustment_date ]
   end
 end

@@ -213,7 +213,7 @@ class OrderingWorkflowTest < ActiveSupport::TestCase
       payment_method: "bank_transfer"
     )
 
-    Payments::ReconcilePayment.call(payment: payment, allocations: [{ invoice: invoice, amount: 3300 }])
+    Payments::ReconcilePayment.call(payment: payment, allocations: [ { invoice: invoice, amount: 3300 } ])
 
     assert_equal 1, payment.payment_allocations.count
     assert payment.reload.applied?

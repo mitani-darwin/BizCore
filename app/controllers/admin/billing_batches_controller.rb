@@ -1,6 +1,6 @@
 module Admin
   class BillingBatchesController < BaseController
-    before_action :set_billing_batch, only: [:show, :cancel]
+    before_action :set_billing_batch, only: [ :show, :cancel ]
 
     def index
       @billing_batches = current_tenant.billing_batches.includes(:executed_by, :cancelled_by, :invoices).recent
@@ -28,7 +28,7 @@ module Admin
     private
 
     def set_billing_batch
-      @billing_batch = current_tenant.billing_batches.includes(:executed_by, :cancelled_by, invoices: [:customer, :payment_allocations]).find_by(id: params[:id])
+      @billing_batch = current_tenant.billing_batches.includes(:executed_by, :cancelled_by, invoices: [ :customer, :payment_allocations ]).find_by(id: params[:id])
       return if @billing_batch
 
       render_not_found and return false

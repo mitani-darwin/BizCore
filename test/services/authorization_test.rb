@@ -31,7 +31,7 @@ class AuthorizationTest < ActiveSupport::TestCase
   end
 
   test "can? returns true when actor has permission" do
-    actor = DummyActor.new([@permission])
+    actor = DummyActor.new([ @permission ])
 
     assert Authorization.can?(actor: actor, tenant: @tenant, key: @permission.key)
   end

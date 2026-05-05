@@ -4,7 +4,7 @@ require "zip"
 module Reports
   class BaseXlsx
     MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".freeze
-    DEFAULT_COLUMN_WIDTHS = [18, 28, 12, 14, 14, 16].freeze
+    DEFAULT_COLUMN_WIDTHS = [ 18, 28, 12, 14, 14, 16 ].freeze
 
     def self.call(**kwargs)
       new(**kwargs).call
@@ -52,7 +52,7 @@ module Reports
     end
 
     def title_row(value = document_title)
-      [string_cell(value, style: 1)]
+      [ string_cell(value, style: 1) ]
     end
 
     def blank_row
@@ -60,25 +60,25 @@ module Reports
     end
 
     def section_row(label, columns: column_widths.size)
-      [header_cell(label)] + blank_cells(columns - 1)
+      [ header_cell(label) ] + blank_cells(columns - 1)
     end
 
     def label_value_row(*values)
       values.each_slice(2).flat_map do |label, value|
-        [header_cell(label), body_cell(value)]
+        [ header_cell(label), body_cell(value) ]
       end
     end
 
     def full_width_value_row(label, value, columns: column_widths.size)
-      [header_cell(label), body_cell(value)] + blank_cells(columns - 2)
+      [ header_cell(label), body_cell(value) ] + blank_cells(columns - 2)
     end
 
     def total_row(label, amount, leading_blank_columns:, trailing_blank_columns: 0)
-      blank_cells(leading_blank_columns) + [total_label_cell(label), total_value_cell(amount)] + blank_cells(trailing_blank_columns)
+      blank_cells(leading_blank_columns) + [ total_label_cell(label), total_value_cell(amount) ] + blank_cells(trailing_blank_columns)
     end
 
     def blank_cells(count, style: 3)
-      Array.new([count, 0].max) { string_cell("", style: style) }
+      Array.new([ count, 0 ].max) { string_cell("", style: style) }
     end
 
     def string_cell(value, style: 3)

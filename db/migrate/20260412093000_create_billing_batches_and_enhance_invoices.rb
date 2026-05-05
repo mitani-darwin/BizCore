@@ -21,9 +21,9 @@ class CreateBillingBatchesAndEnhanceInvoices < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :billing_batches, [:tenant_id, :batch_number], unique: true
-    add_index :billing_batches, [:tenant_id, :closing_date]
-    add_index :billing_batches, [:tenant_id, :billing_period_from, :billing_period_to]
+    add_index :billing_batches, [ :tenant_id, :batch_number ], unique: true
+    add_index :billing_batches, [ :tenant_id, :closing_date ]
+    add_index :billing_batches, [ :tenant_id, :billing_period_from, :billing_period_to ]
 
     change_table :invoices, bulk: true do |t|
       t.references :billing_batch, foreign_key: true

@@ -30,7 +30,7 @@ module Invoicing
           closing_day_snapshot: invoice.closing_day_snapshot,
           payment_due_rule_snapshot: invoice.payment_due_rule_snapshot,
           invoice_delivery_method_snapshot: invoice.invoice_delivery_method_snapshot,
-          remarks: [invoice.remarks.presence, "再発行元: #{invoice.invoice_number}"].compact.join("\n")
+          remarks: [ invoice.remarks.presence, "再発行元: #{invoice.invoice_number}" ].compact.join("\n")
         )
 
         invoice.invoice_items.find_each do |item|

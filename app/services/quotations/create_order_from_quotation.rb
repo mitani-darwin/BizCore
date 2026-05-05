@@ -43,7 +43,7 @@ module Quotations
     attr_reader :quotation, :order_date
 
     def order_remarks
-      remarks = ["見積書 #{quotation.quotation_number} から変換"]
+      remarks = [ "見積書 #{quotation.quotation_number} から変換" ]
       remarks << quotation.subject if quotation.subject.present?
       remarks << quotation.remarks if quotation.remarks.present?
       remarks.join("\n")

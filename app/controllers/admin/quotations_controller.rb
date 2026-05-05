@@ -2,9 +2,9 @@ module Admin
   class QuotationsController < BaseController
     MINIMUM_QUOTATION_ITEM_ROWS = 1
 
-    before_action :set_quotation, only: [:show, :edit, :update, :download_excel, :send_quotation, :accept_quotation, :create_order]
-    before_action :set_form_options, only: [:new, :create, :edit, :update]
-    before_action :ensure_editable_quotation!, only: [:edit, :update]
+    before_action :set_quotation, only: [ :show, :edit, :update, :download_excel, :send_quotation, :accept_quotation, :create_order ]
+    before_action :set_form_options, only: [ :new, :create, :edit, :update ]
+    before_action :ensure_editable_quotation!, only: [ :edit, :update ]
 
     def index
       @quotations = current_tenant.quotations.includes(:customer, :quotation_items, :orders).order(quotation_date: :desc, id: :desc)
@@ -108,7 +108,7 @@ module Admin
         :quotation_date,
         :expiration_date,
         :remarks,
-        quotation_items_attributes: [:id, :product_id, :quantity, :unit_price, :_destroy]
+        quotation_items_attributes: [ :id, :product_id, :quantity, :unit_price, :_destroy ]
       )
 
       normalize_quotation_item_attributes!(permitted)
@@ -134,7 +134,7 @@ module Admin
 
     def build_quotation_item_rows(quotation)
       existing_count = quotation.quotation_items.reject(&:marked_for_destruction?).size
-      [MINIMUM_QUOTATION_ITEM_ROWS - existing_count, 0].max.times do
+      [ MINIMUM_QUOTATION_ITEM_ROWS - existing_count, 0 ].max.times do
         quotation.quotation_items.build(tenant: current_tenant)
       end
     end

@@ -1,8 +1,8 @@
 module Admin
   class PaymentsController < BaseController
-    before_action :set_payment, only: [:show, :edit, :update, :reconcile]
-    before_action :set_source_invoice, only: [:new, :create]
-    before_action :set_customer_options, only: [:new, :create, :edit, :update]
+    before_action :set_payment, only: [ :show, :edit, :update, :reconcile ]
+    before_action :set_source_invoice, only: [ :new, :create ]
+    before_action :set_customer_options, only: [ :new, :create, :edit, :update ]
 
     def index
       @payments = current_tenant.payments.includes(:customer, :payment_allocations).order(payment_date: :desc, id: :desc)
@@ -115,12 +115,12 @@ module Admin
     def apply_source_invoice_allocation!
       raise ArgumentError, "請求と異なる得意先の入金は登録できません" if @payment.customer_id != @source_invoice.customer_id
 
-      allocation_amount = [@payment.amount.to_d, @source_invoice.outstanding_amount].min
+      allocation_amount = [ @payment.amount.to_d, @source_invoice.outstanding_amount ].min
       return if allocation_amount <= 0
 
       Payments::ReconcilePayment.call(
         payment: @payment,
-        allocations: [{ invoice: @source_invoice, amount: allocation_amount }]
+        allocations: [ { invoice: @source_invoice, amount: allocation_amount } ]
       )
     end
 

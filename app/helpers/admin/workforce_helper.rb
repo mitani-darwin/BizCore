@@ -3,36 +3,36 @@ module Admin
     include Admin::OrderingHelper
 
     EMPLOYEE_STATUS_OPTIONS = [
-      ["在籍", "active"],
-      ["停止", "inactive"]
+      [ "在籍", "active" ],
+      [ "停止", "inactive" ]
     ].freeze
 
     EMPLOYMENT_TYPE_OPTIONS = [
-      ["時給制", "hourly"],
-      ["月給制", "salaried"]
+      [ "時給制", "hourly" ],
+      [ "月給制", "salaried" ]
     ].freeze
 
     WORK_SHIFT_STATUS_OPTIONS = [
-      ["予定", "scheduled"],
-      ["完了", "completed"],
-      ["取消", "cancelled"]
+      [ "予定", "scheduled" ],
+      [ "完了", "completed" ],
+      [ "取消", "cancelled" ]
     ].freeze
 
     ATTENDANCE_STATUS_OPTIONS = [
-      ["未打刻", "draft"],
-      ["勤務中", "working"],
-      ["勤務確定", "closed"]
+      [ "未打刻", "draft" ],
+      [ "勤務中", "working" ],
+      [ "勤務確定", "closed" ]
     ].freeze
 
     LEAVE_TYPE_OPTIONS = [
-      ["有給", "paid_leave"],
-      ["特別休暇", "special_leave"]
+      [ "有給", "paid_leave" ],
+      [ "特別休暇", "special_leave" ]
     ].freeze
 
     LEAVE_STATUS_OPTIONS = [
-      ["申請中", "pending"],
-      ["承認済み", "approved"],
-      ["却下", "rejected"]
+      [ "申請中", "pending" ],
+      [ "承認済み", "approved" ],
+      [ "却下", "rejected" ]
     ].freeze
 
     def employee_status_options
@@ -110,10 +110,10 @@ module Admin
 
     def work_shift_status_badge(work_shift)
       label, tone = case work_shift.status
-      when "scheduled" then ["予定", "sky"]
-      when "completed" then ["完了", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "scheduled" then [ "予定", "sky" ]
+      when "completed" then [ "完了", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -121,10 +121,10 @@ module Admin
 
     def attendance_status_badge(attendance_record)
       label, tone = case attendance_record.status
-      when "draft" then ["未打刻", "slate"]
-      when "working" then ["勤務中", "amber"]
-      when "closed" then ["勤務確定", "emerald"]
-      else ["不明", "slate"]
+      when "draft" then [ "未打刻", "slate" ]
+      when "working" then [ "勤務中", "amber" ]
+      when "closed" then [ "勤務確定", "emerald" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -149,10 +149,10 @@ module Admin
 
     def leave_status_badge(leave_request)
       label, tone = case leave_request.status
-      when "pending" then ["申請中", "amber"]
-      when "approved" then ["承認済み", "emerald"]
-      when "rejected" then ["却下", "rose"]
-      else ["不明", "slate"]
+      when "pending" then [ "申請中", "amber" ]
+      when "approved" then [ "承認済み", "emerald" ]
+      when "rejected" then [ "却下", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -160,9 +160,9 @@ module Admin
 
     def payroll_run_status_badge(payroll_run)
       label, tone = case payroll_run.status
-      when "generated" then ["計算済み", "sky"]
-      when "confirmed" then ["確定", "emerald"]
-      else ["不明", "slate"]
+      when "generated" then [ "計算済み", "sky" ]
+      when "confirmed" then [ "確定", "emerald" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)

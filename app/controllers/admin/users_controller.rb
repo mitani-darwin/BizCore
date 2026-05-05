@@ -1,8 +1,8 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :edit, :update]
-    before_action :set_role_options, only: [:new, :create, :edit, :update]
-    before_action :set_employee_options, only: [:new, :create, :edit, :update]
+    before_action :set_user, only: [ :show, :edit, :update ]
+    before_action :set_role_options, only: [ :new, :create, :edit, :update ]
+    before_action :set_employee_options, only: [ :new, :create, :edit, :update ]
 
     def index
       @users = current_tenant.users.includes(:roles, :employee).order(:id)
@@ -58,8 +58,8 @@ module Admin
       @employee_options = current_tenant.employees.ordered_for_admin.to_a
       return unless @user&.employee.present?
 
-      @employee_options |= [@user.employee]
-      @employee_options.sort_by! { |employee| [employee.employee_code.to_s, employee.id] }
+      @employee_options |= [ @user.employee ]
+      @employee_options.sort_by! { |employee| [ employee.employee_code.to_s, employee.id ] }
     end
 
     def assign_roles(user)

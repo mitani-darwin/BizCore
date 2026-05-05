@@ -1,6 +1,6 @@
 module Admin
   class CustomersController < BaseController
-    before_action :set_customer, only: [:show, :edit, :update]
+    before_action :set_customer, only: [ :show, :edit, :update ]
 
     def index
       @filters = { q: search_keyword, status: search_status }

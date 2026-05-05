@@ -17,7 +17,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :customers, [:tenant_id, :code], unique: true
+    add_index :customers, [ :tenant_id, :code ], unique: true
 
     create_table :products, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -30,7 +30,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :products, [:tenant_id, :code], unique: true
+    add_index :products, [ :tenant_id, :code ], unique: true
 
     create_table :warehouses, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -39,7 +39,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.boolean :active, null: false, default: true
       t.timestamps
     end
-    add_index :warehouses, [:tenant_id, :code], unique: true
+    add_index :warehouses, [ :tenant_id, :code ], unique: true
 
     create_table :stock_items, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -49,7 +49,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.integer :quantity_reserved, null: false, default: 0
       t.timestamps
     end
-    add_index :stock_items, [:tenant_id, :warehouse_id, :product_id], unique: true
+    add_index :stock_items, [ :tenant_id, :warehouse_id, :product_id ], unique: true
 
     create_table :stock_movements, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -62,7 +62,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :stock_movements, [:tenant_id, :occurred_on]
+    add_index :stock_movements, [ :tenant_id, :occurred_on ]
 
     create_table :orders, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -78,7 +78,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.datetime :accepted_at
       t.timestamps
     end
-    add_index :orders, [:tenant_id, :order_number], unique: true
+    add_index :orders, [ :tenant_id, :order_number ], unique: true
 
     create_table :order_items, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -95,7 +95,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.string :status, null: false, default: "pending"
       t.timestamps
     end
-    add_index :order_items, [:order_id, :line_no], unique: true
+    add_index :order_items, [ :order_id, :line_no ], unique: true
 
     create_table :stock_allocations, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -108,7 +108,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.datetime :released_at
       t.timestamps
     end
-    add_index :stock_allocations, [:tenant_id, :order_item_id]
+    add_index :stock_allocations, [ :tenant_id, :order_item_id ]
 
     create_table :deliveries, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -122,7 +122,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.datetime :issued_at
       t.timestamps
     end
-    add_index :deliveries, [:tenant_id, :delivery_number], unique: true
+    add_index :deliveries, [ :tenant_id, :delivery_number ], unique: true
 
     create_table :delivery_items, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -156,7 +156,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.text :remarks
       t.timestamps
     end
-    add_index :invoices, [:tenant_id, :invoice_number], unique: true
+    add_index :invoices, [ :tenant_id, :invoice_number ], unique: true
 
     create_table :invoice_items, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -169,7 +169,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.string :tax_category, null: false, default: "taxable_10"
       t.timestamps
     end
-    add_index :invoice_items, [:tenant_id, :source_type, :source_id], name: "index_invoice_items_on_tenant_and_source"
+    add_index :invoice_items, [ :tenant_id, :source_type, :source_id ], name: "index_invoice_items_on_tenant_and_source"
 
     create_table :payments, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -184,7 +184,7 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.string :status, null: false, default: "pending"
       t.timestamps
     end
-    add_index :payments, [:tenant_id, :payment_number], unique: true
+    add_index :payments, [ :tenant_id, :payment_number ], unique: true
 
     create_table :payment_allocations, id: :bigint do |t|
       t.references :tenant, null: false, foreign_key: true, type: :bigint
@@ -194,6 +194,6 @@ class CreateOrderingFoundationTables < ActiveRecord::Migration[8.1]
       t.datetime :allocated_at, null: false
       t.timestamps
     end
-    add_index :payment_allocations, [:payment_id, :invoice_id], unique: true
+    add_index :payment_allocations, [ :payment_id, :invoice_id ], unique: true
   end
 end

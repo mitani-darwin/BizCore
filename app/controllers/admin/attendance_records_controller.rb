@@ -1,7 +1,7 @@
 module Admin
   class AttendanceRecordsController < BaseController
-    before_action :set_attendance_record, only: [:show, :edit, :update, :clock_out]
-    before_action :set_employee_options, only: [:index, :new, :create, :edit, :update, :clock_in]
+    before_action :set_attendance_record, only: [ :show, :edit, :update, :clock_out ]
+    before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update, :clock_in ]
 
     def index
       @current_month = selected_month

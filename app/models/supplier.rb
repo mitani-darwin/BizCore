@@ -41,11 +41,11 @@ class Supplier < ApplicationRecord
   before_validation :set_defaults
 
   def full_address
-    [postal_code, address1, address2].compact_blank.join(" ")
+    [ postal_code, address1, address2 ].compact_blank.join(" ")
   end
 
   def primary_contact
-    [contact_person_department, contact_person_name].compact_blank.join(" ")
+    [ contact_person_department, contact_person_name ].compact_blank.join(" ")
   end
 
   def outstanding_purchase_bill_amount
@@ -120,7 +120,7 @@ class Supplier < ApplicationRecord
     configured_day = closing_day.to_i
     return date.end_of_month.day if configured_day <= 0
 
-    [configured_day, date.end_of_month.day].min
+    [ configured_day, date.end_of_month.day ].min
   end
 
   def due_date_for(closing_date:, default_due_date: nil)

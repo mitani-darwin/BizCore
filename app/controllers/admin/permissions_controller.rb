@@ -1,6 +1,6 @@
 module Admin
   class PermissionsController < BaseController
-    before_action :set_permission, only: [:update, :destroy]
+    before_action :set_permission, only: [ :update, :destroy ]
 
     def index
       @permission = Permission.new

@@ -2,9 +2,9 @@ module Admin
   class PurchaseOrdersController < BaseController
     MINIMUM_PURCHASE_ORDER_ITEM_ROWS = 1
 
-    before_action :set_purchase_order, only: [:show, :edit, :update, :download_excel, :send_purchase_order, :receive_items]
-    before_action :set_form_options, only: [:new, :create, :edit, :update]
-    before_action :ensure_editable_purchase_order!, only: [:edit, :update]
+    before_action :set_purchase_order, only: [ :show, :edit, :update, :download_excel, :send_purchase_order, :receive_items ]
+    before_action :set_form_options, only: [ :new, :create, :edit, :update ]
+    before_action :ensure_editable_purchase_order!, only: [ :edit, :update ]
 
     def index
       @filters = {
@@ -150,7 +150,7 @@ module Admin
         :requested_delivery_date,
         :ordered_by_name,
         :remarks,
-        purchase_order_items_attributes: [:id, :product_id, :quantity, :unit_cost, :_destroy]
+        purchase_order_items_attributes: [ :id, :product_id, :quantity, :unit_cost, :_destroy ]
       )
 
       normalize_purchase_order_item_attributes!(permitted)
@@ -176,7 +176,7 @@ module Admin
 
     def build_purchase_order_item_rows(purchase_order)
       existing_count = purchase_order.purchase_order_items.reject(&:marked_for_destruction?).size
-      [MINIMUM_PURCHASE_ORDER_ITEM_ROWS - existing_count, 0].max.times do
+      [ MINIMUM_PURCHASE_ORDER_ITEM_ROWS - existing_count, 0 ].max.times do
         purchase_order.purchase_order_items.build(tenant: current_tenant)
       end
     end

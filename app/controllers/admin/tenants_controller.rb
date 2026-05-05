@@ -4,7 +4,7 @@ module Admin
 
     def index
       @tenant = current_tenant
-      @tenants = [@tenant].compact
+      @tenants = [ @tenant ].compact
     end
 
     def show; end

@@ -18,7 +18,6 @@ module Seeds
 
         Permission.where(key: keys).index_by(&:key)
       end
-
     end
   end
 end

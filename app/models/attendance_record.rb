@@ -21,7 +21,7 @@ class AttendanceRecord < ApplicationRecord
   scope :ordered_for_admin, -> { order(work_date: :desc, id: :desc) }
 
   validates :work_date, :status, presence: true
-  validates :work_date, uniqueness: { scope: [:tenant_id, :employee_id] }
+  validates :work_date, uniqueness: { scope: [ :tenant_id, :employee_id ] }
   validates :break_minutes, :worked_minutes, :overtime_minutes, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validate :tenant_consistency
   validate :clock_out_must_be_after_clock_in
@@ -48,7 +48,7 @@ class AttendanceRecord < ApplicationRecord
   end
 
   def regular_worked_minutes
-    [worked_minutes.to_i - overtime_minutes.to_i, 0].max
+    [ worked_minutes.to_i - overtime_minutes.to_i, 0 ].max
   end
 
   def title
@@ -81,7 +81,7 @@ class AttendanceRecord < ApplicationRecord
   def calculate_worked_minutes
     self.worked_minutes =
       if clock_in_at.present? && clock_out_at.present?
-        [(((clock_out_at - clock_in_at) / 60).to_i - break_minutes.to_i), 0].max
+        [ (((clock_out_at - clock_in_at) / 60).to_i - break_minutes.to_i), 0 ].max
       else
         0
       end
@@ -89,7 +89,7 @@ class AttendanceRecord < ApplicationRecord
 
   def calculate_overtime_minutes
     scheduled_minutes = work_shift&.scheduled_minutes || employee&.standard_daily_minutes.to_i
-    self.overtime_minutes = [worked_minutes.to_i - scheduled_minutes.to_i, 0].max
+    self.overtime_minutes = [ worked_minutes.to_i - scheduled_minutes.to_i, 0 ].max
   end
 
   def set_status_from_times
@@ -120,7 +120,7 @@ class AttendanceRecord < ApplicationRecord
 
   def cannot_overlap_approved_leave
     return if employee.blank? || work_date.blank?
-    return unless employee.leave_requests.approved_paid_leave.exists?(["start_date <= ? AND end_date >= ?", work_date, work_date])
+    return unless employee.leave_requests.approved_paid_leave.exists?([ "start_date <= ? AND end_date >= ?", work_date, work_date ])
 
     errors.add(:work_date, "は承認済みの有給と重複しています")
   end

@@ -1,6 +1,6 @@
 module Deliveries
   class ExportXlsx < Reports::BaseXlsx
-    COLUMN_WIDTHS = [14, 26, 10, 12, 12, 14].freeze
+    COLUMN_WIDTHS = [ 14, 26, 10, 12, 12, 14 ].freeze
 
     def initialize(delivery:)
       @delivery = delivery

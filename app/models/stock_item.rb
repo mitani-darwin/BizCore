@@ -5,7 +5,7 @@ class StockItem < ApplicationRecord
 
   has_many :stock_counts, dependent: :restrict_with_exception
 
-  validates :product_id, uniqueness: { scope: [:tenant_id, :warehouse_id] }
+  validates :product_id, uniqueness: { scope: [ :tenant_id, :warehouse_id ] }
   validates :quantity_on_hand, :quantity_reserved, :safety_stock, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validate :tenant_consistency
   validate :quantity_on_hand_must_cover_reserved

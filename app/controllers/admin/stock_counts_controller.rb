@@ -1,6 +1,6 @@
 module Admin
   class StockCountsController < BaseController
-    before_action :set_options, only: [:new, :create]
+    before_action :set_options, only: [ :new, :create ]
 
     def index
       @stock_counts = current_tenant.stock_counts.includes(:warehouse, :product, :stock_item).recent

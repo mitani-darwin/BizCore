@@ -45,7 +45,7 @@ module Payrolls
       attendances = employee.attendance_records.where(work_date: period_range).where(status: "closed")
       worked_minutes = attendances.sum(:worked_minutes).to_i
       overtime_minutes = attendances.sum(:overtime_minutes).to_i
-      regular_minutes = [worked_minutes - overtime_minutes, 0].max
+      regular_minutes = [ worked_minutes - overtime_minutes, 0 ].max
       paid_leave_days = approved_paid_leave_days(employee)
 
       base_pay =

@@ -1,6 +1,6 @@
 module Admin
   class DeliveriesController < BaseController
-    before_action :set_delivery, only: [:show, :download_excel]
+    before_action :set_delivery, only: [ :show, :download_excel ]
 
     def index
       @deliveries = current_tenant.deliveries.includes(:customer, :order).order(delivery_date: :desc, id: :desc)

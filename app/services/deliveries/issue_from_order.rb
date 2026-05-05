@@ -13,7 +13,7 @@ module Deliveries
     end
 
     def call
-      reserved_items = order.order_items.includes(stock_allocations: [:warehouse, :product]).select do |item|
+      reserved_items = order.order_items.includes(stock_allocations: [ :warehouse, :product ]).select do |item|
         item.stock_allocations.reserved_only.exists?
       end
       raise NothingToDeliverError, "reserved stock was not found" if reserved_items.empty?

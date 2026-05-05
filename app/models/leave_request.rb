@@ -56,8 +56,8 @@ class LeaveRequest < ApplicationRecord
   def overlap_days_with(range)
     return 0 if start_date.blank? || end_date.blank?
 
-    overlap_start = [start_date, range.begin].max
-    overlap_end = [end_date, range.end].min
+    overlap_start = [ start_date, range.begin ].max
+    overlap_end = [ end_date, range.end ].min
     return 0 if overlap_end < overlap_start
 
     (overlap_end - overlap_start).to_i + 1

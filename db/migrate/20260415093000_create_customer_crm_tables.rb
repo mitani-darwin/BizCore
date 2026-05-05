@@ -18,9 +18,9 @@ class CreateCustomerCrmTables < ActiveRecord::Migration[8.1]
       t.date :response_due_date
       t.timestamps
     end
-    add_index :customer_inquiries, [:tenant_id, :inquiry_number], unique: true
-    add_index :customer_inquiries, [:tenant_id, :status]
-    add_index :customer_inquiries, [:tenant_id, :inquiry_date]
+    add_index :customer_inquiries, [ :tenant_id, :inquiry_number ], unique: true
+    add_index :customer_inquiries, [ :tenant_id, :status ]
+    add_index :customer_inquiries, [ :tenant_id, :inquiry_date ]
 
     create_table :customer_opportunities do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -40,8 +40,8 @@ class CreateCustomerCrmTables < ActiveRecord::Migration[8.1]
       t.text :next_action
       t.timestamps
     end
-    add_index :customer_opportunities, [:tenant_id, :opportunity_number], unique: true
-    add_index :customer_opportunities, [:tenant_id, :stage]
-    add_index :customer_opportunities, [:tenant_id, :opened_on]
+    add_index :customer_opportunities, [ :tenant_id, :opportunity_number ], unique: true
+    add_index :customer_opportunities, [ :tenant_id, :stage ]
+    add_index :customer_opportunities, [ :tenant_id, :opened_on ]
   end
 end

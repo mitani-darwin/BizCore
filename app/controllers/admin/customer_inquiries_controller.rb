@@ -1,7 +1,7 @@
 module Admin
   class CustomerInquiriesController < BaseController
-    before_action :set_customer_inquiry, only: [:show, :edit, :update]
-    before_action :set_form_options, only: [:new, :create, :edit, :update]
+    before_action :set_customer_inquiry, only: [ :show, :edit, :update ]
+    before_action :set_form_options, only: [ :new, :create, :edit, :update ]
 
     def index
       @filters = {

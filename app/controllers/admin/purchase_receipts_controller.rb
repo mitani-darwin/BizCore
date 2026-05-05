@@ -1,6 +1,6 @@
 module Admin
   class PurchaseReceiptsController < BaseController
-    before_action :set_purchase_receipt, only: [:show, :download_excel]
+    before_action :set_purchase_receipt, only: [ :show, :download_excel ]
 
     def index
       @filters = {
@@ -37,7 +37,7 @@ module Admin
     private
 
     def set_purchase_receipt
-      @purchase_receipt = current_tenant.purchase_receipts.includes(:supplier, :warehouse, :purchase_order, purchase_adjustments: :purchase_receipt_item, purchase_receipt_items: [:product, :purchase_adjustments]).find_by(id: params[:id])
+      @purchase_receipt = current_tenant.purchase_receipts.includes(:supplier, :warehouse, :purchase_order, purchase_adjustments: :purchase_receipt_item, purchase_receipt_items: [ :product, :purchase_adjustments ]).find_by(id: params[:id])
       return if @purchase_receipt
 
       render_not_found and return false

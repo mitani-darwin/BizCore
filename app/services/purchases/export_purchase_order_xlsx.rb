@@ -1,6 +1,6 @@
 module Purchases
   class ExportPurchaseOrderXlsx < Reports::BaseXlsx
-    COLUMN_WIDTHS = [14, 24, 10, 10, 10, 12, 14, 14].freeze
+    COLUMN_WIDTHS = [ 14, 24, 10, 10, 10, 12, 14, 14 ].freeze
 
     def initialize(purchase_order:)
       @purchase_order = purchase_order

@@ -7,6 +7,6 @@ class CreateTenantUserRoles < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :tenant_user_roles, [:tenant_user_id, :role_id], unique: true
+    add_index :tenant_user_roles, [ :tenant_user_id, :role_id ], unique: true
   end
 end

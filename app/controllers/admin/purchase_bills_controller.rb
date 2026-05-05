@@ -1,6 +1,6 @@
 module Admin
   class PurchaseBillsController < BaseController
-    before_action :set_purchase_bill, only: [:show, :download_excel, :cancel, :reissue]
+    before_action :set_purchase_bill, only: [ :show, :download_excel, :cancel, :reissue ]
 
     def index
       @purchase_bills = current_tenant.purchase_bills.includes(:supplier, :supplier_payment_allocations, :purchase_bill_batch).order(bill_date: :desc, id: :desc)

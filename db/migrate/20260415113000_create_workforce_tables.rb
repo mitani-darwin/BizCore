@@ -18,8 +18,8 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :employees, [:tenant_id, :employee_code], unique: true
-    add_index :employees, [:tenant_id, :status]
+    add_index :employees, [ :tenant_id, :employee_code ], unique: true
+    add_index :employees, [ :tenant_id, :status ]
 
     create_table :work_shifts do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -32,8 +32,8 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :work_shifts, [:tenant_id, :employee_id, :work_date], unique: true
-    add_index :work_shifts, [:tenant_id, :work_date]
+    add_index :work_shifts, [ :tenant_id, :employee_id, :work_date ], unique: true
+    add_index :work_shifts, [ :tenant_id, :work_date ]
 
     create_table :attendance_records do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -49,9 +49,9 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :attendance_records, [:tenant_id, :employee_id, :work_date], unique: true
-    add_index :attendance_records, [:tenant_id, :work_date]
-    add_index :attendance_records, [:tenant_id, :status]
+    add_index :attendance_records, [ :tenant_id, :employee_id, :work_date ], unique: true
+    add_index :attendance_records, [ :tenant_id, :work_date ]
+    add_index :attendance_records, [ :tenant_id, :status ]
 
     create_table :leave_requests do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -65,8 +65,8 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :leave_requests, [:tenant_id, :employee_id, :start_date]
-    add_index :leave_requests, [:tenant_id, :status]
+    add_index :leave_requests, [ :tenant_id, :employee_id, :start_date ]
+    add_index :leave_requests, [ :tenant_id, :status ]
 
     create_table :payroll_runs do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -80,8 +80,8 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.text :note
       t.timestamps
     end
-    add_index :payroll_runs, [:tenant_id, :payroll_month], unique: true
-    add_index :payroll_runs, [:tenant_id, :run_number], unique: true
+    add_index :payroll_runs, [ :tenant_id, :payroll_month ], unique: true
+    add_index :payroll_runs, [ :tenant_id, :run_number ], unique: true
 
     create_table :payroll_entries do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -96,7 +96,7 @@ class CreateWorkforceTables < ActiveRecord::Migration[8.1]
       t.decimal :gross_pay, precision: 14, scale: 2, null: false, default: 0
       t.timestamps
     end
-    add_index :payroll_entries, [:payroll_run_id, :employee_id], unique: true
-    add_index :payroll_entries, [:tenant_id, :employee_id]
+    add_index :payroll_entries, [ :payroll_run_id, :employee_id ], unique: true
+    add_index :payroll_entries, [ :tenant_id, :employee_id ]
   end
 end

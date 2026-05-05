@@ -21,9 +21,9 @@ class CreatePurchaseBillingAndSupplierPaymentTables < ActiveRecord::Migration[8.
       t.timestamps
     end
 
-    add_index :purchase_bill_batches, [:tenant_id, :batch_number], unique: true
-    add_index :purchase_bill_batches, [:tenant_id, :closing_date]
-    add_index :purchase_bill_batches, [:tenant_id, :billing_period_from, :billing_period_to]
+    add_index :purchase_bill_batches, [ :tenant_id, :batch_number ], unique: true
+    add_index :purchase_bill_batches, [ :tenant_id, :closing_date ]
+    add_index :purchase_bill_batches, [ :tenant_id, :billing_period_from, :billing_period_to ]
 
     create_table :purchase_bills do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -51,9 +51,9 @@ class CreatePurchaseBillingAndSupplierPaymentTables < ActiveRecord::Migration[8.
       t.timestamps
     end
 
-    add_index :purchase_bills, [:tenant_id, :bill_number], unique: true
-    add_index :purchase_bills, [:tenant_id, :status]
-    add_index :purchase_bills, [:tenant_id, :bill_date]
+    add_index :purchase_bills, [ :tenant_id, :bill_number ], unique: true
+    add_index :purchase_bills, [ :tenant_id, :status ]
+    add_index :purchase_bills, [ :tenant_id, :bill_date ]
 
     create_table :purchase_bill_items do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -68,7 +68,7 @@ class CreatePurchaseBillingAndSupplierPaymentTables < ActiveRecord::Migration[8.
       t.timestamps
     end
 
-    add_index :purchase_bill_items, [:tenant_id, :source_type, :source_id]
+    add_index :purchase_bill_items, [ :tenant_id, :source_type, :source_id ]
 
     create_table :supplier_payments do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -85,9 +85,9 @@ class CreatePurchaseBillingAndSupplierPaymentTables < ActiveRecord::Migration[8.
       t.timestamps
     end
 
-    add_index :supplier_payments, [:tenant_id, :payment_number], unique: true
-    add_index :supplier_payments, [:tenant_id, :payment_date]
-    add_index :supplier_payments, [:tenant_id, :status]
+    add_index :supplier_payments, [ :tenant_id, :payment_number ], unique: true
+    add_index :supplier_payments, [ :tenant_id, :payment_date ]
+    add_index :supplier_payments, [ :tenant_id, :status ]
 
     create_table :supplier_payment_allocations do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -99,6 +99,6 @@ class CreatePurchaseBillingAndSupplierPaymentTables < ActiveRecord::Migration[8.
       t.timestamps
     end
 
-    add_index :supplier_payment_allocations, [:supplier_payment_id, :purchase_bill_id], unique: true, name: "index_supplier_payment_allocations_on_payment_and_bill"
+    add_index :supplier_payment_allocations, [ :supplier_payment_id, :purchase_bill_id ], unique: true, name: "index_supplier_payment_allocations_on_payment_and_bill"
   end
 end

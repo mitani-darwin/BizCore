@@ -20,7 +20,7 @@ class WorkShift < ApplicationRecord
 
   validates :work_date, :start_time, :end_time, :status, presence: true
   validates :break_minutes, numericality: { greater_than_or_equal_to: 0, only_integer: true }
-  validates :work_date, uniqueness: { scope: [:tenant_id, :employee_id] }
+  validates :work_date, uniqueness: { scope: [ :tenant_id, :employee_id ] }
   validate :tenant_consistency
   validate :end_time_must_be_after_start_time
 
@@ -30,7 +30,7 @@ class WorkShift < ApplicationRecord
     return 0 if start_time.blank? || end_time.blank?
 
     duration_minutes = (((end_time.to_i - start_time.to_i) / 60) - break_minutes.to_i)
-    [duration_minutes, 0].max
+    [ duration_minutes, 0 ].max
   end
 
   def title

@@ -23,8 +23,8 @@ class CreateProcurementTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :suppliers, [:tenant_id, :code], unique: true
-    add_index :suppliers, [:tenant_id, :status]
+    add_index :suppliers, [ :tenant_id, :code ], unique: true
+    add_index :suppliers, [ :tenant_id, :status ]
 
     create_table :purchase_orders do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -41,9 +41,9 @@ class CreateProcurementTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :purchase_orders, [:tenant_id, :purchase_order_number], unique: true
-    add_index :purchase_orders, [:tenant_id, :status]
-    add_index :purchase_orders, [:tenant_id, :order_date]
+    add_index :purchase_orders, [ :tenant_id, :purchase_order_number ], unique: true
+    add_index :purchase_orders, [ :tenant_id, :status ]
+    add_index :purchase_orders, [ :tenant_id, :order_date ]
 
     create_table :purchase_order_items do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -63,7 +63,7 @@ class CreateProcurementTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :purchase_order_items, [:purchase_order_id, :line_no], unique: true
+    add_index :purchase_order_items, [ :purchase_order_id, :line_no ], unique: true
 
     create_table :purchase_receipts do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -80,8 +80,8 @@ class CreateProcurementTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :purchase_receipts, [:tenant_id, :purchase_receipt_number], unique: true
-    add_index :purchase_receipts, [:tenant_id, :received_on]
+    add_index :purchase_receipts, [ :tenant_id, :purchase_receipt_number ], unique: true
+    add_index :purchase_receipts, [ :tenant_id, :received_on ]
 
     create_table :purchase_receipt_items do |t|
       t.references :tenant, null: false, foreign_key: true

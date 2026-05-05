@@ -7,7 +7,7 @@ class CreateAssignments < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :assignments, [:tenant_id, :user_id, :role_id], unique: true
+    add_index :assignments, [ :tenant_id, :user_id, :role_id ], unique: true
 
     if table_exists?(:user_roles)
       execute <<~SQL.squish

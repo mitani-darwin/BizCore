@@ -1,6 +1,6 @@
 module Admin
   class InvoicesController < BaseController
-    before_action :set_invoice, only: [:show, :download_excel, :cancel, :reissue]
+    before_action :set_invoice, only: [ :show, :download_excel, :cancel, :reissue ]
 
     def index
       @invoices = current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc)

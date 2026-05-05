@@ -98,7 +98,7 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "procurement flow proceeds from purchase order to receipt return, billing, and payment reconciliation" do
-    assert_difference(["PurchaseOrder.count", "PurchaseOrderItem.count"], 1) do
+    assert_difference([ "PurchaseOrder.count", "PurchaseOrderItem.count" ], 1) do
       post admin_purchase_orders_path, params: {
         purchase_order: {
           supplier_id: @supplier.id,
@@ -133,14 +133,14 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_purchase_order_path(purchase_order),
       filename: "#{purchase_order.purchase_order_number}.xlsx",
-      includes: [purchase_order.purchase_order_number, purchase_order.supplier.name]
+      includes: [ purchase_order.purchase_order_number, purchase_order.supplier.name ]
     )
 
     patch send_purchase_order_admin_purchase_order_path(purchase_order)
     assert_redirected_to admin_purchase_order_path(purchase_order)
     assert purchase_order.reload.sent?
 
-    assert_difference(["PurchaseReceipt.count", "PurchaseReceiptItem.count", "StockMovement.count"], 1) do
+    assert_difference([ "PurchaseReceipt.count", "PurchaseReceiptItem.count", "StockMovement.count" ], 1) do
       patch receive_items_admin_purchase_order_path(purchase_order), params: {
         received_on: "2026-04-12",
         received_by_name: "倉庫担当",
@@ -163,10 +163,10 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_purchase_receipt_path(first_receipt),
       filename: "#{first_receipt.purchase_receipt_number}.xlsx",
-      includes: [first_receipt.purchase_receipt_number, first_receipt.supplier.name]
+      includes: [ first_receipt.purchase_receipt_number, first_receipt.supplier.name ]
     )
 
-    assert_difference(["PurchaseReceipt.count", "PurchaseReceiptItem.count", "StockMovement.count"], 1) do
+    assert_difference([ "PurchaseReceipt.count", "PurchaseReceiptItem.count", "StockMovement.count" ], 1) do
       patch receive_items_admin_purchase_order_path(purchase_order), params: {
         received_on: "2026-04-13",
         received_by_name: "倉庫担当",
@@ -188,7 +188,7 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "td", text: second_receipt.purchase_receipt_number
 
-    assert_difference(["PurchaseAdjustment.count", "StockMovement.count"], 1) do
+    assert_difference([ "PurchaseAdjustment.count", "StockMovement.count" ], 1) do
       post admin_purchase_adjustments_path, params: {
         purchase_adjustment: {
           purchase_receipt_id: second_receipt.id,
@@ -237,7 +237,7 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "td", text: discount_adjustment.adjustment_number
 
-    assert_difference(["PurchaseBillBatch.count", "PurchaseBill.count"], 1) do
+    assert_difference([ "PurchaseBillBatch.count", "PurchaseBill.count" ], 1) do
       post issue_monthly_admin_purchase_bills_path, params: {
         billing_period_from: "2026-04-01",
         billing_period_to: "2026-04-30",
@@ -260,7 +260,7 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_purchase_bill_path(purchase_bill),
       filename: "#{purchase_bill.bill_number}.xlsx",
-      includes: [purchase_bill.bill_number, purchase_bill.supplier.name]
+      includes: [ purchase_bill.bill_number, purchase_bill.supplier.name ]
     )
 
     get new_admin_supplier_payment_path(source_purchase_bill_id: purchase_bill.id)
@@ -268,7 +268,7 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source_purchase_bill_id'][value='#{purchase_bill.id}']", count: 1
     assert_select "input[name='supplier_payment[amount]'][value='#{purchase_bill.outstanding_amount.to_i}.0'], input[name='supplier_payment[amount]'][value='#{purchase_bill.outstanding_amount.to_i}']", count: 1
 
-    assert_difference(["SupplierPayment.count", "SupplierPaymentAllocation.count"], 1) do
+    assert_difference([ "SupplierPayment.count", "SupplierPaymentAllocation.count" ], 1) do
       post admin_supplier_payments_path, params: {
         source_purchase_bill_id: purchase_bill.id,
         supplier_payment: {
