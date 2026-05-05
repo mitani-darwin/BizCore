@@ -286,8 +286,8 @@ class Customer < ApplicationRecord
       end
     else
       scope = records
-      scope = scope.where("#{attribute} >= ?", from) if from.present?
-      scope = scope.where("#{attribute} <= ?", to) if to.present?
+      scope = scope.where(arel_table[attribute].gteq(from)) if from.present?
+      scope = scope.where(arel_table[attribute].lteq(to)) if to.present?
       scope
     end
   end
