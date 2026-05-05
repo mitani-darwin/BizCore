@@ -33,7 +33,7 @@ module Purchases
           closing_day_snapshot: purchase_bill.closing_day_snapshot,
           payment_due_rule_snapshot: purchase_bill.payment_due_rule_snapshot,
           payment_method_snapshot: purchase_bill.payment_method_snapshot,
-          remarks: [purchase_bill.remarks.presence, "再発行元: #{purchase_bill.bill_number}"].compact.join("\n")
+          remarks: [ purchase_bill.remarks.presence, "再発行元: #{purchase_bill.bill_number}" ].compact.join("\n")
         )
 
         purchase_bill.purchase_bill_items.find_each do |item|

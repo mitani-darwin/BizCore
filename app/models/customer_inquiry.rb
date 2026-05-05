@@ -62,7 +62,7 @@ class CustomerInquiry < ApplicationRecord
   end
 
   def primary_contact
-    [contact_person_department, contact_person_name].compact_blank.join(" ")
+    [ contact_person_department, contact_person_name ].compact_blank.join(" ")
   end
 
   def open?

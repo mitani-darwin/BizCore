@@ -1,7 +1,7 @@
 module Admin
   class StockMovementsController < BaseController
-    before_action :set_movement, only: [:show]
-    before_action :set_options, only: [:new, :create]
+    before_action :set_movement, only: [ :show ]
+    before_action :set_options, only: [ :new, :create ]
 
     def index
       @stock_movements = current_tenant.stock_movements.includes(:warehouse, :product).recent

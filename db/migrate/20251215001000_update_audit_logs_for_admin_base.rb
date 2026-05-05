@@ -22,7 +22,7 @@ class UpdateAuditLogsForAdminBase < ActiveRecord::Migration[8.1]
     change_column_null :audit_logs, :summary, true if column_exists?(:audit_logs, :summary)
     change_column_default :audit_logs, :status, from: nil, to: "succeeded" if column_exists?(:audit_logs, :status)
 
-    add_index :audit_logs, [:actor_type, :actor_id] unless index_exists?(:audit_logs, [:actor_type, :actor_id])
+    add_index :audit_logs, [ :actor_type, :actor_id ] unless index_exists?(:audit_logs, [ :actor_type, :actor_id ])
     add_index :audit_logs, :action_key unless index_exists?(:audit_logs, :action_key)
     add_index :audit_logs, :request_id unless index_exists?(:audit_logs, :request_id)
   end
@@ -30,7 +30,7 @@ class UpdateAuditLogsForAdminBase < ActiveRecord::Migration[8.1]
   def down
     return unless table_exists?(:audit_logs)
 
-    remove_index :audit_logs, column: [:actor_type, :actor_id] if index_exists?(:audit_logs, [:actor_type, :actor_id])
+    remove_index :audit_logs, column: [ :actor_type, :actor_id ] if index_exists?(:audit_logs, [ :actor_type, :actor_id ])
     remove_index :audit_logs, column: :action_key if index_exists?(:audit_logs, :action_key)
     remove_index :audit_logs, column: :request_id if index_exists?(:audit_logs, :request_id)
 

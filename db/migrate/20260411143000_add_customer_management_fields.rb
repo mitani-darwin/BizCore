@@ -6,6 +6,6 @@ class AddCustomerManagementFields < ActiveRecord::Migration[8.1]
     add_column :customers, :contact_person_email, :string
     add_column :customers, :contact_person_tel, :string
 
-    add_index :customers, [:tenant_id, :status]
+    add_index :customers, [ :tenant_id, :status ]
   end
 end

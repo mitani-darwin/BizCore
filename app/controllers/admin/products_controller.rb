@@ -1,6 +1,6 @@
 module Admin
   class ProductsController < BaseController
-    before_action :set_product, only: [:show, :edit, :update]
+    before_action :set_product, only: [ :show, :edit, :update ]
 
     def index
       @products = current_tenant.products.order(:code, :id)

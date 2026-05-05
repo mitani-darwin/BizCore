@@ -1,7 +1,7 @@
 module Admin
   class LeaveRequestsController < BaseController
-    before_action :set_leave_request, only: [:show, :edit, :update, :approve, :reject]
-    before_action :set_employee_options, only: [:index, :new, :create, :edit, :update]
+    before_action :set_leave_request, only: [ :show, :edit, :update, :approve, :reject ]
+    before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update ]
 
     def index
       @current_month = selected_month

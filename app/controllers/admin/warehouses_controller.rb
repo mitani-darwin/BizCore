@@ -1,6 +1,6 @@
 module Admin
   class WarehousesController < BaseController
-    before_action :set_warehouse, only: [:show, :edit, :update]
+    before_action :set_warehouse, only: [ :show, :edit, :update ]
 
     def index
       @warehouses = current_tenant.warehouses.order(:code, :id)

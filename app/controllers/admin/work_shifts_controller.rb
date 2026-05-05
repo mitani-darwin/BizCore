@@ -1,7 +1,7 @@
 module Admin
   class WorkShiftsController < BaseController
-    before_action :set_work_shift, only: [:show, :edit, :update]
-    before_action :set_employee_options, only: [:index, :new, :create, :edit, :update]
+    before_action :set_work_shift, only: [ :show, :edit, :update ]
+    before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update ]
 
     def index
       @current_month = selected_month

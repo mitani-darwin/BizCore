@@ -60,7 +60,7 @@ module Purchases
             remarks: note
           )
 
-          items.sort_by { |item| [billable_date_for(item), item.id] }.each do |item|
+          items.sort_by { |item| [ billable_date_for(item), item.id ] }.each do |item|
             create_bill_item!(purchase_bill, item)
           end
 

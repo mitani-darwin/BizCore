@@ -1,6 +1,6 @@
 module Admin
   class SuppliersController < BaseController
-    before_action :set_supplier, only: [:show, :edit, :update]
+    before_action :set_supplier, only: [ :show, :edit, :update ]
 
     def index
       @filters = { q: search_keyword, status: search_status }

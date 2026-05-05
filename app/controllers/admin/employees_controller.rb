@@ -1,6 +1,6 @@
 module Admin
   class EmployeesController < BaseController
-    before_action :set_employee, only: [:show, :edit, :update]
+    before_action :set_employee, only: [ :show, :edit, :update ]
 
     def index
       @filters = {

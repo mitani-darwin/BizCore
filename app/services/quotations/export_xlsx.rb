@@ -10,7 +10,7 @@ module Quotations
       "converted" => "注文変換済",
       "cancelled" => "取消"
     }.freeze
-    COLUMN_WIDTHS = [18, 28, 12, 14, 14, 16].freeze
+    COLUMN_WIDTHS = [ 18, 28, 12, 14, 14, 16 ].freeze
 
     def self.call(quotation:)
       new(quotation:).call
@@ -211,15 +211,15 @@ module Quotations
 
     def build_rows
       rows = []
-      rows << [{ value: "見積書", type: :string, style: 1 }]
+      rows << [ { value: "見積書", type: :string, style: 1 } ]
       rows << []
       rows << label_value_row("見積番号", quotation.quotation_number, "状態", status_label, "見積日", jp_date(quotation.quotation_date))
       rows << label_value_row("得意先", quotation.customer.name, "有効期限", jp_date(quotation.expiration_date), "社内担当者", quotation.quoted_by_name.presence || "-")
-      rows << [{ value: "件名", type: :string, style: 2 }, { value: quotation.subject.presence || "-", type: :string, style: 3 }]
+      rows << [ { value: "件名", type: :string, style: 2 }, { value: quotation.subject.presence || "-", type: :string, style: 3 } ]
       rows << label_value_row("得意先担当者", quotation.customer.primary_contact.presence || "-", "メール", quotation.customer.contact_person_email.presence || quotation.customer.email.presence || "-", "電話", quotation.customer.contact_person_tel.presence || quotation.customer.tel.presence || "-")
-      rows << [{ value: "備考", type: :string, style: 2 }, { value: quotation.remarks.presence || "-", type: :string, style: 3 }]
+      rows << [ { value: "備考", type: :string, style: 2 }, { value: quotation.remarks.presence || "-", type: :string, style: 3 } ]
       rows << []
-      rows << [{ value: "見積明細", type: :string, style: 2 }]
+      rows << [ { value: "見積明細", type: :string, style: 2 } ]
       rows << [
         { value: "商品コード", type: :string, style: 2 },
         { value: "商品名", type: :string, style: 2 },

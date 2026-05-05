@@ -136,7 +136,7 @@ tenants.each do |attrs|
     tenant: tenant,
     email: attrs[:billing_email],
     name: "#{attrs[:name]} オーナー",
-    roles: [roles[:owner]],
+    roles: [ roles[:owner] ],
     owner_flag: true
   )
 
@@ -144,7 +144,7 @@ tenants.each do |attrs|
     tenant: tenant,
     email: "admin@#{tenant.code}.example.com",
     name: "#{tenant.name} 管理者",
-    roles: [roles[:admin]],
+    roles: [ roles[:admin] ],
     owner_flag: false
   )
 
@@ -152,7 +152,7 @@ tenants.each do |attrs|
     tenant: tenant,
     email: "manager@#{tenant.code}.example.com",
     name: "#{tenant.name} マネージャー",
-    roles: [roles[:manager]],
+    roles: [ roles[:manager] ],
     owner_flag: false
   )
 
@@ -160,7 +160,7 @@ tenants.each do |attrs|
     tenant: tenant,
     email: "viewer@#{tenant.code}.example.com",
     name: "#{tenant.name} 閲覧者",
-    roles: [roles[:viewer]],
+    roles: [ roles[:viewer] ],
     owner_flag: false
   )
 

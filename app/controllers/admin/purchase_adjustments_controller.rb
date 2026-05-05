@@ -1,6 +1,6 @@
 module Admin
   class PurchaseAdjustmentsController < BaseController
-    before_action :set_purchase_adjustment, only: [:show]
+    before_action :set_purchase_adjustment, only: [ :show ]
 
     def index
       @filters = {

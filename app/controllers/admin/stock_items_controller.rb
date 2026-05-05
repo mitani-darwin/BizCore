@@ -1,7 +1,7 @@
 module Admin
   class StockItemsController < BaseController
-    before_action :set_stock_item, only: [:show, :edit, :update]
-    before_action :set_options, only: [:new, :create, :edit, :update]
+    before_action :set_stock_item, only: [ :show, :edit, :update ]
+    before_action :set_options, only: [ :new, :create, :edit, :update ]
 
     def index
       @stock_items = current_tenant.stock_items.includes(:warehouse, :product).joins(:warehouse, :product).order("warehouses.name ASC, products.name ASC")

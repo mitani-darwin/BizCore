@@ -53,7 +53,7 @@ class PurchaseBill < ApplicationRecord
   def outstanding_amount
     return 0.to_d if cancelled?
 
-    [balance_amount.to_d, 0.to_d].max
+    [ balance_amount.to_d, 0.to_d ].max
   end
 
   def cancellable?

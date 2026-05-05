@@ -17,9 +17,9 @@ class CreateQuotationTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :quotations, [:tenant_id, :quotation_number], unique: true
-    add_index :quotations, [:tenant_id, :status]
-    add_index :quotations, [:tenant_id, :quotation_date]
+    add_index :quotations, [ :tenant_id, :quotation_number ], unique: true
+    add_index :quotations, [ :tenant_id, :status ]
+    add_index :quotations, [ :tenant_id, :quotation_date ]
 
     create_table :quotation_items do |t|
       t.references :tenant, null: false, foreign_key: true
@@ -37,7 +37,7 @@ class CreateQuotationTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :quotation_items, [:quotation_id, :line_no], unique: true
+    add_index :quotation_items, [ :quotation_id, :line_no ], unique: true
 
     add_reference :orders, :quotation, foreign_key: true
   end

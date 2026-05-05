@@ -15,6 +15,6 @@ class AddInventoryControlTables < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :stock_counts, [:tenant_id, :counted_at]
+    add_index :stock_counts, [ :tenant_id, :counted_at ]
   end
 end

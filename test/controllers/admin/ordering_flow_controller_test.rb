@@ -107,7 +107,7 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_quotation_path(@quotation),
       filename: "#{@quotation.quotation_number}.xlsx",
-      includes: [@quotation.quotation_number, @customer.name]
+      includes: [ @quotation.quotation_number, @customer.name ]
     )
 
     get new_admin_quotation_path
@@ -176,7 +176,7 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_quotation_path(quotation),
       filename: "#{quotation.quotation_number}.xlsx",
-      includes: [quotation.quotation_number, quotation.customer.name]
+      includes: [ quotation.quotation_number, quotation.customer.name ]
     )
 
     patch send_quotation_admin_quotation_path(quotation)
@@ -204,7 +204,7 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_order_path(order),
       filename: "#{order.order_number}.xlsx",
-      includes: [order.order_number, order.customer.name]
+      includes: [ order.order_number, order.customer.name ]
     )
   end
 
@@ -264,10 +264,10 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_delivery_path(delivery),
       filename: "#{delivery.delivery_number}.xlsx",
-      includes: [delivery.delivery_number, delivery.customer.name]
+      includes: [ delivery.delivery_number, delivery.customer.name ]
     )
 
-    assert_difference(["BillingBatch.count", "Invoice.count"], 1) do
+    assert_difference([ "BillingBatch.count", "Invoice.count" ], 1) do
       post issue_monthly_admin_invoices_path, params: {
         billing_period_from: "2026-04-01",
         billing_period_to: "2026-04-30",
@@ -288,7 +288,7 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_xlsx_download(
       download_excel_admin_invoice_path(invoice),
       filename: "#{invoice.invoice_number}.xlsx",
-      includes: [invoice.invoice_number, invoice.customer.name]
+      includes: [ invoice.invoice_number, invoice.customer.name ]
     )
 
     assert_difference("Payment.count", 1) do
@@ -355,7 +355,7 @@ class Admin::OrderingFlowControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='source_invoice_id'][value='#{invoice.id}']", count: 1
     assert_select "input[name='payment[amount]'][value='2200.0'], input[name='payment[amount]'][value='2200']", count: 1
 
-    assert_difference(["Payment.count", "PaymentAllocation.count"], 1) do
+    assert_difference([ "Payment.count", "PaymentAllocation.count" ], 1) do
       post admin_payments_path, params: {
         source_invoice_id: invoice.id,
         payment: {

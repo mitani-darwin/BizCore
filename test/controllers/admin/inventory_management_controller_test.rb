@@ -85,7 +85,7 @@ class Admin::InventoryManagementControllerTest < ActionDispatch::IntegrationTest
     assert_equal 15, @stock_item.reload.quantity_on_hand
     assert_equal "inbound", StockMovement.order(:id).last.movement_type
 
-    assert_difference(["StockCount.count", "StockMovement.count"], 1) do
+    assert_difference([ "StockCount.count", "StockMovement.count" ], 1) do
       post admin_stock_counts_path, params: {
         stock_count: {
           stock_item_id: @stock_item.id,

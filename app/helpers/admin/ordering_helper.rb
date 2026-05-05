@@ -1,88 +1,88 @@
 module Admin
   module OrderingHelper
     TAX_CATEGORY_OPTIONS = [
-      ["課税 10%", "taxable_10"],
-      ["軽減税率 8%", "taxable_8"],
-      ["非課税", "non_taxable"]
+      [ "課税 10%", "taxable_10" ],
+      [ "軽減税率 8%", "taxable_8" ],
+      [ "非課税", "non_taxable" ]
     ].freeze
 
     PAYMENT_METHOD_OPTIONS = [
-      ["銀行振込", "bank_transfer"],
-      ["口座振替", "direct_debit"],
-      ["現金", "cash"],
-      ["その他", "other"]
+      [ "銀行振込", "bank_transfer" ],
+      [ "口座振替", "direct_debit" ],
+      [ "現金", "cash" ],
+      [ "その他", "other" ]
     ].freeze
 
     INVOICE_DELIVERY_METHOD_OPTIONS = [
-      ["メール", "email"],
-      ["郵送", "postal"],
-      ["手渡し", "hand"]
+      [ "メール", "email" ],
+      [ "郵送", "postal" ],
+      [ "手渡し", "hand" ]
     ].freeze
 
     PAYMENT_DUE_RULE_OPTIONS = [
-      ["当月末", "end_of_month"],
-      ["翌月末", "next_month_end"],
-      ["翌々月末", "next_two_month_end"],
-      ["個別設定", "custom"]
+      [ "当月末", "end_of_month" ],
+      [ "翌月末", "next_month_end" ],
+      [ "翌々月末", "next_two_month_end" ],
+      [ "個別設定", "custom" ]
     ].freeze
 
     CUSTOMER_STATUS_OPTIONS = [
-      ["取引中", "active"],
-      ["停止", "inactive"]
+      [ "取引中", "active" ],
+      [ "停止", "inactive" ]
     ].freeze
 
     SUPPLIER_STATUS_OPTIONS = [
-      ["取引中", "active"],
-      ["停止", "inactive"]
+      [ "取引中", "active" ],
+      [ "停止", "inactive" ]
     ].freeze
 
     CUSTOMER_INQUIRY_STATUS_OPTIONS = [
-      ["新規", "new"],
-      ["対応中", "responding"],
-      ["商談化", "qualified"],
-      ["完了", "closed"]
+      [ "新規", "new" ],
+      [ "対応中", "responding" ],
+      [ "商談化", "qualified" ],
+      [ "完了", "closed" ]
     ].freeze
 
     CUSTOMER_INQUIRY_SOURCE_OPTIONS = [
-      ["Web", "web"],
-      ["電話", "phone"],
-      ["メール", "email"],
-      ["訪問", "visit"],
-      ["紹介", "referral"],
-      ["その他", "other"]
+      [ "Web", "web" ],
+      [ "電話", "phone" ],
+      [ "メール", "email" ],
+      [ "訪問", "visit" ],
+      [ "紹介", "referral" ],
+      [ "その他", "other" ]
     ].freeze
 
     CUSTOMER_OPPORTUNITY_STAGE_OPTIONS = [
-      ["ヒアリング", "hearing"],
-      ["提案", "proposal"],
-      ["交渉", "negotiation"],
-      ["受注", "won"],
-      ["失注", "lost"]
+      [ "ヒアリング", "hearing" ],
+      [ "提案", "proposal" ],
+      [ "交渉", "negotiation" ],
+      [ "受注", "won" ],
+      [ "失注", "lost" ]
     ].freeze
 
     BALANCE_SCOPE_OPTIONS = [
-      ["すべて", "all"],
-      ["残高あり", "open"],
-      ["滞留あり", "overdue"]
+      [ "すべて", "all" ],
+      [ "残高あり", "open" ],
+      [ "滞留あり", "overdue" ]
     ].freeze
 
     SCHEDULE_SCOPE_OPTIONS = [
-      ["すべて", "all"],
-      ["滞留のみ", "overdue"],
-      ["本日分", "today"],
-      ["7日以内", "within_7_days"],
-      ["30日以内", "within_30_days"]
+      [ "すべて", "all" ],
+      [ "滞留のみ", "overdue" ],
+      [ "本日分", "today" ],
+      [ "7日以内", "within_7_days" ],
+      [ "30日以内", "within_30_days" ]
     ].freeze
 
     PURCHASE_ADJUSTMENT_TYPE_OPTIONS = [
-      ["返品", "purchase_return"],
-      ["値引き", "discount"]
+      [ "返品", "purchase_return" ],
+      [ "値引き", "discount" ]
     ].freeze
 
     STOCK_MOVEMENT_OPTIONS = [
-      ["入庫", "inbound"],
-      ["棚卸増加", "adjustment_increase"],
-      ["棚卸減少", "adjustment_decrease"]
+      [ "入庫", "inbound" ],
+      [ "棚卸増加", "adjustment_increase" ],
+      [ "棚卸減少", "adjustment_decrease" ]
     ].freeze
 
     def jp_date(value)
@@ -194,9 +194,9 @@ module Admin
 
     def purchase_receipt_status_badge(receipt)
       label, tone = case receipt.status
-      when "issued" then ["入荷済", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "入荷済", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -213,9 +213,9 @@ module Admin
     def purchase_adjustment_status_badge(adjustment)
       label, tone = case adjustment.status
       when "issued"
-        [purchase_adjustment_type_label(adjustment.adjustment_type), adjustment.purchase_return? ? "rose" : "amber"]
-      when "cancelled" then ["取消", "slate"]
-      else ["不明", "slate"]
+        [ purchase_adjustment_type_label(adjustment.adjustment_type), adjustment.purchase_return? ? "rose" : "amber" ]
+      when "cancelled" then [ "取消", "slate" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -227,12 +227,12 @@ module Admin
 
     def purchase_bill_status_badge(purchase_bill)
       label, tone = case purchase_bill.status
-      when "issued" then ["未払", "amber"]
-      when "partially_paid" then ["一部支払", "sky"]
-      when "paid" then ["支払済", "emerald"]
-      when "credit" then ["差引超過", "violet"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "未払", "amber" ]
+      when "partially_paid" then [ "一部支払", "sky" ]
+      when "paid" then [ "支払済", "emerald" ]
+      when "credit" then [ "差引超過", "violet" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -240,9 +240,9 @@ module Admin
 
     def purchase_bill_batch_status_badge(purchase_bill_batch)
       label, tone = case purchase_bill_batch.status
-      when "issued" then ["締め済", "violet"]
-      when "cancelled" then ["締め解除", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "締め済", "violet" ]
+      when "cancelled" then [ "締め解除", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -250,11 +250,11 @@ module Admin
 
     def supplier_payment_status_badge(supplier_payment)
       label, tone = case supplier_payment.status
-      when "pending" then ["未消込", "amber"]
-      when "partially_applied" then ["一部消込", "sky"]
-      when "applied" then ["消込済", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "pending" then [ "未消込", "amber" ]
+      when "partially_applied" then [ "一部消込", "sky" ]
+      when "applied" then [ "消込済", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -277,10 +277,10 @@ module Admin
 
     def delivery_status_badge(delivery)
       label, tone = case delivery.status
-      when "issued" then ["発行済", "sky"]
-      when "billed" then ["請求済", "violet"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "発行済", "sky" ]
+      when "billed" then [ "請求済", "violet" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -288,11 +288,11 @@ module Admin
 
     def invoice_status_badge(invoice)
       label, tone = case invoice.status
-      when "issued" then ["未入金", "amber"]
-      when "partially_paid" then ["一部入金", "sky"]
-      when "paid" then ["入金済", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "未入金", "amber" ]
+      when "partially_paid" then [ "一部入金", "sky" ]
+      when "paid" then [ "入金済", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -300,9 +300,9 @@ module Admin
 
     def billing_batch_status_badge(billing_batch)
       label, tone = case billing_batch.status
-      when "issued" then ["締め済", "violet"]
-      when "cancelled" then ["締め解除", "rose"]
-      else ["不明", "slate"]
+      when "issued" then [ "締め済", "violet" ]
+      when "cancelled" then [ "締め解除", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -310,11 +310,11 @@ module Admin
 
     def payment_status_badge(payment)
       label, tone = case payment.status
-      when "pending" then ["未消込", "amber"]
-      when "partially_applied" then ["一部消込", "sky"]
-      when "applied" then ["消込済", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "pending" then [ "未消込", "amber" ]
+      when "partially_applied" then [ "一部消込", "sky" ]
+      when "applied" then [ "消込済", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -343,11 +343,11 @@ module Admin
 
     def customer_inquiry_status_badge(inquiry)
       label, tone = case inquiry.status
-      when "new" then ["新規", "sky"]
-      when "responding" then ["対応中", "amber"]
-      when "qualified" then ["商談化", "indigo"]
-      when "closed" then ["完了", "emerald"]
-      else ["不明", "slate"]
+      when "new" then [ "新規", "sky" ]
+      when "responding" then [ "対応中", "amber" ]
+      when "qualified" then [ "商談化", "indigo" ]
+      when "closed" then [ "完了", "emerald" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -359,12 +359,12 @@ module Admin
 
     def customer_opportunity_stage_badge(opportunity)
       label, tone = case opportunity.stage
-      when "hearing" then ["ヒアリング", "slate"]
-      when "proposal" then ["提案", "sky"]
-      when "negotiation" then ["交渉", "amber"]
-      when "won" then ["受注", "emerald"]
-      when "lost" then ["失注", "rose"]
-      else ["不明", "slate"]
+      when "hearing" then [ "ヒアリング", "slate" ]
+      when "proposal" then [ "提案", "sky" ]
+      when "negotiation" then [ "交渉", "amber" ]
+      when "won" then [ "受注", "emerald" ]
+      when "lost" then [ "失注", "rose" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -389,15 +389,15 @@ module Admin
       days_delta = (due_date - as_of).to_i
       label, tone =
         if days_delta.negative?
-          ["滞留", "rose"]
+          [ "滞留", "rose" ]
         elsif days_delta.zero?
-          ["本日", "amber"]
+          [ "本日", "amber" ]
         elsif days_delta <= 7
-          ["7日以内", "sky"]
+          [ "7日以内", "sky" ]
         elsif days_delta <= 30
-          ["30日以内", "indigo"]
+          [ "30日以内", "indigo" ]
         else
-          ["先日付", "slate"]
+          [ "先日付", "slate" ]
         end
 
       status_badge(label, tone)
@@ -443,11 +443,11 @@ module Admin
 
     def stock_movement_badge(movement)
       label, tone = case movement.movement_type
-      when "inbound" then ["入庫", "emerald"]
-      when "outbound" then ["出庫", "rose"]
-      when "adjustment", "adjustment_increase" then ["増加調整", "sky"]
-      when "adjustment_decrease" then ["減少調整", "amber"]
-      else ["不明", "slate"]
+      when "inbound" then [ "入庫", "emerald" ]
+      when "outbound" then [ "出庫", "rose" ]
+      when "adjustment", "adjustment_increase" then [ "増加調整", "sky" ]
+      when "adjustment_decrease" then [ "減少調整", "amber" ]
+      else [ "不明", "slate" ]
       end
 
       status_badge(label, tone)
@@ -484,36 +484,36 @@ module Admin
 
     def quotation_status_tone(status)
       case status
-      when "draft" then ["下書き", "slate"]
-      when "sent" then ["提示済", "sky"]
-      when "accepted" then ["採用", "emerald"]
-      when "converted" then ["注文変換済", "violet"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "draft" then [ "下書き", "slate" ]
+      when "sent" then [ "提示済", "sky" ]
+      when "accepted" then [ "採用", "emerald" ]
+      when "converted" then [ "注文変換済", "violet" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
     end
 
     def purchase_order_status_tone(status)
       case status
-      when "draft" then ["下書き", "slate"]
-      when "sent" then ["発注済", "sky"]
-      when "partially_received" then ["一部入荷", "amber"]
-      when "received" then ["入荷完了", "emerald"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "draft" then [ "下書き", "slate" ]
+      when "sent" then [ "発注済", "sky" ]
+      when "partially_received" then [ "一部入荷", "amber" ]
+      when "received" then [ "入荷完了", "emerald" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
     end
 
     def order_status_tone(status)
       case status
-      when "draft" then ["下書き", "slate"]
-      when "sent" then ["送信済", "sky"]
-      when "accepted" then ["受注済", "indigo"]
-      when "allocated" then ["在庫確保済", "amber"]
-      when "delivered" then ["納品済", "emerald"]
-      when "billed" then ["請求済", "violet"]
-      when "cancelled" then ["取消", "rose"]
-      else ["不明", "slate"]
+      when "draft" then [ "下書き", "slate" ]
+      when "sent" then [ "送信済", "sky" ]
+      when "accepted" then [ "受注済", "indigo" ]
+      when "allocated" then [ "在庫確保済", "amber" ]
+      when "delivered" then [ "納品済", "emerald" ]
+      when "billed" then [ "請求済", "violet" ]
+      when "cancelled" then [ "取消", "rose" ]
+      else [ "不明", "slate" ]
       end
     end
 

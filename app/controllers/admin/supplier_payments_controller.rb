@@ -1,8 +1,8 @@
 module Admin
   class SupplierPaymentsController < BaseController
-    before_action :set_supplier_payment, only: [:show, :edit, :update, :reconcile]
-    before_action :set_source_purchase_bill, only: [:new, :create]
-    before_action :set_supplier_options, only: [:new, :create, :edit, :update]
+    before_action :set_supplier_payment, only: [ :show, :edit, :update, :reconcile ]
+    before_action :set_source_purchase_bill, only: [ :new, :create ]
+    before_action :set_supplier_options, only: [ :new, :create, :edit, :update ]
 
     def index
       @supplier_payments = current_tenant.supplier_payments.includes(:supplier, :supplier_payment_allocations).order(payment_date: :desc, id: :desc)
@@ -119,12 +119,12 @@ module Admin
     def apply_source_purchase_bill_allocation!
       raise ArgumentError, "仕入請求と異なる仕入先の支払は登録できません" if @supplier_payment.supplier_id != @source_purchase_bill.supplier_id
 
-      allocation_amount = [@supplier_payment.amount.to_d, @source_purchase_bill.outstanding_amount].min
+      allocation_amount = [ @supplier_payment.amount.to_d, @source_purchase_bill.outstanding_amount ].min
       return if allocation_amount <= 0
 
       Purchases::ReconcileSupplierPayment.call(
         supplier_payment: @supplier_payment,
-        allocations: [{ purchase_bill: @source_purchase_bill, amount: allocation_amount }]
+        allocations: [ { purchase_bill: @source_purchase_bill, amount: allocation_amount } ]
       )
     end
 

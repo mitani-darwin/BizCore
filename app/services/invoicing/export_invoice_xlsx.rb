@@ -1,6 +1,6 @@
 module Invoicing
   class ExportInvoiceXlsx < Reports::BaseXlsx
-    COLUMN_WIDTHS = [24, 10, 12, 12, 12, 14].freeze
+    COLUMN_WIDTHS = [ 24, 10, 12, 12, 12, 14 ].freeze
 
     def initialize(invoice:)
       @invoice = invoice

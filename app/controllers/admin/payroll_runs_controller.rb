@@ -1,6 +1,6 @@
 module Admin
   class PayrollRunsController < BaseController
-    before_action :set_payroll_run, only: [:show]
+    before_action :set_payroll_run, only: [ :show ]
 
     def index
       @current_month = selected_month

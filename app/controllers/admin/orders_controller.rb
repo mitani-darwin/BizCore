@@ -2,9 +2,9 @@ module Admin
   class OrdersController < BaseController
     MINIMUM_ORDER_ITEM_ROWS = 1
 
-    before_action :set_order, only: [:show, :edit, :update, :download_excel, :send_order, :accept_order, :reserve_stock, :issue_delivery]
-    before_action :set_form_options, only: [:new, :create, :edit, :update]
-    before_action :ensure_editable_order!, only: [:edit, :update]
+    before_action :set_order, only: [ :show, :edit, :update, :download_excel, :send_order, :accept_order, :reserve_stock, :issue_delivery ]
+    before_action :set_form_options, only: [ :new, :create, :edit, :update ]
+    before_action :ensure_editable_order!, only: [ :edit, :update ]
 
     def index
       @orders = current_tenant.orders.includes(:customer, :order_items).order(order_date: :desc, id: :desc)
@@ -94,7 +94,7 @@ module Admin
     private
 
     def set_order
-      @order = current_tenant.orders.includes(:quotation, order_items: [product: [], stock_allocations: :warehouse]).find_by(id: params[:id])
+      @order = current_tenant.orders.includes(:quotation, order_items: [ product: [], stock_allocations: :warehouse ]).find_by(id: params[:id])
       return if @order
 
       render_not_found and return false
@@ -119,7 +119,7 @@ module Admin
         :ordered_by_name,
         :delivery_address,
         :remarks,
-        order_items_attributes: [:id, :product_id, :quantity, :unit_price, :_destroy]
+        order_items_attributes: [ :id, :product_id, :quantity, :unit_price, :_destroy ]
       )
 
       normalize_order_item_attributes!(permitted)
@@ -145,7 +145,7 @@ module Admin
 
     def build_order_item_rows(order)
       existing_count = order.order_items.reject(&:marked_for_destruction?).size
-      [MINIMUM_ORDER_ITEM_ROWS - existing_count, 0].max.times do
+      [ MINIMUM_ORDER_ITEM_ROWS - existing_count, 0 ].max.times do
         order.order_items.build(tenant: current_tenant)
       end
     end

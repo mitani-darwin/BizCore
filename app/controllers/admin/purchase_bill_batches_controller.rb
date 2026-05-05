@@ -1,6 +1,6 @@
 module Admin
   class PurchaseBillBatchesController < BaseController
-    before_action :set_purchase_bill_batch, only: [:show, :cancel]
+    before_action :set_purchase_bill_batch, only: [ :show, :cancel ]
 
     def index
       @purchase_bill_batches = current_tenant.purchase_bill_batches.includes(:executed_by, :cancelled_by, :purchase_bills).recent
@@ -31,7 +31,7 @@ module Admin
       @purchase_bill_batch = current_tenant.purchase_bill_batches.includes(
         :executed_by,
         :cancelled_by,
-        purchase_bills: [:supplier, :supplier_payment_allocations]
+        purchase_bills: [ :supplier, :supplier_payment_allocations ]
       ).find_by(id: params[:id])
       return if @purchase_bill_batch
 
