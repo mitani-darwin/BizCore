@@ -1,5 +1,8 @@
 ja:
   hello: "こんにちは"
+  time:
+    formats:
+      short: "%m/%d %H:%M"
   support:
     array:
       words_connector: "、"
