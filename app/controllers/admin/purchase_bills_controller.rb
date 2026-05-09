@@ -1,6 +1,6 @@
 module Admin
   class PurchaseBillsController < BaseController
-    before_action :set_purchase_bill, only: [ :show, :download_excel, :cancel, :reissue ]
+    before_action :set_purchase_bill, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 
     def index
       @purchase_bills = current_tenant.purchase_bills.includes(:supplier, :supplier_payment_allocations, :purchase_bill_batch).order(bill_date: :desc, id: :desc)
@@ -16,6 +16,16 @@ module Admin
         Purchases::ExportPurchaseBillXlsx.call(purchase_bill: @purchase_bill, template: template),
         filename: "#{@purchase_bill.bill_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "purchase_bill")
+      send_data(
+        Purchases::ExportPurchaseBillPdf.call(purchase_bill: @purchase_bill, template: template),
+        filename: "#{@purchase_bill.bill_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
         disposition: :attachment
       )
     end

@@ -1,6 +1,6 @@
 module Admin
   class DeliveriesController < BaseController
-    before_action :set_delivery, only: [ :show, :download_excel ]
+    before_action :set_delivery, only: [ :show, :download_excel, :download_pdf ]
 
     def index
       @deliveries = current_tenant.deliveries.includes(:customer, :order).order(delivery_date: :desc, id: :desc)
@@ -14,6 +14,16 @@ module Admin
         Deliveries::ExportXlsx.call(delivery: @delivery, template: template),
         filename: "#{@delivery.delivery_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "delivery")
+      send_data(
+        Deliveries::ExportPdf.call(delivery: @delivery, template: template),
+        filename: "#{@delivery.delivery_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
         disposition: :attachment
       )
     end

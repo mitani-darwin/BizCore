@@ -2,7 +2,7 @@ module Admin
   class QuotationsController < BaseController
     MINIMUM_QUOTATION_ITEM_ROWS = 1
 
-    before_action :set_quotation, only: [ :show, :edit, :update, :download_excel, :send_quotation, :accept_quotation, :create_order ]
+    before_action :set_quotation, only: [ :show, :edit, :update, :download_excel, :download_pdf, :send_quotation, :accept_quotation, :create_order ]
     before_action :set_form_options, only: [ :new, :create, :edit, :update ]
     before_action :ensure_editable_quotation!, only: [ :edit, :update ]
 
@@ -52,6 +52,16 @@ module Admin
         Quotations::ExportXlsx.call(quotation: @quotation, template: template),
         filename: "#{@quotation.quotation_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "quotation")
+      send_data(
+        Quotations::ExportPdf.call(quotation: @quotation, template: template),
+        filename: "#{@quotation.quotation_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
         disposition: :attachment
       )
     end

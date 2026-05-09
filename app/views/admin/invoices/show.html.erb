@@ -11,6 +11,7 @@
     </div>
     <div class="flex flex-wrap gap-2">
       <%= link_to "Excel出力", download_excel_admin_invoice_path(@invoice), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+      <%= link_to "PDF出力", download_pdf_admin_invoice_path(@invoice), class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
       <% if can?("admin.payments.create") && @invoice.balance_amount.to_d.positive? && !@invoice.cancelled? %>
         <%= link_to "この請求の入金を登録", new_admin_payment_path(source_invoice_id: @invoice.id), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
       <% end %>
