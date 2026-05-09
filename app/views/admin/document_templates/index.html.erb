@@ -1,0 +1,25 @@
+<div class="space-y-4">
+  <% @templates.each do |template| %>
+    <% defn = template.definition %>
+    <div class="rounded-lg border border-slate-200 bg-white px-5 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="font-semibold text-slate-800"><%= defn[:title] %></p>
+          <p class="mt-1 text-xs text-slate-500">
+            列数: <%= defn[:column_widths]&.size %>列 &ensp;
+            設定可能行: <%= defn[:rows]&.size %>行 &ensp;
+            明細列: <%= defn[:item_columns]&.size %>列
+          </p>
+          <% if template.company_header_enabled? %>
+            <span class="mt-1 inline-block rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">会社情報ヘッダーあり</span>
+          <% end %>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= link_to "設定",
+            edit_admin_document_template_path(template.document_type),
+            class: "rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

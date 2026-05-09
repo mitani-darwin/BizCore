@@ -11,8 +11,9 @@ module Admin
     def show; end
 
     def download_excel
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "invoice")
       send_data(
-        Invoicing::ExportInvoiceXlsx.call(invoice: @invoice),
+        Invoicing::ExportInvoiceXlsx.call(invoice: @invoice, template: template),
         filename: "#{@invoice.invoice_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
         disposition: :attachment

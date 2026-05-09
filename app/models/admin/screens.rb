@@ -237,6 +237,14 @@ module Admin
           update: { label: "更新", page_title: "権限管理", breadcrumb_label: "権限管理" }
         }
       },
+      document_templates: {
+        index_path: :admin_document_templates_path,
+        actions: %i[index edit update],
+        action_overrides: {
+          edit: { permission_action: :update, label: "編集", breadcrumb_label: "編集", page_title: "%{resource}編集" },
+          update: { permission_action: :update, label: "編集", breadcrumb_label: "編集", page_title: "%{resource}編集" }
+        }
+      },
       audit_logs: {
         index_path: :admin_audit_logs_path,
         actions: %i[index show]

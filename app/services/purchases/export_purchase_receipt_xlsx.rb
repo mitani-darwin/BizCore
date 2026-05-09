@@ -2,8 +2,9 @@ module Purchases
   class ExportPurchaseReceiptXlsx < Reports::BaseXlsx
     COLUMN_WIDTHS = [ 14, 24, 10, 10, 10, 12, 14 ].freeze
 
-    def initialize(purchase_receipt:)
+    def initialize(purchase_receipt:, template: nil)
       @purchase_receipt = purchase_receipt
+      @template = template
     end
 
     private
@@ -27,27 +28,28 @@ module Purchases
     end
 
     def column_widths
-      COLUMN_WIDTHS
+      template ? template.resolved_column_widths : COLUMN_WIDTHS
     end
 
     def build_rows
       rows = []
+      rows.concat(company_header_rows)
       rows << title_row
       rows << blank_row
       rows << label_value_row("入荷番号", purchase_receipt.purchase_receipt_number, "状態", purchase_receipt_status_label(purchase_receipt.status), "入荷日", jp_date(purchase_receipt.received_on))
-      rows << label_value_row("仕入先", purchase_receipt.supplier.name, "発注番号", purchase_receipt.purchase_order.purchase_order_number, "倉庫", purchase_receipt.warehouse.name)
-      rows << label_value_row("入荷担当者", purchase_receipt.received_by_name.presence || "-", "登録日時", purchase_receipt.issued_at.present? ? purchase_receipt.issued_at.strftime("%Y/%m/%d %H:%M") : "-", "仕入先担当者", purchase_receipt.supplier.primary_contact.presence || "-")
-      rows << full_width_value_row("備考", purchase_receipt.remarks.presence || "-", columns: column_widths.size)
+      rows << label_value_row("仕入先", purchase_receipt.supplier.name, "発注番号", purchase_receipt.purchase_order.purchase_order_number, "倉庫", purchase_receipt.warehouse.name) if row_visible?("supplier_order")
+      rows << label_value_row("入荷担当者", purchase_receipt.received_by_name.presence || "-", "登録日時", purchase_receipt.issued_at.present? ? purchase_receipt.issued_at.strftime("%Y/%m/%d %H:%M") : "-", "仕入先担当者", purchase_receipt.supplier.primary_contact.presence || "-") if row_visible?("staff_info")
+      rows << full_width_value_row("備考", purchase_receipt.remarks.presence || "-", columns: column_widths.size) if row_visible?("remarks")
       rows << blank_row
       rows << section_row("入荷明細", columns: column_widths.size)
       rows << [
-        header_cell("商品コード"),
-        header_cell("商品名"),
-        header_cell("入荷数量"),
-        header_cell("返品済"),
-        header_cell("返品可能"),
-        header_cell("単価"),
-        header_cell("金額")
+        header_cell(item_col_label("product_code", "商品コード")),
+        header_cell(item_col_label("product_name", "商品名")),
+        header_cell(item_col_label("quantity", "入荷数量")),
+        header_cell(item_col_label("returned", "返品済")),
+        header_cell(item_col_label("returnable", "返品可能")),
+        header_cell(item_col_label("unit_cost", "単価")),
+        header_cell(item_col_label("amount", "金額"))
       ]
 
       purchase_receipt.purchase_receipt_items.each do |item|

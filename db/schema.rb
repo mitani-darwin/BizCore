@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_15_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -215,6 +215,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_170000) do
     t.index ["order_item_id"], name: "index_delivery_items_on_order_item_id"
     t.index ["product_id"], name: "index_delivery_items_on_product_id"
     t.index ["tenant_id"], name: "index_delivery_items_on_tenant_id"
+  end
+
+  create_table "document_templates", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "document_type", null: false
+    t.text "settings"
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "document_type"], name: "index_document_templates_on_tenant_id_and_document_type", unique: true
+    t.index ["tenant_id"], name: "index_document_templates_on_tenant_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -959,6 +969,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_170000) do
   add_foreign_key "delivery_items", "order_items"
   add_foreign_key "delivery_items", "products"
   add_foreign_key "delivery_items", "tenants"
+  add_foreign_key "document_templates", "tenants"
   add_foreign_key "employees", "tenants"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "tenants"

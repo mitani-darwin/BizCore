@@ -9,8 +9,9 @@ module Admin
     def show; end
 
     def download_excel
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "delivery")
       send_data(
-        Deliveries::ExportXlsx.call(delivery: @delivery),
+        Deliveries::ExportXlsx.call(delivery: @delivery, template: template),
         filename: "#{@delivery.delivery_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
         disposition: :attachment

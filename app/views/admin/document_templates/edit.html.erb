@@ -1,0 +1,238 @@
+<%
+  item_col_samples = {
+    "description"  => "商品サンプル A",
+    "product_code" => "A-001",
+    "product_name" => "商品サンプル A",
+    "quantity"     => "2",
+    "unit_price"   => "1,500",
+    "unit_cost"    => "1,500",
+    "tax_category" => "10%",
+    "tax_amount"   => "300",
+    "amount"       => "3,300",
+    "subtotal"     => "3,000",
+    "allocated"    => "2",
+    "delivered"    => "0",
+    "status"       => "未納",
+    "remarks"      => "—",
+  }.freeze
+
+  defn          = @template.definition
+  item_columns  = defn[:item_columns] || []
+  info_rows     = defn[:rows] || []
+  col_widths    = @template.resolved_column_widths
+%>
+
+<style>
+  [contenteditable=true]:empty::before {
+    content: attr(data-placeholder);
+    color: #cbd5e1;
+    pointer-events: none;
+  }
+  [contenteditable=true]:focus { outline: none; }
+  .resize-handle:hover { background-color: #38bdf8; opacity: 0.6; }
+</style>
+
+<%= form_with url: admin_document_template_path(@template.document_type), method: :patch, local: true,
+    data: {
+      controller: "document-template",
+      "document-template-column-widths-value": col_widths.to_json
+    } do %>
+
+  <% if @template.errors.any? %>
+    <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% @template.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# ツールバー %>
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <label class="flex items-center gap-2 cursor-pointer select-none text-sm font-medium text-slate-700">
+      <input type="hidden"
+             name="document_template[settings][company_header_enabled]"
+             value="<%= @template.company_header_enabled? ? '1' : '0' %>"
+             data-document-template-target="companyHeaderEnabledInput">
+      <input type="checkbox"
+             class="h-4 w-4 rounded border-slate-300 text-sky-600"
+             data-action="change->document-template#toggleCompanyHeader"
+             <%= "checked" if @template.company_header_enabled? %>>
+      会社情報ヘッダーを出力する
+    </label>
+    <div class="flex items-center gap-3 text-xs text-slate-400">
+      <span>列ヘッダーをダブルクリックで列名変更 &ensp;|&ensp; 列境界をドラッグで幅調整 &ensp;|&ensp; 目のアイコンで行の表示/非表示</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <input type="submit" value="保存する"
+        class="cursor-pointer rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">
+      <%= link_to "キャンセル", admin_document_templates_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+    </div>
+  </div>
+
+  <%# 帳票プレビュー用紙 %>
+  <div class="rounded-xl bg-slate-100 p-6">
+    <div class="mx-auto bg-white shadow border border-slate-200" style="max-width: 760px;">
+      <div class="px-10 py-8">
+
+        <%# 会社情報ヘッダー %>
+        <div data-document-template-target="companyHeaderSection"
+             class="mb-5 pb-4 border-b-2 border-slate-500 <%= 'hidden' unless @template.company_header_enabled? %>">
+          <p class="mb-0.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">会社情報（クリックして編集）</p>
+
+          <div contenteditable="true"
+               data-field="company_name"
+               data-placeholder="会社名"
+               data-action="blur->document-template#syncCompanyField"
+               class="text-base font-bold text-slate-800 leading-snug cursor-text border-b border-transparent hover:border-slate-300 focus:border-sky-400 rounded-sm px-0.5 py-0.5 min-h-[1.5em]"><%= @template.company_name %></div>
+
+          <div class="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-sm text-slate-600">
+            <span class="flex items-center gap-1">
+              <span class="text-xs text-slate-400">〒</span>
+              <span contenteditable="true"
+                    data-field="company_postal_code"
+                    data-placeholder="000-0000"
+                    data-action="blur->document-template#syncCompanyField"
+                    class="cursor-text border-b border-transparent hover:border-slate-300 focus:border-sky-400 rounded-sm px-0.5 min-w-[5em] min-h-[1.2em] inline-block"><%= @template.company_postal_code %></span>
+            </span>
+            <span contenteditable="true"
+                  data-field="company_address"
+                  data-placeholder="住所"
+                  data-action="blur->document-template#syncCompanyField"
+                  class="cursor-text border-b border-transparent hover:border-slate-300 focus:border-sky-400 rounded-sm px-0.5 min-w-[12em] min-h-[1.2em] inline-block"><%= @template.company_address %></span>
+          </div>
+          <div class="mt-0.5 flex flex-wrap gap-x-4 gap-y-0.5 text-sm text-slate-600">
+            <span class="flex items-center gap-1">
+              <span class="text-xs text-slate-400">TEL</span>
+              <span contenteditable="true"
+                    data-field="company_tel"
+                    data-placeholder="00-0000-0000"
+                    data-action="blur->document-template#syncCompanyField"
+                    class="cursor-text border-b border-transparent hover:border-slate-300 focus:border-sky-400 rounded-sm px-0.5 min-w-[8em] min-h-[1.2em] inline-block"><%= @template.company_tel %></span>
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="text-xs text-slate-400">Email</span>
+              <span contenteditable="true"
+                    data-field="company_email"
+                    data-placeholder="info@example.com"
+                    data-action="blur->document-template#syncCompanyField"
+                    class="cursor-text border-b border-transparent hover:border-slate-300 focus:border-sky-400 rounded-sm px-0.5 min-w-[10em] min-h-[1.2em] inline-block"><%= @template.company_email %></span>
+            </span>
+          </div>
+        </div>
+
+        <%# 帳票タイトル %>
+        <h1 class="mb-5 text-center text-xl font-bold tracking-widest text-slate-800"><%= defn[:title] %></h1>
+
+        <%# ヘッダー行（表示/非表示トグル付き） %>
+        <% if info_rows.any? %>
+          <div class="mb-4 divide-y divide-slate-100 border border-slate-200 rounded">
+            <% info_rows.each do |row| %>
+              <%
+                row_key     = row[:key]
+                row_label   = row[:label]
+                row_visible = @template.row_visible?(row_key)
+              %>
+              <div data-info-row
+                   data-row-key="<%= row_key %>"
+                   data-visible="<%= row_visible %>"
+                   class="flex items-center justify-between gap-2 px-3 py-2 transition-opacity">
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs font-semibold text-slate-500"><%= row_label %></span>
+                  <div class="mt-0.5 text-xs text-slate-300 truncate">（実際の帳票データが出力されます）</div>
+                </div>
+                <button type="button"
+                        title="<%= row_visible ? '非表示にする' : '表示する' %>"
+                        data-action="click->document-template#toggleRow"
+                        data-row-key="<%= row_key %>"
+                        class="flex-shrink-0 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                  <svg data-icon="eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                       class="h-4 w-4 <%= 'hidden' unless row_visible %>">
+                    <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                    <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41Z" clip-rule="evenodd"/>
+                  </svg>
+                  <svg data-icon="eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                       class="h-4 w-4 <%= 'hidden' if row_visible %>">
+                    <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.091a4 4 0 0 0-5.557-5.556Z" clip-rule="evenodd"/>
+                    <path d="M10.748 13.93l2.523 2.524a10.065 10.065 0 0 1-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 0 1 0-1.186A10.007 10.007 0 0 1 2.839 6.02L6.07 9.252a4 4 0 0 0 4.678 4.678Z"/>
+                  </svg>
+                </button>
+                <input type="hidden"
+                       name="document_template[settings][row_visibility][<%= row_key %>]"
+                       value="<%= row_visible ? '1' : '0' %>">
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# 明細テーブル（列幅リサイズ + 列名ダブルクリック編集） %>
+        <% if item_columns.any? %>
+          <table data-resize-table class="w-full border-collapse table-fixed text-xs" style="border: 1px solid #cbd5e1;">
+            <colgroup>
+              <% col_widths.each_with_index do |_w, i| %>
+                <col data-document-template-target="col" data-col-index="<%= i %>">
+              <% end %>
+            </colgroup>
+            <thead>
+              <tr class="bg-slate-100">
+                <% item_columns.each_with_index do |col, i| %>
+                  <th class="relative border border-slate-300 px-2 py-2 text-left font-semibold text-slate-700 select-none cursor-pointer"
+                      title="ダブルクリックで列名を変更"
+                      data-action="dblclick->document-template#startEditLabel"
+                      data-col-index="<%= i %>"
+                      data-col-key="<%= col[:key] %>"
+                      data-default-label="<%= col[:default_label] %>">
+                    <span data-document-template-target="columnLabel" data-col-index="<%= i %>">
+                      <%= @template.item_column_label(col[:key], col[:default_label]) %>
+                    </span>
+                    <% unless i == item_columns.size - 1 %>
+                      <div class="resize-handle absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize z-10 transition-colors"
+                           data-action="mousedown->document-template#startResize"
+                           data-col-index="<%= i %>">
+                      </div>
+                    <% end %>
+                  </th>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody>
+              <% 2.times do |row_i| %>
+                <tr class="<%= row_i.odd? ? 'bg-slate-50' : 'bg-white' %>">
+                  <% item_columns.each do |col| %>
+                    <td class="border border-slate-200 px-2 py-1.5 text-slate-300 truncate">
+                      <%= item_col_samples[col[:key]] || "—" %>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <p class="mt-1 text-right text-[10px] text-slate-300">（サンプル表示）</p>
+        <% end %>
+
+      </div><%# /px-10 py-8 %>
+    </div><%# /paper %>
+  </div><%# /bg-slate-100 %>
+
+  <%# ============ 非表示フォーム入力 ============ %>
+
+  <%# 会社情報フィールド %>
+  <input type="hidden" name="document_template[settings][company_name]"        value="<%= @template.company_name %>">
+  <input type="hidden" name="document_template[settings][company_postal_code]" value="<%= @template.company_postal_code %>">
+  <input type="hidden" name="document_template[settings][company_address]"     value="<%= @template.company_address %>">
+  <input type="hidden" name="document_template[settings][company_tel]"         value="<%= @template.company_tel %>">
+  <input type="hidden" name="document_template[settings][company_email]"       value="<%= @template.company_email %>">
+
+  <%# 列幅 %>
+  <% col_widths.each_with_index do |width, i| %>
+    <input type="hidden" name="document_template[settings][column_widths][<%= i %>]" value="<%= width %>">
+  <% end %>
+
+  <%# 列ラベル（列ラベル用）%>
+  <% item_columns.each do |col| %>
+    <input type="hidden"
+           name="document_template[settings][item_column_labels][<%= col[:key] %>]"
+           value="<%= @template.item_column_label(col[:key], '') %>">
+  <% end %>
+
+<% end %>

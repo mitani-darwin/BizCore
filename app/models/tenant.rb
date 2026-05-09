@@ -29,6 +29,7 @@ class Tenant < ApplicationRecord
   has_many :billing_batches, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_many :document_templates, dependent: :destroy
 
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true

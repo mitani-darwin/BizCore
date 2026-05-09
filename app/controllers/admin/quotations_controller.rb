@@ -47,10 +47,11 @@ module Admin
     end
 
     def download_excel
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "quotation")
       send_data(
-        Quotations::ExportXlsx.call(quotation: @quotation),
+        Quotations::ExportXlsx.call(quotation: @quotation, template: template),
         filename: "#{@quotation.quotation_number}.xlsx",
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type: Reports::BaseXlsx::MIME_TYPE,
         disposition: :attachment
       )
     end

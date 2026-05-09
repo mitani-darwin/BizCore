@@ -36,6 +36,13 @@ module Admin
               path: :admin_roles_path,
               required_keys: %w[admin.roles.read],
               children: []
+            ),
+            Item.new(
+              id: :document_templates,
+              label: "帳票テンプレート",
+              path: :admin_document_templates_path,
+              required_keys: %w[admin.document_templates.read],
+              children: []
             )
           ]
         ),

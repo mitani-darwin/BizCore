@@ -65,8 +65,9 @@ module Admin
     end
 
     def download_excel
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "purchase_order")
       send_data(
-        Purchases::ExportPurchaseOrderXlsx.call(purchase_order: @purchase_order),
+        Purchases::ExportPurchaseOrderXlsx.call(purchase_order: @purchase_order, template: template),
         filename: "#{@purchase_order.purchase_order_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
         disposition: :attachment

@@ -144,6 +144,7 @@ Rails.application.routes.draw do
         patch :reconcile
       end
     end
+    resources :document_templates, only: [ :index, :edit, :update ], param: :document_type
     root to: "dashboard#index"
   end
 end
