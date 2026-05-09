@@ -59,13 +59,17 @@ module Reports
 
     # ---------- 列幅ヘルパー ----------
 
-    # テンプレート設定を加味した列幅（PDF ポイント単位）の配列を返す
+    # テンプレート設定を加味した列幅（PDF ポイント単位）の配列を返す。
+    # 浮動小数点誤差で合計が usable_width を超えないよう最後の列で端数を吸収する。
     def pdf_column_widths(usable_width)
       widths = column_widths
       total = widths.sum.to_f
-      return Array.new(widths.size) { usable_width / widths.size } if total.zero?
+      n = widths.size
+      return Array.new(n) { (usable_width / n).floor(2) }.tap { |a| a[-1] = (usable_width - a[0..-2].sum).round(2) } if total.zero?
 
-      widths.map { |w| (w / total * usable_width).round(1) }
+      result = widths.map { |w| (w / total * usable_width).floor(2) }
+      result[-1] = (usable_width - result[0..-2].sum).round(2)
+      result
     end
 
     def column_widths
@@ -124,7 +128,8 @@ module Reports
       return if rows.empty?
 
       usable_width = pdf.bounds.width
-      col_w = usable_width / 6.0
+      base_w = (usable_width / 6.0).floor(2)
+      col_ws = Array.new(5, base_w) + [ (usable_width - base_w * 5).round(2) ]
 
       table_data = rows.map do |pairs|
         row_cells = []
@@ -136,8 +141,8 @@ module Reports
         row_cells
       end
 
-      pdf.table(table_data, width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
-        6.times { |i| t.columns(i).width = col_w }
+      pdf.table(table_data, cell_style: { padding: [ 3, 4 ] }) do |t|
+        col_ws.each_with_index { |w, i| t.columns(i).width = w }
         t.cells.border_width = 0.5
         t.cells.border_color = "CBD5E1"
       end
@@ -154,7 +159,6 @@ module Reports
           { content: label.to_s, background_color: "F1F5F9", font_style: :bold },
           { content: value.to_s }
         ] ],
-        width: usable_width,
         cell_style: { padding: [ 3, 4 ] }
       ) do |t|
         t.columns(0).width = label_w
@@ -180,7 +184,7 @@ module Reports
       data_rows = rows.map { |row| row.map { |cell| { content: cell.to_s } } }
       table_data = [ header_row ] + data_rows
 
-      pdf.table(table_data, width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
+      pdf.table(table_data, cell_style: { padding: [ 3, 4 ] }) do |t|
         col_widths.each_with_index { |w, i| t.columns(i).width = w }
         t.row(0).background_color = "F1F5F9"
         t.cells.border_width = 0.5
@@ -201,7 +205,7 @@ module Reports
         { content: label.to_s, background_color: "E0F2FE", font_style: :bold, align: :right },
         { content: number_with_delimiter(amount), background_color: "E0F2FE", font_style: :bold, align: :right }
       ]
-      pdf.table([ row ], width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
+      pdf.table([ row ], cell_style: { padding: [ 3, 4 ] }) do |t|
         t.columns(0).width = leading_w
         t.columns(1).width = label_w
         t.columns(2).width = value_w
