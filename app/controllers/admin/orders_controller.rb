@@ -2,7 +2,7 @@ module Admin
   class OrdersController < BaseController
     MINIMUM_ORDER_ITEM_ROWS = 1
 
-    before_action :set_order, only: [ :show, :edit, :update, :download_excel, :send_order, :accept_order, :reserve_stock, :issue_delivery ]
+    before_action :set_order, only: [ :show, :edit, :update, :download_excel, :download_pdf, :send_order, :accept_order, :reserve_stock, :issue_delivery ]
     before_action :set_form_options, only: [ :new, :create, :edit, :update ]
     before_action :ensure_editable_order!, only: [ :edit, :update ]
 
@@ -53,6 +53,16 @@ module Admin
         Orders::ExportXlsx.call(order: @order, template: template),
         filename: "#{@order.order_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "order")
+      send_data(
+        Orders::ExportPdf.call(order: @order, template: template),
+        filename: "#{@order.order_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
         disposition: :attachment
       )
     end

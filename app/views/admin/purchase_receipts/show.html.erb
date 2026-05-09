@@ -11,6 +11,7 @@
     </div>
     <div class="flex gap-2">
       <%= link_to "Excel出力", download_excel_admin_purchase_receipt_path(@purchase_receipt), class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+      <%= link_to "PDF出力", download_pdf_admin_purchase_receipt_path(@purchase_receipt), class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
       <%= link_to "発注へ", admin_purchase_order_path(@purchase_receipt.purchase_order), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
       <%= link_to "一覧へ戻る", admin_purchase_receipts_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
     </div>

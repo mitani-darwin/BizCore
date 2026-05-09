@@ -1,6 +1,6 @@
 module Admin
   class PurchaseReceiptsController < BaseController
-    before_action :set_purchase_receipt, only: [ :show, :download_excel ]
+    before_action :set_purchase_receipt, only: [ :show, :download_excel, :download_pdf ]
 
     def index
       @filters = {
@@ -31,6 +31,16 @@ module Admin
         Purchases::ExportPurchaseReceiptXlsx.call(purchase_receipt: @purchase_receipt, template: template),
         filename: "#{@purchase_receipt.purchase_receipt_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "purchase_receipt")
+      send_data(
+        Purchases::ExportPurchaseReceiptPdf.call(purchase_receipt: @purchase_receipt, template: template),
+        filename: "#{@purchase_receipt.purchase_receipt_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
         disposition: :attachment
       )
     end
