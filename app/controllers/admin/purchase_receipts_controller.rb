@@ -26,8 +26,9 @@ module Admin
     end
 
     def download_excel
+      template = DocumentTemplate.for_tenant_and_type(current_tenant, "purchase_receipt")
       send_data(
-        Purchases::ExportPurchaseReceiptXlsx.call(purchase_receipt: @purchase_receipt),
+        Purchases::ExportPurchaseReceiptXlsx.call(purchase_receipt: @purchase_receipt, template: template),
         filename: "#{@purchase_receipt.purchase_receipt_number}.xlsx",
         type: Reports::BaseXlsx::MIME_TYPE,
         disposition: :attachment

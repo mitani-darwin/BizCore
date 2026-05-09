@@ -10,6 +10,8 @@ module Reports
       new(**kwargs).call
     end
 
+    attr_reader :template
+
     def call
       buffer = Zip::OutputStream.write_buffer do |zip|
         write_entry(zip, "[Content_Types].xml", content_types_xml)
@@ -44,11 +46,34 @@ module Reports
     end
 
     def column_widths
-      DEFAULT_COLUMN_WIDTHS
+      return DEFAULT_COLUMN_WIDTHS unless template
+      template.resolved_column_widths.presence || DEFAULT_COLUMN_WIDTHS
     end
 
     def worksheet_name
       sanitize_sheet_name(document_title)
+    end
+
+    def row_visible?(key)
+      return true unless template
+      template.row_visible?(key)
+    end
+
+    def item_col_label(key, default_label)
+      return default_label unless template
+      template.item_column_label(key, default_label)
+    end
+
+    def company_header_rows
+      return [] unless template&.company_header_enabled?
+
+      rows = []
+      rows << full_width_value_row("会社名", template.company_name, columns: column_widths.size) if template.company_name.present?
+      rows << full_width_value_row("郵便番号・住所", [ template.company_postal_code, template.company_address ].select(&:present?).join(" "), columns: column_widths.size) if template.company_postal_code.present? || template.company_address.present?
+      rows << full_width_value_row("電話番号", template.company_tel, columns: column_widths.size) if template.company_tel.present?
+      rows << full_width_value_row("メール", template.company_email, columns: column_widths.size) if template.company_email.present?
+      rows << blank_row unless rows.empty?
+      rows
     end
 
     def title_row(value = document_title)
