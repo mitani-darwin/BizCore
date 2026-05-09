@@ -136,7 +136,7 @@ module Reports
         row_cells
       end
 
-      pdf.table(table_data, width: usable_width, cell_padding: [ 3, 4 ]) do |t|
+      pdf.table(table_data, width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
         6.times { |i| t.columns(i).width = col_w }
         t.cells.border_width = 0.5
         t.cells.border_color = "CBD5E1"
@@ -155,7 +155,7 @@ module Reports
           { content: value.to_s }
         ] ],
         width: usable_width,
-        cell_padding: [ 3, 4 ]
+        cell_style: { padding: [ 3, 4 ] }
       ) do |t|
         t.columns(0).width = label_w
         t.columns(1).width = value_w
@@ -180,7 +180,7 @@ module Reports
       data_rows = rows.map { |row| row.map { |cell| { content: cell.to_s } } }
       table_data = [ header_row ] + data_rows
 
-      pdf.table(table_data, width: usable_width, cell_padding: [ 3, 4 ]) do |t|
+      pdf.table(table_data, width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
         col_widths.each_with_index { |w, i| t.columns(i).width = w }
         t.row(0).background_color = "F1F5F9"
         t.cells.border_width = 0.5
@@ -201,7 +201,7 @@ module Reports
         { content: label.to_s, background_color: "E0F2FE", font_style: :bold, align: :right },
         { content: number_with_delimiter(amount), background_color: "E0F2FE", font_style: :bold, align: :right }
       ]
-      pdf.table([ row ], width: usable_width, cell_padding: [ 3, 4 ]) do |t|
+      pdf.table([ row ], width: usable_width, cell_style: { padding: [ 3, 4 ] }) do |t|
         t.columns(0).width = leading_w
         t.columns(1).width = label_w
         t.columns(2).width = value_w
