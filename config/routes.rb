@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       post :clock_in
       patch :clock_out
     end
+    # 従業員セルフ画面: 日報
+    resources :my_daily_reports, only: [ :index, :new, :create, :show ], controller: "daily_reports"
   end
 
 
@@ -152,6 +154,13 @@ Rails.application.routes.draw do
       end
     end
     resources :document_templates, only: [ :index, :edit, :update ], param: :document_type
+    # 現場管理
+    resources :sites do
+      member do
+        patch :update_progress
+      end
+    end
+    resources :daily_reports, only: [ :index, :show ]
     root to: "dashboard#index"
   end
 end

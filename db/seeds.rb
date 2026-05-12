@@ -236,5 +236,33 @@ tenants.each do |attrs|
   end
 end
 
+# 現場サンプルデータ
+darwin_tenant = Tenant.find_by(code: "darwin")
+if darwin_tenant
+  [
+    {
+      name: "〇〇ビル外壁改修工事",
+      code: "SITE-001",
+      category: "construction",
+      status: "active",
+      progress_percentage: 45,
+      address: "東京都渋谷区"
+    },
+    {
+      name: "△△設備定期保守",
+      code: "SITE-002",
+      category: "maintenance",
+      status: "active",
+      progress_percentage: 70,
+      address: "東京都新宿区"
+    }
+  ].each do |attrs|
+    darwin_tenant.sites.find_or_create_by!(code: attrs[:code]) do |s|
+      s.assign_attributes(attrs)
+      s.start_date = Date.current - 30
+    end
+  end
+end
+
 puts "Seeded tenants, roles, permissions, and sample users. Default password: #{DEFAULT_PASSWORD}"
 puts "Seeded employee login users: employee1@darwin.example.com, employee2@darwin.example.com, employee1@acme.example.com, employee2@acme.example.com"

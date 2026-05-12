@@ -1,0 +1,153 @@
+<% content_for :page_title, "現場詳細" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900"><%= @site.name %></h1>
+      <p class="text-sm text-slate-600">コード: <%= @site.code %></p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if can?("admin.sites.update") %>
+        <%= link_to "編集", edit_admin_site_path(@site), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <% end %>
+      <% if can?("admin.sites.delete") %>
+        <%= button_to "削除", admin_site_path(@site), method: :delete,
+              data: { turbo_confirm: "「#{@site.name}」を削除しますか？この操作は取り消せません。" },
+              class: "rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 現場詳細情報 %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">基本情報</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">カテゴリ</dt>
+          <dd><%= @site.category_label %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">ステータス</dt>
+          <dd>
+            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
+              <%= @site.active? ? 'bg-emerald-100 text-emerald-700' : '' %>
+              <%= @site.planning? ? 'bg-sky-100 text-sky-700' : '' %>
+              <%= @site.on_hold? ? 'bg-amber-100 text-amber-700' : '' %>
+              <%= @site.completed? ? 'bg-slate-100 text-slate-700' : '' %>
+              <%= @site.cancelled? ? 'bg-rose-100 text-rose-700' : '' %>
+            "><%= @site.status_label %></span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">住所</dt>
+          <dd><%= @site.address.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">開始日</dt>
+          <dd><%= jp_date(@site.start_date) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">終了日</dt>
+          <dd><%= jp_date(@site.end_date) %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">説明</h2>
+      <div class="mt-3 text-sm text-slate-700">
+        <%= simple_format(@site.description.presence || "-") %>
+      </div>
+    </div>
+  </div>
+
+  <%# 進捗更新フォーム %>
+  <% if can?("admin.sites.update") %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">進捗更新</h2>
+      <div class="mt-3">
+        <div class="mb-3 flex items-center gap-3">
+          <div class="h-3 flex-1 overflow-hidden rounded-full bg-slate-200">
+            <div class="bg-sky-500 h-2 rounded-full transition-all" style="width: <%= @site.progress_percentage %>%"></div>
+          </div>
+          <span class="text-sm font-semibold text-slate-700"><%= @site.progress_percentage %>%</span>
+        </div>
+        <%= form_with url: update_progress_admin_site_path(@site), method: :patch, local: true, class: "grid gap-4 sm:grid-cols-[1fr_1fr_auto]" do |f| %>
+          <%= f.hidden_field :dummy, value: "" %>
+          <div>
+            <%= f.label :status, "ステータス", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+            <%= f.select :status,
+                  options_for_select(Site::STATUS_LABELS.map { |k, v| [v, k] }, @site.status),
+                  {},
+                  class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                  name: "site[status]" %>
+          </div>
+          <div>
+            <%= label_tag "site_progress_percentage", "進捗率 (%)", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+            <%= range_field_tag "site[progress_percentage]", @site.progress_percentage, min: 0, max: 100, step: 5,
+                  id: "site_progress_percentage",
+                  class: "mt-3 w-full cursor-pointer accent-sky-600" %>
+            <div class="mt-1 flex justify-between text-xs text-slate-500">
+              <span>0%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <%= f.submit "更新", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 日報一覧（直近10件） %>
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="text-sm font-semibold text-slate-900">最近の日報（直近10件）</h2>
+      <% if can?("admin.daily_reports.read") %>
+        <%= link_to "日報一覧", admin_daily_reports_path(site_id: @site.id), class: "text-xs font-semibold text-sky-700 hover:underline" %>
+      <% end %>
+    </div>
+    <% if @recent_daily_reports.any? %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-3 py-2">日付</th>
+              <th class="px-3 py-2">従業員</th>
+              <th class="px-3 py-2 text-right">作業時間</th>
+              <th class="px-3 py-2">作業内容</th>
+              <th class="px-3 py-2 text-right">操作</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @recent_daily_reports.each do |report| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-3 py-2 text-slate-700"><%= jp_date(report.report_date) %></td>
+                <td class="px-3 py-2 text-slate-700"><%= report.employee.name %></td>
+                <td class="px-3 py-2 text-right text-slate-700"><%= report.work_hours %>h</td>
+                <td class="px-3 py-2 text-slate-700"><%= report.work_content.truncate(50) %></td>
+                <td class="px-3 py-2 text-right">
+                  <% if can?("admin.daily_reports.read") %>
+                    <%= link_to "詳細", admin_daily_report_path(report), class: "rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-3 text-sm text-slate-500">日報はまだ登録されていません。</p>
+    <% end %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_sites_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.sites.update") %>
+      <%= link_to "編集", edit_admin_site_path(@site), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+  </div>
+</div>

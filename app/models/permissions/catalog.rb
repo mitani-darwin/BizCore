@@ -40,7 +40,9 @@ module Permissions
       permissions: %i[read create update delete],
       authorizations: %i[read update],
       assignments: %i[read create delete],
-      audit_logs: %i[read]
+      audit_logs: %i[read],
+      sites: %i[read create update delete],
+      daily_reports: %i[read]
     }.freeze
 
     RESOURCE_LABELS = {
@@ -83,7 +85,9 @@ module Permissions
       permissions: "権限定義",
       authorizations: "権限割当",
       assignments: "ロール付与",
-      audit_logs: "監査ログ"
+      audit_logs: "監査ログ",
+      sites: "現場",
+      daily_reports: "日報"
     }.freeze
 
     ACTION_LABELS = {

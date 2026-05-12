@@ -1,0 +1,74 @@
+<% content_for :page_title, "日報詳細" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">日報詳細</h1>
+      <p class="text-sm text-slate-600"><%= jp_date(@daily_report.report_date) %> / <%= @daily_report.site.name %></p>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">基本情報</h2>
+      <dl class="mt-3 space-y-3 text-sm text-slate-800">
+        <div>
+          <dt class="text-xs text-slate-500">作業日</dt>
+          <dd><%= jp_date(@daily_report.report_date) %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">現場</dt>
+          <dd>
+            <% if can?("admin.sites.read") %>
+              <%= link_to "#{@daily_report.site.code}: #{@daily_report.site.name}", admin_site_path(@daily_report.site), class: "text-sky-700 hover:underline" %>
+            <% else %>
+              <%= "#{@daily_report.site.code}: #{@daily_report.site.name}" %>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">従業員</dt>
+          <dd><%= @daily_report.employee.name %></dd>
+        </div>
+        <div>
+          <dt class="text-xs text-slate-500">作業時間</dt>
+          <dd><%= @daily_report.work_hours %>時間</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">作業内容</h2>
+      <div class="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <%= simple_format(@daily_report.work_content) %>
+      </div>
+    </div>
+  </div>
+
+  <% if @daily_report.notes.present? %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">備考</h2>
+      <div class="mt-3 rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <%= simple_format(@daily_report.notes) %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 写真ギャラリー %>
+  <% if @daily_report.photos.attached? %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-900">写真 (<%= @daily_report.photos.count %>枚)</h2>
+      <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        <% @daily_report.photos.each do |photo| %>
+          <div class="overflow-hidden rounded-lg border border-slate-200">
+            <%= image_tag photo, class: "h-40 w-full object-cover" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="flex gap-2">
+    <%= link_to "一覧へ戻る", admin_daily_reports_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+  </div>
+</div>
