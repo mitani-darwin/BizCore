@@ -30,10 +30,15 @@ class Tenant < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :document_templates, dependent: :destroy
+  has_many :sites, dependent: :destroy
+  has_many :daily_reports, dependent: :destroy
 
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true
   validates :billing_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :billing_closing_day, :payroll_closing_day, :purchase_closing_day,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 31 },
+            allow_nil: true
 
   # 仮想属性: 画面用に補完する値
   attribute :primary_domain, :string
@@ -57,7 +62,25 @@ class Tenant < ApplicationRecord
     read_attribute(:last_access_at) || updated_at
   end
 
+  def effective_billing_closing_day_for(date)
+    closing_day_for(billing_closing_day, date)
+  end
+
+  def effective_payroll_closing_day_for(date)
+    closing_day_for(payroll_closing_day, date)
+  end
+
+  def effective_purchase_closing_day_for(date)
+    closing_day_for(purchase_closing_day, date)
+  end
+
   private
+
+  def closing_day_for(configured_day, date)
+    return date.end_of_month.day if configured_day.blank? || configured_day.to_i <= 0
+
+    [ configured_day.to_i, date.end_of_month.day ].min
+  end
 
   def create_default_admin_role
     roles.create!(

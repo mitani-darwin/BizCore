@@ -1,0 +1,64 @@
+<%= form_with model: [:admin, site], local: true, class: "space-y-6" do |f| %>
+  <% if site.errors.any? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      <p class="font-semibold">入力内容にエラーがあります。</p>
+      <ul class="list-disc pl-5">
+        <% site.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :code, "現場コード", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "SITE-001" %>
+    </div>
+    <div>
+      <%= f.label :name, "現場名", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+    </div>
+    <div>
+      <%= f.label :category, "カテゴリ", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :category,
+            options_for_select(Site::CATEGORY_LABELS.map { |k, v| [v, k] }, site.category),
+            {},
+            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :status, "ステータス", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :status,
+            options_for_select(Site::STATUS_LABELS.map { |k, v| [v, k] }, site.status),
+            {},
+            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :progress_percentage, "進捗率 (%)", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.number_field :progress_percentage,
+            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+            min: 0, max: 100, step: 1 %>
+    </div>
+    <div>
+      <%= f.label :address, "住所", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_field :address, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :start_date, "開始日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :start_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div>
+      <%= f.label :end_date, "終了日", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.date_field :end_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= f.label :description, "説明", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.text_area :description, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <%= link_to "キャンセル", site.persisted? ? admin_site_path(site) : admin_sites_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+  </div>
+<% end %>

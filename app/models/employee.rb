@@ -18,6 +18,7 @@ class Employee < ApplicationRecord
   has_many :attendance_records, dependent: :restrict_with_exception
   has_many :leave_requests, dependent: :restrict_with_exception
   has_many :payroll_entries, dependent: :restrict_with_exception
+  has_many :daily_reports, dependent: :destroy
 
   enum :status, STATUSES
   enum :employment_type, EMPLOYMENT_TYPES, prefix: true

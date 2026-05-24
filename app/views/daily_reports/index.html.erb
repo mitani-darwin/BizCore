@@ -1,0 +1,61 @@
+<% content_for :title, "マイ日報" %>
+
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.10),_transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef6ff_100%)]">
+  <div class="mx-auto flex min-h-screen max-w-4xl flex-col gap-6 px-4 py-6">
+    <header class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">My Daily Reports</p>
+          <h1 class="mt-2 text-3xl font-semibold text-slate-900">マイ日報</h1>
+          <p class="mt-2 text-sm text-slate-600"><%= current_employee.name %> / <%= current_tenant.name %></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to "新規日報を作成", new_my_daily_report_path, class: "rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+          <%= link_to "打刻画面へ", my_attendance_path, class: "rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, form: { data: { turbo: true } }, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+        </div>
+      </div>
+    </header>
+
+    <div class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <h2 class="text-lg font-semibold text-slate-900">最近の日報</h2>
+      <% if @daily_reports.any? %>
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <tr>
+                <th class="px-4 py-2">日付</th>
+                <th class="px-4 py-2">現場</th>
+                <th class="px-4 py-2 text-right">作業時間</th>
+                <th class="px-4 py-2">作業内容</th>
+                <th class="px-4 py-2 text-right">写真</th>
+                <th class="px-4 py-2 text-right">操作</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <% @daily_reports.each do |report| %>
+                <tr class="hover:bg-slate-50">
+                  <td class="px-4 py-2 text-slate-700"><%= report.report_date.strftime("%Y/%m/%d") %></td>
+                  <td class="px-4 py-2 text-slate-700"><%= report.site.name %></td>
+                  <td class="px-4 py-2 text-right text-slate-700"><%= report.work_hours %>h</td>
+                  <td class="px-4 py-2 text-slate-700"><%= report.work_content.truncate(50) %></td>
+                  <td class="px-4 py-2 text-right text-slate-700"><%= report.photos.count %>枚</td>
+                  <td class="px-4 py-2 text-right">
+                    <%= link_to "詳細", my_daily_report_path(report), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="mt-4 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+          <p>日報がまだ登録されていません。</p>
+          <div class="mt-3">
+            <%= link_to "最初の日報を作成する", new_my_daily_report_path, class: "inline-block rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

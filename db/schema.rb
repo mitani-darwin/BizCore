@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_000001) do
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "assignments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "role_id", null: false
@@ -178,6 +206,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
     t.index ["tenant_id", "code"], name: "index_customers_on_tenant_id_and_code", unique: true
     t.index ["tenant_id", "status"], name: "index_customers_on_tenant_id_and_status"
     t.index ["tenant_id"], name: "index_customers_on_tenant_id"
+  end
+
+  create_table "daily_reports", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "employee_id", null: false
+    t.text "notes"
+    t.date "report_date", null: false
+    t.integer "site_id", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.text "work_content", null: false
+    t.decimal "work_hours", precision: 5, scale: 2, null: false
+    t.index ["employee_id"], name: "index_daily_reports_on_employee_id"
+    t.index ["site_id"], name: "index_daily_reports_on_site_id"
+    t.index ["tenant_id", "employee_id"], name: "index_daily_reports_on_tenant_id_and_employee_id"
+    t.index ["tenant_id", "report_date"], name: "index_daily_reports_on_tenant_id_and_report_date"
+    t.index ["tenant_id", "site_id"], name: "index_daily_reports_on_tenant_id_and_site_id"
+    t.index ["tenant_id"], name: "index_daily_reports_on_tenant_id"
   end
 
   create_table "deliveries", force: :cascade do |t|
@@ -718,6 +764,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
     t.index ["tenant_id"], name: "index_roles_on_tenant_id"
   end
 
+  create_table "sites", force: :cascade do |t|
+    t.string "address"
+    t.string "category", default: "construction", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.date "end_date"
+    t.string "name", null: false
+    t.integer "progress_percentage", default: 0, null: false
+    t.date "start_date"
+    t.string "status", default: "active", null: false
+    t.integer "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "code"], name: "index_sites_on_tenant_id_and_code", unique: true
+    t.index ["tenant_id", "status"], name: "index_sites_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_sites_on_tenant_id"
+  end
+
   create_table "stock_allocations", force: :cascade do |t|
     t.datetime "allocated_at", null: false
     t.integer "allocated_quantity", null: false
@@ -861,12 +925,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
   end
 
   create_table "tenants", force: :cascade do |t|
+    t.integer "billing_closing_day"
     t.string "billing_email", null: false
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "name", null: false
+    t.integer "payroll_closing_day"
     t.string "plan", null: false
+    t.integer "purchase_closing_day"
     t.string "status", null: false
     t.string "subdomain", null: false
     t.datetime "updated_at", null: false
@@ -943,6 +1010,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
     t.index ["tenant_id"], name: "index_work_shifts_on_tenant_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "tenants"
   add_foreign_key "assignments", "users"
@@ -962,6 +1031,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
   add_foreign_key "customer_opportunities", "tenants"
   add_foreign_key "customer_opportunities", "users", column: "assigned_user_id"
   add_foreign_key "customers", "tenants"
+  add_foreign_key "daily_reports", "employees"
+  add_foreign_key "daily_reports", "sites"
+  add_foreign_key "daily_reports", "tenants"
   add_foreign_key "deliveries", "customers"
   add_foreign_key "deliveries", "orders"
   add_foreign_key "deliveries", "tenants"
@@ -1034,6 +1106,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_120000) do
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "roles", "tenants"
+  add_foreign_key "sites", "tenants"
   add_foreign_key "stock_allocations", "order_items"
   add_foreign_key "stock_allocations", "products"
   add_foreign_key "stock_allocations", "tenants"

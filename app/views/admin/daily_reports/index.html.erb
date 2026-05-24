@@ -1,0 +1,79 @@
+<% content_for :page_title, "日報一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">日報一覧</h1>
+      <p class="text-sm text-slate-600">従業員が登録した日報の一覧です。</p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_daily_reports_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_200px_200px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "作業内容で検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "キーワード", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :site_id, "現場", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :site_id,
+              options_for_select([["すべて", ""]] + @site_options.map { |s| ["#{s.code}: #{s.name}", s.id] }, @filters[:site_id]),
+              {},
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :employee_id, "従業員", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :employee_id,
+              options_for_select([["すべて", ""]] + @employee_options.map { |e| [e.name, e.id] }, @filters[:employee_id]),
+              {},
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "クリア", admin_daily_reports_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @daily_reports.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">日付</th>
+            <th class="px-4 py-2">現場</th>
+            <th class="px-4 py-2">従業員</th>
+            <th class="px-4 py-2 text-right">作業時間</th>
+            <th class="px-4 py-2">作業内容</th>
+            <th class="px-4 py-2 text-right">写真</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @daily_reports.each do |report| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(report.report_date) %></td>
+              <td class="px-4 py-2 text-slate-700">
+                <div class="font-semibold text-slate-900"><%= report.site.name %></div>
+                <div class="text-xs text-slate-500"><%= report.site.code %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= report.employee.name %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= report.work_hours %>h</td>
+              <td class="px-4 py-2 text-slate-700"><%= report.work_content.truncate(60) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= report.photos.count %>枚</td>
+              <td class="px-4 py-2 text-right">
+                <%= link_to "詳細", admin_daily_report_path(report), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p><%= @filters.values.any?(&:present?) ? "条件に一致する日報がありません。" : "日報がまだ登録されていません。" %></p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,99 @@
+<% content_for :page_title, "現場一覧" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">現場一覧</h1>
+      <p class="text-sm text-slate-600">現場・案件の進捗を管理します。</p>
+    </div>
+    <% if can?("admin.sites.create") %>
+      <%= link_to "新規現場", new_admin_site_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_sites_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_200px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・現場名で検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :status, "ステータス", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status,
+              options_for_select([["すべて", ""]] + Site::STATUS_LABELS.map { |k, v| [v, k] }, @filters[:status]),
+              {},
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "クリア", admin_sites_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @sites.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">コード</th>
+            <th class="px-4 py-2">現場名</th>
+            <th class="px-4 py-2">カテゴリ</th>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">進捗</th>
+            <th class="px-4 py-2">開始日</th>
+            <th class="px-4 py-2">終了日</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @sites.each do |site| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2 font-semibold text-slate-900"><%= site.code %></td>
+              <td class="px-4 py-2">
+                <div class="font-semibold text-slate-900"><%= site.name %></div>
+                <div class="text-xs text-slate-500"><%= site.address.presence || "-" %></div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= site.category_label %></td>
+              <td class="px-4 py-2">
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
+                  <%= site.active? ? 'bg-emerald-100 text-emerald-700' : '' %>
+                  <%= site.planning? ? 'bg-sky-100 text-sky-700' : '' %>
+                  <%= site.on_hold? ? 'bg-amber-100 text-amber-700' : '' %>
+                  <%= site.completed? ? 'bg-slate-100 text-slate-700' : '' %>
+                  <%= site.cancelled? ? 'bg-rose-100 text-rose-700' : '' %>
+                ">
+                  <%= site.status_label %>
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <div class="flex items-center gap-2">
+                  <div class="h-2 w-24 overflow-hidden rounded-full bg-slate-200">
+                    <div class="bg-sky-500 h-2 rounded-full" style="width: <%= site.progress_percentage %>%"></div>
+                  </div>
+                  <span class="text-xs text-slate-600"><%= site.progress_percentage %>%</span>
+                </div>
+              </td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(site.start_date) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= jp_date(site.end_date) %></td>
+              <td class="px-4 py-2 text-right">
+                <div class="inline-flex gap-2">
+                  <%= link_to "詳細", admin_site_path(site), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.sites.update") %>
+                    <%= link_to "編集", edit_admin_site_path(site), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p><%= @filters[:q].present? || @filters[:status].present? ? "条件に一致する現場がありません。" : "現場がまだ登録されていません。" %></p>
+    </div>
+  <% end %>
+</div>

@@ -143,9 +143,12 @@ ja:
         paid_on: "支払日"
         supplier: "仕入先"
       tenant:
+        billing_closing_day: "請求締め日"
         billing_email: "請求先メールアドレス"
         code: "コード"
         name: "テナント名"
+        payroll_closing_day: "給与締め日"
+        purchase_closing_day: "仕入締め日"
         subdomain: "サブドメイン"
       user:
         email: "メールアドレス"

@@ -326,6 +326,26 @@ module Admin
           ]
         ),
         Section.new(
+          id: :site_management,
+          label: "現場管理",
+          items: [
+            Item.new(
+              id: :sites,
+              label: "現場",
+              path: :admin_sites_path,
+              required_keys: %w[admin.sites.read],
+              children: []
+            ),
+            Item.new(
+              id: :daily_reports,
+              label: "日報",
+              path: :admin_daily_reports_path,
+              required_keys: %w[admin.daily_reports.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :audit,
           label: "監査",
           items: [

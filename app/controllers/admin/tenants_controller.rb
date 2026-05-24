@@ -41,7 +41,10 @@ module Admin
         :subdomain,
         :plan,
         :status,
-        :billing_email
+        :billing_email,
+        :billing_closing_day,
+        :payroll_closing_day,
+        :purchase_closing_day
       )
     end
   end

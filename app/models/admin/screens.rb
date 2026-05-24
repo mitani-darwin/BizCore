@@ -43,7 +43,11 @@ module Admin
       },
       work_shifts: {
         index_path: :admin_work_shifts_path,
-        actions: %i[index show new create edit update]
+        actions: %i[index show new create edit update destroy grid],
+        action_overrides: {
+          grid: { permission_action: :read, label: "グリッド入力", breadcrumb_label: "グリッド入力", page_title: "シフトグリッド" },
+          destroy: { permission_action: :delete, label: "削除", breadcrumb_label: "削除" }
+        }
       },
       attendance_records: {
         index_path: :admin_attendance_records_path,
@@ -247,6 +251,22 @@ module Admin
       },
       audit_logs: {
         index_path: :admin_audit_logs_path,
+        actions: %i[index show]
+      },
+      sites: {
+        index_path: :admin_sites_path,
+        actions: %i[index show new create edit update update_progress],
+        action_overrides: {
+          update_progress: {
+            permission_action: :update,
+            label: "進捗更新",
+            breadcrumb_label: "進捗更新",
+            page_title: "%{resource}詳細"
+          }
+        }
+      },
+      daily_reports: {
+        index_path: :admin_daily_reports_path,
         actions: %i[index show]
       }
     }.freeze

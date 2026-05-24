@@ -1,0 +1,73 @@
+<% content_for :page_title, "シフトグリッド" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">シフトグリッド</h1>
+      <p class="text-sm text-slate-600">全従業員の月次シフトを一覧で入力・確認できます。</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= link_to "一覧表示", admin_work_shifts_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+      <% if can?("admin.work_shifts.create") %>
+        <%= link_to "新規シフト", new_admin_work_shift_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= link_to grid_admin_work_shifts_path(month: (@current_month - 1.month).strftime("%Y-%m")),
+        class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" do %>
+      ◀
+    <% end %>
+    <span class="text-base font-semibold text-slate-900"><%= @current_month.strftime("%Y年%m月") %></span>
+    <%= link_to grid_admin_work_shifts_path(month: (@current_month + 1.month).strftime("%Y-%m")),
+        class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" do %>
+      ▶
+    <% end %>
+  </div>
+
+  <% if @employees.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-max border-collapse text-xs">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200 px-3 py-2 text-left text-xs font-semibold text-slate-600 min-w-[120px]">
+              従業員
+            </th>
+            <% @dates.each do |date| %>
+              <% day_class = date.saturday? ? "text-sky-600" : date.sunday? ? "text-rose-600" : "text-slate-600" %>
+              <th class="border-b border-r border-slate-200 px-1 py-2 text-center font-medium <%= day_class %> min-w-[72px]">
+                <div><%= date.day %>日</div>
+                <div class="text-[10px]"><%= %w[日 月 火 水 木 金 土][date.wday] %></div>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @employees.each_with_index do |employee, idx| %>
+            <tr class="<%= idx.odd? ? 'bg-slate-50/50' : 'bg-white' %>">
+              <td class="sticky left-0 z-10 border-r border-b border-slate-200 px-3 py-2 font-semibold text-slate-900 whitespace-nowrap <%= idx.odd? ? 'bg-slate-50/80' : 'bg-white' %>">
+                <%= employee.name %>
+                <div class="text-[10px] font-normal text-slate-500"><%= employee.employee_code %></div>
+              </td>
+              <% @dates.each do |date| %>
+                <% shift = @shift_map[[employee.id, date]] %>
+                <% col_bg = date.saturday? ? "bg-sky-50/40" : date.sunday? ? "bg-rose-50/40" : "" %>
+                <td class="border-r border-b border-slate-100 p-0 align-top <%= col_bg %>">
+                  <%= render "grid_cell", shift: shift, employee: employee, date: date, grid_month_param: @grid_month_param %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>従業員が登録されていません。</p>
+    </div>
+  <% end %>
+</div>

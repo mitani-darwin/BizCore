@@ -1,7 +1,18 @@
 module Admin
   class WorkShiftsController < BaseController
-    before_action :set_work_shift, only: [ :show, :edit, :update ]
+    before_action :set_work_shift, only: [ :show, :edit, :update, :destroy ]
     before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update ]
+
+    def grid
+      @current_month = selected_month
+      @grid_month_param = @current_month.strftime("%Y-%m")
+      @dates = (@current_month.beginning_of_month..@current_month.end_of_month).to_a
+      @employees = current_tenant.employees.ordered_for_admin
+      shifts = current_tenant.work_shifts
+                             .for_month(@current_month)
+                             .includes(:employee)
+      @shift_map = shifts.index_by { |s| [ s.employee_id, s.work_date ] }
+    end
 
     def index
       @current_month = selected_month
@@ -24,6 +35,16 @@ module Admin
     def show; end
 
     def new
+      if params[:from_grid].present? && params[:employee_id].present? && params[:work_date].present?
+        existing = current_tenant.work_shifts.find_by(
+          employee_id: params[:employee_id],
+          work_date: params[:work_date]
+        )
+        if existing
+          @work_shift = existing
+          render :edit and return
+        end
+      end
       @work_shift = current_tenant.work_shifts.build(default_work_shift_attributes)
     end
 
@@ -31,19 +52,68 @@ module Admin
       @work_shift = current_tenant.work_shifts.build(work_shift_params)
 
       if @work_shift.save
-        redirect_to admin_work_shift_path(@work_shift), notice: "シフトを作成しました。"
+        if params[:from_grid].present?
+          respond_to do |format|
+            format.turbo_stream do
+              render turbo_stream: turbo_stream.replace(
+                "shift_cell_#{@work_shift.employee_id}_#{@work_shift.work_date}",
+                partial: "grid_cell",
+                locals: { shift: @work_shift, employee: @work_shift.employee, date: @work_shift.work_date, grid_month_param: params[:from_grid] }
+              )
+            end
+            format.html { redirect_to grid_admin_work_shifts_path(month: params[:from_grid]) }
+          end
+        else
+          redirect_to admin_work_shift_path(@work_shift), notice: "シフトを作成しました。"
+        end
       else
-        render :new, status: :unprocessable_entity
+        render :new, status: :unprocessable_entity, layout: params[:from_grid].blank?
       end
     end
 
     def edit; end
 
+    def destroy
+      authorize!("admin.work_shifts.delete")
+      employee_id = @work_shift.employee_id
+      work_date   = @work_shift.work_date
+      @work_shift.destroy!
+
+      if params[:from_grid].present?
+        respond_to do |format|
+          format.turbo_stream do
+            employee = current_tenant.employees.find_by(id: employee_id)
+            render turbo_stream: turbo_stream.replace(
+              "shift_cell_#{employee_id}_#{work_date}",
+              partial: "grid_cell",
+              locals: { shift: nil, employee: employee, date: work_date, grid_month_param: params[:from_grid] }
+            )
+          end
+          format.html { redirect_to grid_admin_work_shifts_path(month: params[:from_grid]), notice: "シフトを削除しました。" }
+        end
+      else
+        redirect_to admin_work_shifts_path(month: work_date.strftime("%Y-%m")), notice: "シフトを削除しました。"
+      end
+    end
+
     def update
       if @work_shift.update(work_shift_params)
-        redirect_to admin_work_shift_path(@work_shift), notice: "シフトを更新しました。"
+        if params[:from_grid].present?
+          respond_to do |format|
+            format.turbo_stream do
+              render turbo_stream: turbo_stream.replace(
+                "shift_cell_#{@work_shift.employee_id}_#{@work_shift.work_date}",
+                partial: "grid_cell",
+                locals: { shift: @work_shift, employee: @work_shift.employee, date: @work_shift.work_date, grid_month_param: params[:from_grid] }
+              )
+            end
+            format.html { redirect_to grid_admin_work_shifts_path(month: params[:from_grid]) }
+          end
+        else
+          redirect_to admin_work_shift_path(@work_shift), notice: "シフトを更新しました。"
+        end
       else
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_entity, layout: params[:from_grid].blank?
       end
     end
 
@@ -75,7 +145,7 @@ module Admin
     def default_work_shift_attributes
       {
         employee_id: params[:employee_id],
-        work_date: Date.current,
+        work_date: params[:work_date].presence || Date.current,
         start_time: Time.zone.parse("09:00"),
         end_time: Time.zone.parse("18:00"),
         break_minutes: 60,
