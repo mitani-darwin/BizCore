@@ -1,0 +1,36 @@
+<% frame_id = "shift_cell_#{employee.id}_#{date}" %>
+<% shift_color = case shift&.status
+   when "scheduled" then "text-sky-700 hover:bg-sky-50"
+   when "completed" then "text-emerald-700 hover:bg-emerald-50"
+   when "cancelled" then "text-slate-400 line-through hover:bg-slate-100"
+   else "text-slate-600 hover:bg-slate-50"
+   end %>
+<%= turbo_frame_tag frame_id do %>
+  <% if shift %>
+    <% if can?("admin.work_shifts.update") %>
+      <%= link_to edit_admin_work_shift_path(shift, from_grid: grid_month_param),
+          class: "block px-1.5 py-1 text-center leading-tight rounded #{shift_color}" do %>
+        <div class="font-medium"><%= hhmm(shift.start_time) %></div>
+        <div class="font-medium"><%= hhmm(shift.end_time) %></div>
+        <div class="text-[10px] text-slate-400"><%= shift.break_minutes %>分休</div>
+      <% end %>
+    <% else %>
+      <div class="px-1.5 py-1 text-center leading-tight">
+        <div class="font-medium <%= shift_color.split.first %>"><%= hhmm(shift.start_time) %></div>
+        <div class="font-medium <%= shift_color.split.first %>"><%= hhmm(shift.end_time) %></div>
+        <div class="text-[10px] text-slate-400"><%= shift.break_minutes %>分休</div>
+      </div>
+    <% end %>
+  <% else %>
+    <% if can?("admin.work_shifts.create") %>
+      <%= link_to new_admin_work_shift_path(employee_id: employee.id, work_date: date, from_grid: grid_month_param),
+          class: "flex h-12 items-center justify-center text-slate-200 hover:text-sky-500 hover:bg-sky-50/50 transition-colors" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+      <% end %>
+    <% else %>
+      <div class="h-12"></div>
+    <% end %>
+  <% end %>
+<% end %>

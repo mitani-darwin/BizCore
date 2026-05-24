@@ -13,6 +13,11 @@
       <% if can?("admin.work_shifts.update") %>
         <%= link_to "編集", edit_admin_work_shift_path(@work_shift), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
       <% end %>
+      <% if can?("admin.work_shifts.delete") %>
+        <%= button_to "削除", admin_work_shift_path(@work_shift),
+            method: :delete,
+            class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
       <%= link_to "一覧へ戻る", admin_work_shifts_path(month: @work_shift.work_date.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
     </div>
   </div>

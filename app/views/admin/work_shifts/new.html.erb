@@ -1,12 +1,21 @@
 <% content_for :page_title, "シフト新規作成" %>
 
-<div class="space-y-4">
-  <div>
-    <h1 class="text-xl font-semibold text-slate-900">シフト新規作成</h1>
-    <p class="text-sm text-slate-600">従業員ごとの勤務予定を登録します。</p>
-  </div>
+<% cell_frame_id = @work_shift.employee_id.present? && @work_shift.work_date.present? ?
+   "shift_cell_#{@work_shift.employee_id}_#{@work_shift.work_date}" : nil %>
 
-  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-    <%= render "form", work_shift: @work_shift %>
+<% if params[:from_grid].present? && cell_frame_id.present? %>
+  <%= turbo_frame_tag cell_frame_id do %>
+    <%= render 'grid_cell_form', work_shift: @work_shift, from_grid: params[:from_grid] %>
+  <% end %>
+<% else %>
+  <div class="space-y-4">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">シフト新規作成</h1>
+      <p class="text-sm text-slate-600">従業員ごとの勤務予定を登録します。</p>
+    </div>
+
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <%= render "form", work_shift: @work_shift %>
+    </div>
   </div>
-</div>
+<% end %>

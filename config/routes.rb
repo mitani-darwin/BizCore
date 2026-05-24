@@ -37,7 +37,11 @@ Rails.application.routes.draw do
     resources :roles, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :users, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :employees, only: [ :index, :show, :new, :create, :edit, :update ]
-    resources :work_shifts, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :work_shifts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
+      collection do
+        get :grid
+      end
+    end
     resources :attendance_records, only: [ :index, :show, :new, :create, :edit, :update ] do
       collection do
         post :clock_in

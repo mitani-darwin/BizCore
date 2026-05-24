@@ -43,7 +43,11 @@ module Admin
       },
       work_shifts: {
         index_path: :admin_work_shifts_path,
-        actions: %i[index show new create edit update]
+        actions: %i[index show new create edit update destroy grid],
+        action_overrides: {
+          grid: { permission_action: :read, label: "グリッド入力", breadcrumb_label: "グリッド入力", page_title: "シフトグリッド" },
+          destroy: { permission_action: :delete, label: "削除", breadcrumb_label: "削除" }
+        }
       },
       attendance_records: {
         index_path: :admin_attendance_records_path,
