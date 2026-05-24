@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_11_134935) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_000001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -925,12 +925,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_134935) do
   end
 
   create_table "tenants", force: :cascade do |t|
+    t.integer "billing_closing_day"
     t.string "billing_email", null: false
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "name", null: false
+    t.integer "payroll_closing_day"
     t.string "plan", null: false
+    t.integer "purchase_closing_day"
     t.string "status", null: false
     t.string "subdomain", null: false
     t.datetime "updated_at", null: false

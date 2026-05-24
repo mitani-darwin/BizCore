@@ -35,6 +35,36 @@
         <dt class="text-xs text-slate-500">請求メール</dt>
         <dd class="text-sm font-semibold text-slate-900 break-all"><%= @tenant.billing_email %></dd>
       </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <dt class="text-xs text-slate-500">請求締め日</dt>
+        <dd class="text-sm font-semibold text-slate-900">
+          <% if @tenant.billing_closing_day.present? && @tenant.billing_closing_day.to_i > 0 %>
+            <%= @tenant.billing_closing_day %>日
+          <% else %>
+            末日
+          <% end %>
+        </dd>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <dt class="text-xs text-slate-500">給与締め日</dt>
+        <dd class="text-sm font-semibold text-slate-900">
+          <% if @tenant.payroll_closing_day.present? && @tenant.payroll_closing_day.to_i > 0 %>
+            <%= @tenant.payroll_closing_day %>日
+          <% else %>
+            末日
+          <% end %>
+        </dd>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <dt class="text-xs text-slate-500">仕入締め日</dt>
+        <dd class="text-sm font-semibold text-slate-900">
+          <% if @tenant.purchase_closing_day.present? && @tenant.purchase_closing_day.to_i > 0 %>
+            <%= @tenant.purchase_closing_day %>日
+          <% else %>
+            末日
+          <% end %>
+        </dd>
+      </div>
     </dl>
   </div>
 
