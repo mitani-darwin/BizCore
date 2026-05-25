@@ -51,10 +51,11 @@ module Admin
       },
       attendance_records: {
         index_path: :admin_attendance_records_path,
-        actions: %i[index show new create edit update clock_in clock_out],
+        actions: %i[index show new create edit update clock_in clock_out close_month],
         action_overrides: {
-          clock_in: { permission_action: :create, label: "出勤打刻", breadcrumb_label: "出勤打刻", page_title: "%{resource}一覧" },
-          clock_out: { permission_action: :update, label: "退勤打刻", breadcrumb_label: "退勤打刻", page_title: "%{resource}詳細" }
+          clock_in:    { permission_action: :create, label: "出勤打刻",  breadcrumb_label: "出勤打刻",  page_title: "%{resource}一覧" },
+          clock_out:   { permission_action: :update, label: "退勤打刻",  breadcrumb_label: "退勤打刻",  page_title: "%{resource}詳細" },
+          close_month: { permission_action: :update, label: "月次締め",  breadcrumb_label: "月次締め",  page_title: "%{resource}一覧" }
         }
       },
       leave_requests: {

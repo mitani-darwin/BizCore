@@ -22,6 +22,8 @@ module Admin
         worked_minutes: @attendance_records.sum(&:worked_minutes),
         overtime_minutes: @attendance_records.sum(&:overtime_minutes)
       }
+      @month_working_count = current_tenant.attendance_records.for_month(@current_month).where(status: "working").count
+      @month_closed_count  = current_tenant.attendance_records.for_month(@current_month).where(status: "closed").count
       default_clock_in_at = Time.zone.now.change(sec: 0)
       @clock_in_defaults = {
         employee_id: search_employee_id,
@@ -85,7 +87,31 @@ module Admin
       redirect_to admin_attendance_record_path(@attendance_record), alert: "退勤打刻に失敗しました: #{e.message}"
     end
 
+    def close_month
+      authorize!("admin.attendance_records.update")
+      target_month = selected_month
+      result = Attendances::CloseMonth.call(
+        tenant: current_tenant,
+        month: target_month,
+        requested_by: current_admin_user
+      )
+      audit!(action_key: required_permission_key, auditable: nil,
+             metadata: { month: target_month, closed_count: result.closed_count })
+      notice = build_close_month_notice(result)
+      redirect_to admin_attendance_records_path(month: target_month.strftime("%Y-%m")), notice: notice
+    rescue StandardError => e
+      redirect_to admin_attendance_records_path(month: selected_month.strftime("%Y-%m")), alert: "月次締めに失敗しました: #{e.message}"
+    end
+
     private
+
+    def build_close_month_notice(result)
+      parts = []
+      parts << "#{result.closed_count}件を締めました" if result.closed_count > 0
+      parts << "#{result.already_closed_count}件は締め済み" if result.already_closed_count > 0
+      parts << "#{result.draft_count}件は打刻なし（集計対象外）" if result.draft_count > 0
+      parts.any? ? "月次締めを実行しました。#{parts.join('、')}。" : "月次締めを実行しました。対象レコードはありませんでした。"
+    end
 
     def set_attendance_record
       @attendance_record = current_tenant.attendance_records.includes(:employee, :work_shift).find_by(id: params[:id])
