@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_25_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_223120) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -350,6 +350,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_000001) do
     t.decimal "days_count", precision: 5, scale: 1, default: "1.0", null: false
     t.integer "employee_id", null: false
     t.date "end_date", null: false
+    t.string "half_day_type", default: "none", null: false
     t.string "leave_type", default: "paid_leave", null: false
     t.text "note"
     t.text "reason"

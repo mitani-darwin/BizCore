@@ -1,0 +1,102 @@
+<% content_for :title, "有給申請" %>
+
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.10),_transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef6ff_100%)]">
+  <div class="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-6">
+    <header class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">New Leave Request</p>
+          <h1 class="mt-2 text-2xl font-semibold text-slate-900">有給申請</h1>
+          <p class="mt-1 text-sm text-slate-600">有給残: <span class="font-semibold <%= @remaining_days <= 0 ? 'text-rose-700' : 'text-sky-700' %>"><%= @remaining_days.to_d %> 日</span></p>
+        </div>
+        <%= link_to "一覧へ戻る", my_leave_requests_path, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+      </div>
+    </header>
+
+    <div class="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur">
+      <% if @leave_request.errors.any? %>
+        <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p class="font-semibold">入力内容にエラーがあります。</p>
+          <ul class="mt-1 list-disc pl-5">
+            <% @leave_request.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @leave_request, url: my_leave_requests_path, local: true, class: "space-y-5",
+            data: { controller: "leave-request" } do |f| %>
+        <div>
+          <%= f.label :leave_type, "休暇種別", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.select :leave_type,
+              options_for_select([["有給休暇", "paid_leave"], ["特別休暇", "special_leave"]], @leave_request.leave_type),
+              {},
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+
+        <div>
+          <%= f.label :half_day_type, "取得区分", class: "block text-sm font-medium text-slate-800" %>
+          <div class="mt-2 flex flex-wrap gap-3">
+            <% [["全休", "none"], ["午前半休", "morning"], ["午後半休", "afternoon"]].each do |label, value| %>
+              <label class="flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition
+                has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50 has-[:checked]:text-sky-700
+                border-slate-200 text-slate-700 hover:bg-slate-50">
+                <%= f.radio_button :half_day_type, value,
+                    class: "accent-sky-600",
+                    data: { leave_request_target: "halfDayType", action: "change->leave-request#syncHalfDay" } %>
+                <%= label %>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <%= f.label :start_date, "開始日", class: "block text-sm font-medium text-slate-800" %>
+            <%= f.date_field :start_date,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                required: true,
+                data: { leave_request_target: "startDate", action: "change->leave-request#onStartDateChange" } %>
+          </div>
+          <div data-leave-request-target="endDateRow">
+            <%= f.label :end_date, "終了日", class: "block text-sm font-medium text-slate-800" %>
+            <%= f.date_field :end_date,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                required: true,
+                data: { leave_request_target: "endDate", action: "change->leave-request#calculate" } %>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div>
+            <%= f.label :days_count, "取得日数", class: "block text-sm font-medium text-slate-800" %>
+            <%= f.number_field :days_count, min: 0.5, step: 0.5,
+                class: "mt-1 w-28 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                data: { leave_request_target: "daysCount" } %>
+          </div>
+          <p class="mt-5 text-xs text-slate-500">開始日・終了日から自動入力されます。</p>
+        </div>
+
+        <div>
+          <%= f.label :reason, "申請理由", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :reason, rows: 3,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+              placeholder: "例: 私用のため" %>
+        </div>
+
+        <div>
+          <%= f.label :note, "備考（任意）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :note, rows: 2,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+              placeholder: "その他連絡事項があれば入力してください" %>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <%= f.submit "申請する", class: "rounded-lg bg-sky-600 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-700 cursor-pointer" %>
+          <%= link_to "キャンセル", my_leave_requests_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

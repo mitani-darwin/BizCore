@@ -108,10 +108,11 @@ module Admin
     def leave_request_params
       params.require(:leave_request).permit(
         :employee_id,
+        :leave_type,
+        :half_day_type,
         :start_date,
         :end_date,
         :days_count,
-        :leave_type,
         :reason,
         :note
       )
