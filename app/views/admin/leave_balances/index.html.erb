@@ -1,0 +1,106 @@
+<% content_for :page_title, "有給残一覧" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">有給残一覧</h1>
+    <p class="text-sm text-slate-600">従業員ごとの有給付与日数・消化日数・残日数を確認します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <%= form_with url: admin_leave_balances_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_160px_200px_160px_auto_auto]" do |f| %>
+      <div>
+        <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・氏名・メールで検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :status, "在籍状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :status,
+            options_for_select([["在籍中", "active"], ["退職済", "inactive"], ["すべて", ""]], @filters[:status] || "active"),
+            {},
+            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :balance_scope, "残日数", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.select :balance_scope,
+            options_for_select([["すべて", "all"], ["残あり", "positive"], ["残なし・超過", "zero_or_less"]], @filters[:balance_scope]),
+            {},
+            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div>
+        <%= f.label :as_of, "基準日", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
+        <%= f.date_field :as_of, value: @filters[:as_of], class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      </div>
+      <div class="flex items-end">
+        <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
+      <div class="flex items-end">
+        <%= link_to "クリア", admin_leave_balances_path, class: "w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-sm text-slate-700 hover:bg-slate-50" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">対象人数</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:employee_count] %> 人</div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">付与合計</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:total_granted].to_d %> 日</div>
+      </div>
+      <div class="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+        <div class="text-xs text-slate-500">消化合計</div>
+        <div class="mt-1 text-xl font-semibold text-slate-900"><%= @summary[:total_used].to_d %> 日</div>
+      </div>
+      <div class="rounded-lg border border-sky-100 bg-sky-50 px-4 py-3">
+        <div class="text-xs text-sky-600">残日数合計</div>
+        <div class="mt-1 text-xl font-semibold text-sky-900"><%= @summary[:total_remaining].to_d %> 日</div>
+      </div>
+    </div>
+  </div>
+
+  <% if @balance_rows.any? %>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-4 py-2">状態</th>
+            <th class="px-4 py-2">従業員</th>
+            <th class="px-4 py-2">雇用形態</th>
+            <th class="px-4 py-2 text-right">付与日数</th>
+            <th class="px-4 py-2 text-right">消化日数</th>
+            <th class="px-4 py-2 text-right">残日数</th>
+            <th class="px-4 py-2 text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @balance_rows.each do |row| %>
+            <% employee = row[:employee] %>
+            <% low_balance = row[:remaining_days] <= 0 %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-4 py-2"><%= employee_status_badge(employee) %></td>
+              <td class="px-4 py-2">
+                <div class="font-semibold text-slate-900"><%= link_to employee.name, admin_employee_path(employee), class: "hover:underline" %></div>
+                <div class="text-xs text-slate-500"><%= employee.employee_code %></div>
+              </td>
+              <td class="px-4 py-2"><%= employment_type_badge(employee) %></td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= row[:granted_days].to_d %> 日</td>
+              <td class="px-4 py-2 text-right text-slate-700"><%= row[:used_days].to_d %> 日</td>
+              <td class="px-4 py-2 text-right font-semibold <%= low_balance ? 'text-rose-700' : 'text-sky-700' %>">
+                <%= row[:remaining_days].to_d %> 日
+              </td>
+              <td class="px-4 py-2 text-right">
+                <% if can?("admin.leave_requests.read") %>
+                  <%= link_to "有給一覧", admin_leave_requests_path(employee_id: employee.id), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
+      <p>条件に一致する従業員はありません。</p>
+    </div>
+  <% end %>
+</div>

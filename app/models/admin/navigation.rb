@@ -113,6 +113,13 @@ module Admin
               children: []
             ),
             Item.new(
+              id: :leave_balances,
+              label: "有給残一覧",
+              path: :admin_leave_balances_path,
+              required_keys: %w[admin.leave_balances.read],
+              children: []
+            ),
+            Item.new(
               id: :payroll_runs,
               label: "給与計算",
               path: :admin_payroll_runs_path,

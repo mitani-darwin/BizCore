@@ -57,6 +57,7 @@ Rails.application.routes.draw do
         patch :reject
       end
     end
+    resources :leave_balances, only: [ :index ]
     resources :payroll_runs, only: [ :index, :show ] do
       collection do
         post :generate

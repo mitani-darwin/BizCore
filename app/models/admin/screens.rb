@@ -66,6 +66,10 @@ module Admin
           reject: { permission_action: :update, label: "却下", breadcrumb_label: "却下", page_title: "%{resource}詳細" }
         }
       },
+      leave_balances: {
+        index_path: :admin_leave_balances_path,
+        actions: %i[index]
+      },
       payroll_runs: {
         index_path: :admin_payroll_runs_path,
         actions: %i[index show generate confirm download_excel download_pdf],
