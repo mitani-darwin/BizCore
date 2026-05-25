@@ -10,11 +10,18 @@ class LeaveRequest < ApplicationRecord
     rejected: "rejected"
   }.freeze
 
+  HALF_DAY_TYPES = {
+    none: "none",
+    morning: "morning",
+    afternoon: "afternoon"
+  }.freeze
+
   belongs_to :tenant
   belongs_to :employee
 
   enum :leave_type, LEAVE_TYPES, prefix: true
   enum :status, STATUSES, prefix: true
+  enum :half_day_type, HALF_DAY_TYPES, prefix: true
 
   scope :for_month, lambda { |month|
     return all if month.blank?
@@ -80,9 +87,13 @@ class LeaveRequest < ApplicationRecord
 
   def calculate_days_count
     return if start_date.blank? || end_date.blank?
-    return if days_count.to_d.positive?
 
-    self.days_count = ((end_date - start_date).to_i + 1).to_d
+    if !half_day_type_none?
+      self.days_count = 0.5
+      self.end_date = start_date
+    elsif days_count.to_d <= 0
+      self.days_count = ((end_date - start_date).to_i + 1).to_d
+    end
   end
 
   def tenant_consistency

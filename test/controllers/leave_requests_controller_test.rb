@@ -72,6 +72,28 @@ class LeaveRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.new(2026, 6, 1), leave_request.start_date
   end
 
+  test "employee can create a half-day leave request" do
+    sign_in @employee_user
+    assert_difference -> { @employee.leave_requests.count }, +1 do
+      post my_leave_requests_path, params: {
+        leave_request: {
+          leave_type: "paid_leave",
+          half_day_type: "morning",
+          start_date: "2026-06-01",
+          end_date: "2026-06-01",
+          reason: "午前のみ"
+        }
+      }
+    end
+    assert_redirected_to my_leave_requests_path
+
+    leave_request = @employee.leave_requests.last
+    assert_equal "morning", leave_request.half_day_type
+    assert_equal 0.5.to_d, leave_request.days_count
+    assert_equal Date.new(2026, 6, 1), leave_request.start_date
+    assert_equal Date.new(2026, 6, 1), leave_request.end_date
+  end
+
   test "employee can view leave request detail" do
     sign_in @employee_user
     leave_request = @employee.leave_requests.create!(

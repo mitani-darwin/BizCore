@@ -54,6 +54,11 @@
                           end %>">
                       <%= leave_request.leave_type == "paid_leave" ? "有給休暇" : "特別休暇" %>
                     </span>
+                    <% unless leave_request.half_day_type_none? %>
+                      <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                        <%= leave_request.half_day_type_morning? ? "午前半休" : "午後半休" %>
+                      </span>
+                    <% end %>
                   </div>
                   <p class="mt-1 text-xs text-slate-600"><%= leave_request.days_count.to_d %> 日間
                     <% if leave_request.reason.present? %> ・ <%= leave_request.reason.truncate(40) %><% end %>

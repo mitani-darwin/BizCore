@@ -53,6 +53,6 @@ class LeaveRequestsController < ApplicationController
   end
 
   def leave_request_params
-    params.require(:leave_request).permit(:leave_type, :start_date, :end_date, :days_count, :reason, :note)
+    params.require(:leave_request).permit(:leave_type, :half_day_type, :start_date, :end_date, :days_count, :reason, :note)
   end
 end

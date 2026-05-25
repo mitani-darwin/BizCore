@@ -20,12 +20,27 @@
       <%= f.label :leave_type, "休暇区分", class: "block text-sm font-medium text-slate-800" %>
       <%= f.select :leave_type, options_for_select(leave_type_options, leave_request.leave_type), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" %>
     </div>
+    <div class="sm:col-span-2">
+      <%= f.label :half_day_type, "取得区分", class: "block text-sm font-medium text-slate-800" %>
+      <div class="mt-2 flex flex-wrap gap-3">
+        <% [["全休", "none"], ["午前半休", "morning"], ["午後半休", "afternoon"]].each do |label, value| %>
+          <label class="flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition
+            has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50 has-[:checked]:text-sky-700
+            border-slate-200 text-slate-700 hover:bg-slate-50">
+            <%= f.radio_button :half_day_type, value,
+                class: "accent-sky-600",
+                data: { leave_request_target: "halfDayType", action: "change->leave-request#syncHalfDay" } %>
+            <%= label %>
+          </label>
+        <% end %>
+      </div>
+    </div>
     <div>
       <%= f.label :start_date, "開始日", class: "block text-sm font-medium text-slate-800" %>
       <%= f.date_field :start_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm",
-          data: { leave_request_target: "startDate", action: "change->leave-request#calculate" } %>
+          data: { leave_request_target: "startDate", action: "change->leave-request#onStartDateChange" } %>
     </div>
-    <div>
+    <div data-leave-request-target="endDateRow">
       <%= f.label :end_date, "終了日", class: "block text-sm font-medium text-slate-800" %>
       <%= f.date_field :end_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm",
           data: { leave_request_target: "endDate", action: "change->leave-request#calculate" } %>
