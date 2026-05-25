@@ -67,9 +67,10 @@ module Admin
       },
       payroll_runs: {
         index_path: :admin_payroll_runs_path,
-        actions: %i[index show generate],
+        actions: %i[index show generate confirm],
         action_overrides: {
-          generate: { permission_action: :create, label: "給与反映", breadcrumb_label: "給与反映", page_title: "%{resource}一覧" }
+          generate: { permission_action: :create, label: "給与反映", breadcrumb_label: "給与反映", page_title: "%{resource}一覧" },
+          confirm: { permission_action: :update, label: "確定", breadcrumb_label: "確定", page_title: "%{resource}詳細" }
         }
       },
       suppliers: {

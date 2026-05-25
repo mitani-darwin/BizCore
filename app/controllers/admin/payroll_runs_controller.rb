@@ -1,6 +1,6 @@
 module Admin
   class PayrollRunsController < BaseController
-    before_action :set_payroll_run, only: [ :show ]
+    before_action :set_payroll_run, only: [ :show, :confirm ]
 
     def index
       @current_month = selected_month
@@ -14,6 +14,15 @@ module Admin
 
     def show
       @payroll_entries = @payroll_run.payroll_entries.joins(:employee).includes(:employee).order("employees.employee_code ASC, payroll_entries.id ASC")
+    end
+
+    def confirm
+      authorize!("admin.payroll_runs.update")
+      @payroll_run.confirm!(confirmed_by: current_admin_user)
+      audit!(action_key: required_permission_key, auditable: @payroll_run, metadata: { payroll_month: @payroll_run.payroll_month })
+      redirect_to admin_payroll_run_path(@payroll_run), notice: "給与計算を確定しました。"
+    rescue StandardError => e
+      redirect_to admin_payroll_run_path(@payroll_run), alert: "確定に失敗しました: #{e.message}"
     end
 
     def generate
