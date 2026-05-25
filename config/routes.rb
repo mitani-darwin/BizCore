@@ -60,6 +60,9 @@ Rails.application.routes.draw do
       collection do
         post :generate
       end
+      member do
+        patch :confirm
+      end
     end
     resources :customers, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :customer_inquiries, only: [ :index, :show, :new, :create, :edit, :update ]

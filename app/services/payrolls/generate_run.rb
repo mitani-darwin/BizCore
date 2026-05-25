@@ -14,10 +14,14 @@ module Payrolls
     def call
       PayrollRun.transaction do
         run = tenant.payroll_runs.find_or_initialize_by(payroll_month: payroll_month)
+        raise "確定済みの給与計算は再生成できません" if run.confirmed?
+
         run.generated_by = requested_by
         run.generated_at = Time.current
         run.status = "generated"
         run.note = note
+        run.confirmed_at = nil
+        run.confirmed_by = nil
         run.save!
 
         run.payroll_entries.delete_all

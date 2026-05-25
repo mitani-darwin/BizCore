@@ -10,9 +10,23 @@
       <p class="text-sm text-slate-600"><%= @payroll_run.payroll_month.strftime("%Y年%m月") %> 分 / 生成日時 <%= jp_datetime(@payroll_run.generated_at) %></p>
     </div>
     <div class="flex gap-2">
+      <% if @payroll_run.generated? && can?("admin.payroll_runs.update") %>
+        <%= button_to "確定する", confirm_admin_payroll_run_path(@payroll_run),
+            method: :patch,
+            class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700" %>
+      <% end %>
       <%= link_to "一覧へ戻る", admin_payroll_runs_path(month: @payroll_run.payroll_month.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
     </div>
   </div>
+
+  <% if @payroll_run.confirmed? %>
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-800">
+      確定日時: <%= jp_datetime(@payroll_run.confirmed_at) %>
+      <% if @payroll_run.confirmed_by.present? %>
+        　確定者: <%= @payroll_run.confirmed_by.email %>
+      <% end %>
+    </div>
+  <% end %>
 
   <div class="grid gap-4 md:grid-cols-3">
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

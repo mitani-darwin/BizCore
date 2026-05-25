@@ -8,6 +8,7 @@ class PayrollRun < ApplicationRecord
 
   belongs_to :tenant
   belongs_to :generated_by, class_name: "User", optional: true
+  belongs_to :confirmed_by, class_name: "User", optional: true
 
   has_many :payroll_entries, dependent: :destroy
 
@@ -27,6 +28,12 @@ class PayrollRun < ApplicationRecord
 
   def title
     run_number
+  end
+
+  def confirm!(confirmed_by:)
+    raise "確定済みの給与計算は再確定できません" if confirmed?
+
+    update!(status: "confirmed", confirmed_at: Time.current, confirmed_by: confirmed_by)
   end
 
   private

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_000001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -458,6 +458,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_000001) do
   end
 
   create_table "payroll_runs", force: :cascade do |t|
+    t.datetime "confirmed_at"
+    t.integer "confirmed_by_id"
     t.datetime "created_at", null: false
     t.integer "employee_count", default: 0, null: false
     t.datetime "generated_at"
@@ -469,6 +471,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_000001) do
     t.integer "tenant_id", null: false
     t.decimal "total_gross_pay", precision: 14, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
+    t.index ["confirmed_by_id"], name: "index_payroll_runs_on_confirmed_by_id"
     t.index ["generated_by_id"], name: "index_payroll_runs_on_generated_by_id"
     t.index ["tenant_id", "payroll_month"], name: "index_payroll_runs_on_tenant_id_and_payroll_month", unique: true
     t.index ["tenant_id", "run_number"], name: "index_payroll_runs_on_tenant_id_and_run_number", unique: true

@@ -11,7 +11,7 @@
   <% if can?("admin.payroll_runs.create") %>
     <div class="rounded-xl border border-violet-200 bg-violet-50 p-4 shadow-sm">
       <h2 class="text-sm font-semibold text-slate-900">5. 給与への自動反映</h2>
-      <p class="mt-1 text-xs text-slate-600">対象月の勤務確定済み勤怠、残業、有給承認分を集計して給与計算を再生成します。</p>
+      <p class="mt-1 text-xs text-slate-600">対象月の勤務確定済み勤怠、残業、有給承認分を集計して給与計算を再生成します。確定済みの月は再生成できません。</p>
       <%= form_with url: generate_admin_payroll_runs_path, method: :post, local: true, class: "mt-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)_auto]" do %>
         <div>
           <label class="block text-xs font-semibold tracking-wide text-slate-500">給与対象月</label>
@@ -52,6 +52,7 @@
             <th class="px-4 py-2">給与計算番号</th>
             <th class="px-4 py-2">対象月</th>
             <th class="px-4 py-2">生成日時</th>
+            <th class="px-4 py-2">確定日時</th>
             <th class="px-4 py-2 text-right">対象人数</th>
             <th class="px-4 py-2 text-right">支給総額</th>
             <th class="px-4 py-2 text-right">操作</th>
@@ -64,6 +65,7 @@
               <td class="px-4 py-2 font-semibold text-slate-900"><%= payroll_run.run_number %></td>
               <td class="px-4 py-2 text-slate-700"><%= payroll_run.payroll_month.strftime("%Y年%m月") %></td>
               <td class="px-4 py-2 text-slate-700"><%= jp_datetime(payroll_run.generated_at) %></td>
+              <td class="px-4 py-2 text-slate-700"><%= payroll_run.confirmed_at ? jp_datetime(payroll_run.confirmed_at) : "-" %></td>
               <td class="px-4 py-2 text-right text-slate-700"><%= payroll_run.employee_count %></td>
               <td class="px-4 py-2 text-right text-slate-700"><%= money(payroll_run.total_gross_pay) %></td>
               <td class="px-4 py-2 text-right">
