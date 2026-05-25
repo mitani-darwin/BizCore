@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     resources :attendance_records, only: [ :index, :show, :new, :create, :edit, :update ] do
       collection do
         post :clock_in
+        post :close_month
       end
       member do
         patch :clock_out
