@@ -1,6 +1,6 @@
 module Admin
   class PayrollRunsController < BaseController
-    before_action :set_payroll_run, only: [ :show, :confirm ]
+    before_action :set_payroll_run, only: [ :show, :confirm, :download_excel, :download_pdf ]
 
     def index
       @current_month = selected_month
@@ -14,6 +14,24 @@ module Admin
 
     def show
       @payroll_entries = @payroll_run.payroll_entries.joins(:employee).includes(:employee).order("employees.employee_code ASC, payroll_entries.id ASC")
+    end
+
+    def download_excel
+      send_data(
+        Payrolls::ExportPayrollXlsx.call(payroll_run: @payroll_run),
+        filename: "#{@payroll_run.run_number}.xlsx",
+        type: Reports::BaseXlsx::MIME_TYPE,
+        disposition: :attachment
+      )
+    end
+
+    def download_pdf
+      send_data(
+        Payrolls::ExportPayrollPdf.call(payroll_run: @payroll_run),
+        filename: "#{@payroll_run.run_number}.pdf",
+        type: Reports::BasePdf::MIME_TYPE,
+        disposition: :attachment
+      )
     end
 
     def confirm

@@ -63,6 +63,8 @@ Rails.application.routes.draw do
       end
       member do
         patch :confirm
+        get :download_excel
+        get :download_pdf
       end
     end
     resources :customers, only: [ :index, :show, :new, :create, :edit, :update ]

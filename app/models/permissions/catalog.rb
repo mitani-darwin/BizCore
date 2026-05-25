@@ -9,7 +9,7 @@ module Permissions
       work_shifts: %i[read create update delete],
       attendance_records: %i[read create update delete],
       leave_requests: %i[read create update delete],
-      payroll_runs: %i[read create update delete],
+      payroll_runs: %i[read create update delete download_excel download_pdf],
       customer_inquiries: %i[read create update delete],
       customer_opportunities: %i[read create update delete],
       customer_sales: %i[read],

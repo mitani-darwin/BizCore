@@ -68,10 +68,12 @@ module Admin
       },
       payroll_runs: {
         index_path: :admin_payroll_runs_path,
-        actions: %i[index show generate confirm],
+        actions: %i[index show generate confirm download_excel download_pdf],
         action_overrides: {
-          generate: { permission_action: :create, label: "給与反映", breadcrumb_label: "給与反映", page_title: "%{resource}一覧" },
-          confirm: { permission_action: :update, label: "確定", breadcrumb_label: "確定", page_title: "%{resource}詳細" }
+          generate:       { permission_action: :create, label: "給与反映",   breadcrumb_label: "給与反映",   page_title: "%{resource}一覧" },
+          confirm:        { permission_action: :update, label: "確定",       breadcrumb_label: "確定",       page_title: "%{resource}詳細" },
+          download_excel: { permission_action: :read,   label: "Excel出力",  breadcrumb_label: "Excel出力",  page_title: "%{resource}詳細" },
+          download_pdf:   { permission_action: :read,   label: "PDF出力",    breadcrumb_label: "PDF出力",    page_title: "%{resource}詳細" }
         }
       },
       suppliers: {

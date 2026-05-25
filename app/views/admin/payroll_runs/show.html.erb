@@ -10,6 +10,12 @@
       <p class="text-sm text-slate-600"><%= @payroll_run.payroll_month.strftime("%Y年%m月") %> 分 / 生成日時 <%= jp_datetime(@payroll_run.generated_at) %></p>
     </div>
     <div class="flex gap-2">
+      <% if can?("admin.payroll_runs.read") %>
+        <%= link_to "Excel", download_excel_admin_payroll_run_path(@payroll_run),
+            class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+        <%= link_to "PDF", download_pdf_admin_payroll_run_path(@payroll_run),
+            class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
       <% if @payroll_run.generated? && can?("admin.payroll_runs.update") %>
         <%= button_to "確定する", confirm_admin_payroll_run_path(@payroll_run),
             method: :patch,
