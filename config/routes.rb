@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     end
     # 従業員セルフ画面: 日報
     resources :my_daily_reports, only: [ :index, :new, :create, :show ], controller: "daily_reports"
+    # 従業員セルフ画面: 有給申請
+    resources :my_leave_requests, only: [ :index, :new, :create, :show ], controller: "leave_requests"
   end
 
 
