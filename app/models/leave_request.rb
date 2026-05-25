@@ -80,7 +80,7 @@ class LeaveRequest < ApplicationRecord
 
   def calculate_days_count
     return if start_date.blank? || end_date.blank?
-    return if days_count.to_d.positive? && changed.exclude?("start_date") && changed.exclude?("end_date")
+    return if days_count.to_d.positive?
 
     self.days_count = ((end_date - start_date).to_i + 1).to_d
   end
