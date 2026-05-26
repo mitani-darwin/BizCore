@@ -16,8 +16,9 @@ module Admin
                                      .where(status: %w[issued partially_paid])
                                      .where("purchase_bills.balance_amount > 0")
                                      .order(:due_date, :bill_date, :id)
-      @payment_schedule_rows = build_rows(purchase_bills)
-      @summary = build_summary(@payment_schedule_rows)
+      all_rows = build_rows(purchase_bills)
+      @summary = build_summary(all_rows)
+      @pagy, @payment_schedule_rows = pagy_array(all_rows)
     end
 
     private

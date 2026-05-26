@@ -3,7 +3,7 @@ module Admin
     before_action :set_product, only: [ :show, :edit, :update ]
 
     def index
-      @products = current_tenant.products.order(:code, :id)
+      @pagy, @products = pagy(current_tenant.products.order(:code, :id))
     end
 
     def show; end

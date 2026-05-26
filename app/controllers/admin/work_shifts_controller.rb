@@ -20,16 +20,17 @@ module Admin
         month: @current_month.strftime("%Y-%m"),
         employee_id: search_employee_id
       }
-      @work_shifts = current_tenant.work_shifts
-                                   .includes(:employee, :attendance_record)
-                                   .for_month(@current_month)
-                                   .with_employee(search_employee_id)
-                                   .ordered_for_admin
+      query = current_tenant.work_shifts
+                            .includes(:employee, :attendance_record)
+                            .for_month(@current_month)
+                            .with_employee(search_employee_id)
+                            .ordered_for_admin
       @shift_summary = {
-        count: @work_shifts.size,
-        scheduled_minutes: @work_shifts.sum(&:scheduled_minutes),
-        completed_count: @work_shifts.count(&:completed?)
+        count: query.size,
+        scheduled_minutes: query.sum(&:scheduled_minutes),
+        completed_count: query.count(&:completed?)
       }
+      @pagy, @work_shifts = pagy(query)
     end
 
     def show; end

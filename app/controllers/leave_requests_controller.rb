@@ -6,9 +6,7 @@ class LeaveRequestsController < ApplicationController
   before_action :set_leave_request, only: [ :show ]
 
   def index
-    @leave_requests = current_employee.leave_requests
-                                      .order(start_date: :desc, id: :desc)
-                                      .limit(50)
+    @pagy, @leave_requests = pagy(current_employee.leave_requests.order(start_date: :desc, id: :desc))
     @remaining_days = current_employee.remaining_paid_leave_days
   end
 

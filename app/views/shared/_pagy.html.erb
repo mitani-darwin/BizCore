@@ -1,0 +1,34 @@
+<% if pagy.pages > 1 %>
+  <nav class="mt-4 flex items-center justify-between border-t border-slate-100 pt-4" aria-label="ページネーション">
+    <p class="text-xs text-slate-500">
+      <%= pagy.count %> 件中 <%= pagy.from %>〜<%= pagy.to %> 件を表示
+    </p>
+    <div class="flex items-center gap-1">
+      <% if pagy.prev %>
+        <%= link_to pagy_url_for(pagy, pagy.prev), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "前のページ" } do %>
+          ‹
+        <% end %>
+      <% else %>
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-sm text-slate-300">‹</span>
+      <% end %>
+
+      <% pagy.series.each do |item| %>
+        <% if item == :gap %>
+          <span class="flex h-8 w-8 items-center justify-center text-sm text-slate-400">…</span>
+        <% elsif item == pagy.page %>
+          <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-600 text-sm font-semibold text-white"><%= item %></span>
+        <% else %>
+          <%= link_to item.to_s, pagy_url_for(pagy, item), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50" %>
+        <% end %>
+      <% end %>
+
+      <% if pagy.next %>
+        <%= link_to pagy_url_for(pagy, pagy.next), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "次のページ" } do %>
+          ›
+        <% end %>
+      <% else %>
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-sm text-slate-300">›</span>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

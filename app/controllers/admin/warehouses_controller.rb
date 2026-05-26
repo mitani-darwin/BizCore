@@ -3,7 +3,7 @@ module Admin
     before_action :set_warehouse, only: [ :show, :edit, :update ]
 
     def index
-      @warehouses = current_tenant.warehouses.order(:code, :id)
+      @pagy, @warehouses = pagy(current_tenant.warehouses.order(:code, :id))
     end
 
     def show; end

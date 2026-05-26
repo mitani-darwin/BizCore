@@ -9,17 +9,18 @@ module Admin
         supplier_id: search_supplier_id
       }
       @supplier_filter_options = current_tenant.suppliers.ordered_for_admin
-      @purchase_adjustments = current_tenant.purchase_adjustments
-                                           .includes(:supplier, :purchase_receipt, :purchase_order)
-                                           .search(search_keyword)
-                                           .with_type(search_adjustment_type)
-                                           .with_supplier(search_supplier_id)
-                                           .ordered_for_admin
+      query = current_tenant.purchase_adjustments
+                            .includes(:supplier, :purchase_receipt, :purchase_order)
+                            .search(search_keyword)
+                            .with_type(search_adjustment_type)
+                            .with_supplier(search_supplier_id)
+                            .ordered_for_admin
       @summary = {
-        count: @purchase_adjustments.size,
-        return_amount: @purchase_adjustments.select(&:purchase_return?).sum { |adjustment| adjustment.amount.to_d },
-        discount_amount: @purchase_adjustments.select(&:discount?).sum { |adjustment| adjustment.amount.to_d }
+        count: query.size,
+        return_amount: query.select(&:purchase_return?).sum { |adjustment| adjustment.amount.to_d },
+        discount_amount: query.select(&:discount?).sum { |adjustment| adjustment.amount.to_d }
       }
+      @pagy, @purchase_adjustments = pagy(query)
     end
 
     def show; end

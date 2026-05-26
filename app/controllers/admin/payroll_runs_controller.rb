@@ -4,12 +4,13 @@ module Admin
 
     def index
       @current_month = selected_month
-      @payroll_runs = current_tenant.payroll_runs.includes(payroll_entries: :employee).ordered_for_admin
+      query = current_tenant.payroll_runs.includes(payroll_entries: :employee).ordered_for_admin
       @payroll_summary = {
-        count: @payroll_runs.size,
-        latest_total_gross_pay: @payroll_runs.first&.total_gross_pay.to_d,
-        latest_employee_count: @payroll_runs.first&.employee_count.to_i
+        count: query.size,
+        latest_total_gross_pay: query.first&.total_gross_pay.to_d,
+        latest_employee_count: query.first&.employee_count.to_i
       }
+      @pagy, @payroll_runs = pagy(query)
     end
 
     def show

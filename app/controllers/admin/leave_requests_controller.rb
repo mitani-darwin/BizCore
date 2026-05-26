@@ -10,17 +10,18 @@ module Admin
         employee_id: search_employee_id,
         status: search_status
       }
-      @leave_requests = current_tenant.leave_requests
-                                      .includes(:employee)
-                                      .for_month(@current_month)
-                                      .with_employee(search_employee_id)
-                                      .with_status(search_status)
-                                      .ordered_for_admin
+      query = current_tenant.leave_requests
+                            .includes(:employee)
+                            .for_month(@current_month)
+                            .with_employee(search_employee_id)
+                            .with_status(search_status)
+                            .ordered_for_admin
       @leave_summary = {
-        count: @leave_requests.size,
-        pending_count: @leave_requests.count(&:status_pending?),
-        approved_days: @leave_requests.select(&:status_approved?).sum { |leave_request| leave_request.days_within(@current_month.beginning_of_month..@current_month.end_of_month) }
+        count: query.size,
+        pending_count: query.count(&:status_pending?),
+        approved_days: query.select(&:status_approved?).sum { |leave_request| leave_request.days_within(@current_month.beginning_of_month..@current_month.end_of_month) }
       }
+      @pagy, @leave_requests = pagy(query)
     end
 
     def show; end

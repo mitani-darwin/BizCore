@@ -11,18 +11,19 @@ module Admin
         from: parse_date(params[:from]),
         to: parse_date(params[:to])
       }
-      @customers = current_tenant.customers
-                                 .includes(:invoices, :payments, :customer_opportunities)
-                                 .search(search_keyword)
-                                 .with_status(search_status)
-                                 .ordered_for_admin
+      query = current_tenant.customers
+                            .includes(:invoices, :payments, :customer_opportunities)
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .ordered_for_admin
       @summary = {
-        count: @customers.size,
-        sales_total: @customers.sum { |customer| customer.sales_amount(from: @period[:from], to: @period[:to]) },
-        payment_total: @customers.sum { |customer| customer.payment_amount_in_period(from: @period[:from], to: @period[:to]) },
-        outstanding_total: @customers.sum(&:outstanding_invoice_amount),
-        pipeline_total: @customers.sum(&:pipeline_opportunity_amount)
+        count: query.size,
+        sales_total: query.sum { |customer| customer.sales_amount(from: @period[:from], to: @period[:to]) },
+        payment_total: query.sum { |customer| customer.payment_amount_in_period(from: @period[:from], to: @period[:to]) },
+        outstanding_total: query.sum(&:outstanding_invoice_amount),
+        pipeline_total: query.sum(&:pipeline_opportunity_amount)
       }
+      @pagy, @customers = pagy(query)
     end
 
     private

@@ -8,16 +8,17 @@ module Admin
         supplier_id: search_supplier_id
       }
       @supplier_filter_options = current_tenant.suppliers.ordered_for_admin
-      @purchase_receipts = current_tenant.purchase_receipts
-                                         .includes(:supplier, :warehouse, :purchase_order)
-                                         .search(search_keyword)
-                                         .with_supplier(search_supplier_id)
-                                         .ordered_for_admin
+      query = current_tenant.purchase_receipts
+                            .includes(:supplier, :warehouse, :purchase_order)
+                            .search(search_keyword)
+                            .with_supplier(search_supplier_id)
+                            .ordered_for_admin
       @summary = {
-        count: @purchase_receipts.size,
-        today_count: @purchase_receipts.count { |receipt| receipt.received_on == Date.current },
-        amount_total: @purchase_receipts.sum(&:total_amount)
+        count: query.size,
+        today_count: query.count { |receipt| receipt.received_on == Date.current },
+        amount_total: query.sum(&:total_amount)
       }
+      @pagy, @purchase_receipts = pagy(query)
     end
 
     def show

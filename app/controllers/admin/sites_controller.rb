@@ -5,10 +5,11 @@ module Admin
 
     def index
       @filters = { q: search_keyword, status: search_status }
-      @sites = current_tenant.sites
-      @sites = @sites.where(status: @filters[:status]) if @filters[:status].present?
-      @sites = @sites.where("name LIKE ? OR code LIKE ?", "%#{search_keyword}%", "%#{search_keyword}%") if @filters[:q].present?
-      @sites = @sites.order(created_at: :desc, id: :desc)
+      query = current_tenant.sites
+      query = query.where(status: @filters[:status]) if @filters[:status].present?
+      query = query.where("name LIKE ? OR code LIKE ?", "%#{search_keyword}%", "%#{search_keyword}%") if @filters[:q].present?
+      query = query.order(created_at: :desc, id: :desc)
+      @pagy, @sites = pagy(query)
     end
 
     def show

@@ -7,7 +7,7 @@ module Admin
     before_action :ensure_editable_quotation!, only: [ :edit, :update ]
 
     def index
-      @quotations = current_tenant.quotations.includes(:customer, :quotation_items, :orders).order(quotation_date: :desc, id: :desc)
+      @pagy, @quotations = pagy(current_tenant.quotations.includes(:customer, :quotation_items, :orders).order(quotation_date: :desc, id: :desc))
     end
 
     def show

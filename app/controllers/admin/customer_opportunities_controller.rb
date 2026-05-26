@@ -10,18 +10,19 @@ module Admin
         customer_id: search_customer_id
       }
       @customer_filter_options = current_tenant.customers.ordered_for_admin
-      @customer_opportunities = current_tenant.customer_opportunities
-                                             .includes(:customer, :customer_inquiry, :assigned_user)
-                                             .search(search_keyword)
-                                             .with_stage(search_stage)
-                                             .with_customer(search_customer_id)
-                                             .ordered_for_admin
+      query = current_tenant.customer_opportunities
+                            .includes(:customer, :customer_inquiry, :assigned_user)
+                            .search(search_keyword)
+                            .with_stage(search_stage)
+                            .with_customer(search_customer_id)
+                            .ordered_for_admin
       @summary = {
-        count: @customer_opportunities.size,
-        open_count: @customer_opportunities.count(&:open?),
-        pipeline_amount: @customer_opportunities.select(&:open?).sum { |opportunity| opportunity.expected_amount.to_d },
-        won_amount: @customer_opportunities.select(&:won?).sum { |opportunity| opportunity.actual_sales_amount.to_d }
+        count: query.size,
+        open_count: query.count(&:open?),
+        pipeline_amount: query.select(&:open?).sum { |opportunity| opportunity.expected_amount.to_d },
+        won_amount: query.select(&:won?).sum { |opportunity| opportunity.actual_sales_amount.to_d }
       }
+      @pagy, @customer_opportunities = pagy(query)
     end
 
     def show; end

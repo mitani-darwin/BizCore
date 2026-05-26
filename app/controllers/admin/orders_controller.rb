@@ -7,7 +7,7 @@ module Admin
     before_action :ensure_editable_order!, only: [ :edit, :update ]
 
     def index
-      @orders = current_tenant.orders.includes(:customer, :order_items).order(order_date: :desc, id: :desc)
+      @pagy, @orders = pagy(current_tenant.orders.includes(:customer, :order_items).order(order_date: :desc, id: :desc))
     end
 
     def show

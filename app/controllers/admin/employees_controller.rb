@@ -8,18 +8,19 @@ module Admin
         status: search_status,
         employment_type: search_employment_type
       }
-      @employees = current_tenant.employees
-                                 .includes(:attendance_records, :leave_requests, payroll_entries: :payroll_run)
-                                 .search(search_keyword)
-                                 .with_status(search_status)
-                                 .with_employment_type(search_employment_type)
-                                 .ordered_for_admin
+      query = current_tenant.employees
+                            .includes(:attendance_records, :leave_requests, payroll_entries: :payroll_run)
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .with_employment_type(search_employment_type)
+                            .ordered_for_admin
       @employee_summary = {
-        count: @employees.size,
-        active_count: @employees.count(&:active?),
-        hourly_count: @employees.count(&:employment_type_hourly?),
-        total_paid_leave_balance: @employees.sum { |employee| employee.remaining_paid_leave_days }
+        count: query.size,
+        active_count: query.count(&:active?),
+        hourly_count: query.count(&:employment_type_hourly?),
+        total_paid_leave_balance: query.sum { |employee| employee.remaining_paid_leave_days }
       }
+      @pagy, @employees = pagy(query)
     end
 
     def show
