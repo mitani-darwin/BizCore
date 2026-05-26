@@ -12,7 +12,7 @@
         <span class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-sm text-slate-300">‹</span>
       <% end %>
 
-      <% pagy_series(pagy).each do |item| %>
+      <% pagy.series.each do |item| %>
         <% if item == :gap %>
           <span class="flex h-8 w-8 items-center justify-center text-sm text-slate-400">…</span>
         <% elsif item == pagy.page %>
