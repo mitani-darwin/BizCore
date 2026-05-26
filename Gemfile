@@ -19,6 +19,7 @@ gem "jbuilder"
 gem "pundit"
 gem "devise"
 gem "pagy", "~> 9.0"
+gem "net-imap", ">= 0.6.4"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.22"
