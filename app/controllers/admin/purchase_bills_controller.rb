@@ -3,7 +3,7 @@ module Admin
     before_action :set_purchase_bill, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 
     def index
-      @purchase_bills = current_tenant.purchase_bills.includes(:supplier, :supplier_payment_allocations, :purchase_bill_batch).order(bill_date: :desc, id: :desc)
+      @pagy, @purchase_bills = pagy(current_tenant.purchase_bills.includes(:supplier, :supplier_payment_allocations, :purchase_bill_batch).order(bill_date: :desc, id: :desc))
       @recent_purchase_bill_batches = current_tenant.purchase_bill_batches.includes(:executed_by, :purchase_bills).recent.limit(5)
       @billing_defaults = billing_defaults
     end

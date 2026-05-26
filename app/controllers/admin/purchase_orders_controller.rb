@@ -13,17 +13,18 @@ module Admin
         supplier_id: search_supplier_id
       }
       @supplier_filter_options = current_tenant.suppliers.ordered_for_admin
-      @purchase_orders = current_tenant.purchase_orders
-                                       .includes(:supplier, :warehouse, :purchase_order_items)
-                                       .search(search_keyword)
-                                       .with_status(search_status)
-                                       .with_supplier(search_supplier_id)
-                                       .ordered_for_admin
+      query = current_tenant.purchase_orders
+                            .includes(:supplier, :warehouse, :purchase_order_items)
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .with_supplier(search_supplier_id)
+                            .ordered_for_admin
       @summary = {
-        count: @purchase_orders.size,
-        open_count: @purchase_orders.count { |purchase_order| %w[sent partially_received].include?(purchase_order.status) },
-        completed_count: @purchase_orders.count(&:received?)
+        count: query.size,
+        open_count: query.count { |purchase_order| %w[sent partially_received].include?(purchase_order.status) },
+        completed_count: query.count(&:received?)
       }
+      @pagy, @purchase_orders = pagy(query)
     end
 
     def show

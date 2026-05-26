@@ -83,6 +83,7 @@
             </div>
           <% end %>
         </div>
+        <%= render "shared/pagy", pagy: @pagy %>
       <% else %>
         <div class="mt-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
           <p>申請履歴はありません。</p>

@@ -4,17 +4,18 @@ module Admin
 
     def index
       @filters = { q: search_keyword, status: search_status }
-      @customers = current_tenant.customers
-                                 .includes(:orders, :invoices)
-                                 .search(search_keyword)
-                                 .with_status(search_status)
-                                 .ordered_for_admin
+      query = current_tenant.customers
+                            .includes(:orders, :invoices)
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .ordered_for_admin
       @customer_summary = {
-        count: @customers.size,
-        active_count: @customers.count(&:active?),
-        unpaid_invoice_count: @customers.sum(&:unpaid_invoice_count),
-        outstanding_amount: @customers.sum(&:outstanding_invoice_amount)
+        count: query.size,
+        active_count: query.count(&:active?),
+        unpaid_invoice_count: query.sum(&:unpaid_invoice_count),
+        outstanding_amount: query.sum(&:outstanding_invoice_amount)
       }
+      @pagy, @customers = pagy(query)
     end
 
     def show

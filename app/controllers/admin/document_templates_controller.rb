@@ -3,9 +3,10 @@ module Admin
     before_action :set_template, only: [ :edit, :update ]
 
     def index
-      @templates = DocumentTemplate::DOCUMENT_TYPES.map do |doc_type|
+      all_templates = DocumentTemplate::DOCUMENT_TYPES.map do |doc_type|
         DocumentTemplate.for_tenant_and_type(current_tenant, doc_type)
       end
+      @pagy, @templates = pagy_array(all_templates)
     end
 
     def edit; end

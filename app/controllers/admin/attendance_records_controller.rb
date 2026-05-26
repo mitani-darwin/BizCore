@@ -10,18 +10,19 @@ module Admin
         employee_id: search_employee_id,
         status: search_status
       }
-      @attendance_records = current_tenant.attendance_records
-                                          .includes(:employee, :work_shift)
-                                          .for_month(@current_month)
-                                          .with_employee(search_employee_id)
-                                          .with_status(search_status)
-                                          .ordered_for_admin
+      query = current_tenant.attendance_records
+                            .includes(:employee, :work_shift)
+                            .for_month(@current_month)
+                            .with_employee(search_employee_id)
+                            .with_status(search_status)
+                            .ordered_for_admin
       @attendance_summary = {
-        count: @attendance_records.size,
-        working_count: @attendance_records.count(&:working?),
-        worked_minutes: @attendance_records.sum(&:worked_minutes),
-        overtime_minutes: @attendance_records.sum(&:overtime_minutes)
+        count: query.size,
+        working_count: query.count(&:working?),
+        worked_minutes: query.sum(&:worked_minutes),
+        overtime_minutes: query.sum(&:overtime_minutes)
       }
+      @pagy, @attendance_records = pagy(query)
       @month_working_count = current_tenant.attendance_records.for_month(@current_month).where(status: "working").count
       @month_closed_count  = current_tenant.attendance_records.for_month(@current_month).where(status: "closed").count
       default_clock_in_at = Time.zone.now.change(sec: 0)

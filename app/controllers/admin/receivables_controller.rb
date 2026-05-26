@@ -13,14 +13,15 @@ module Admin
                                 .search(search_keyword)
                                 .with_status(search_status)
                                 .ordered_for_admin
-      @receivable_rows = build_rows(customers)
+      all_rows = build_rows(customers)
       @summary = {
-        count: @receivable_rows.size,
-        unpaid_invoice_count: @receivable_rows.sum { |row| row[:unpaid_invoice_count] },
-        outstanding_amount: @receivable_rows.sum { |row| row[:outstanding_amount] },
-        overdue_invoice_count: @receivable_rows.sum { |row| row[:overdue_invoice_count] },
-        overdue_amount: @receivable_rows.sum { |row| row[:overdue_amount] }
+        count: all_rows.size,
+        unpaid_invoice_count: all_rows.sum { |row| row[:unpaid_invoice_count] },
+        outstanding_amount: all_rows.sum { |row| row[:outstanding_amount] },
+        overdue_invoice_count: all_rows.sum { |row| row[:overdue_invoice_count] },
+        overdue_amount: all_rows.sum { |row| row[:overdue_amount] }
       }
+      @pagy, @receivable_rows = pagy_array(all_rows)
     end
 
     private

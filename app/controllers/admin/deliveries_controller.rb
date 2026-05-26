@@ -3,7 +3,7 @@ module Admin
     before_action :set_delivery, only: [ :show, :download_excel, :download_pdf ]
 
     def index
-      @deliveries = current_tenant.deliveries.includes(:customer, :order).order(delivery_date: :desc, id: :desc)
+      @pagy, @deliveries = pagy(current_tenant.deliveries.includes(:customer, :order).order(delivery_date: :desc, id: :desc))
     end
 
     def show; end

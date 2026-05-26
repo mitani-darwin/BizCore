@@ -5,7 +5,7 @@ module Admin
     before_action :set_supplier_options, only: [ :new, :create, :edit, :update ]
 
     def index
-      @supplier_payments = current_tenant.supplier_payments.includes(:supplier, :supplier_payment_allocations).order(payment_date: :desc, id: :desc)
+      @pagy, @supplier_payments = pagy(current_tenant.supplier_payments.includes(:supplier, :supplier_payment_allocations).order(payment_date: :desc, id: :desc))
     end
 
     def show

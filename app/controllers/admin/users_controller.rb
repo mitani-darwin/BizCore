@@ -5,7 +5,7 @@ module Admin
     before_action :set_employee_options, only: [ :new, :create, :edit, :update ]
 
     def index
-      @users = current_tenant.users.includes(:roles, :employee).order(:id)
+      @pagy, @users = pagy(current_tenant.users.includes(:roles, :employee).order(:id))
     end
 
     def show; end

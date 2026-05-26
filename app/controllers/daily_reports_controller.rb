@@ -7,10 +7,7 @@ class DailyReportsController < ApplicationController
 
   # 自分の日報一覧
   def index
-    @daily_reports = current_employee.daily_reports
-                                     .includes(:site)
-                                     .ordered_for_admin
-                                     .limit(30)
+    @pagy, @daily_reports = pagy(current_employee.daily_reports.includes(:site).ordered_for_admin)
   end
 
   # 新規日報フォーム

@@ -10,12 +10,13 @@ module Admin
         q: params[:q].to_s.strip
       }
 
-      @daily_reports = current_tenant.daily_reports.includes(:site, :employee).ordered_for_admin
-      @daily_reports = @daily_reports.where(site_id: @filters[:site_id]) if @filters[:site_id].present?
-      @daily_reports = @daily_reports.where(employee_id: @filters[:employee_id]) if @filters[:employee_id].present?
+      query = current_tenant.daily_reports.includes(:site, :employee).ordered_for_admin
+      query = query.where(site_id: @filters[:site_id]) if @filters[:site_id].present?
+      query = query.where(employee_id: @filters[:employee_id]) if @filters[:employee_id].present?
       if @filters[:q].present?
-        @daily_reports = @daily_reports.where("work_content LIKE ?", "%#{@filters[:q]}%")
+        query = query.where("work_content LIKE ?", "%#{@filters[:q]}%")
       end
+      @pagy, @daily_reports = pagy(query)
 
       # フィルタ用のセレクトオプション
       @site_options = current_tenant.sites.order(:name)

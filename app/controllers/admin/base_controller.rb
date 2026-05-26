@@ -1,5 +1,7 @@
 module Admin
   class BaseController < ::ApplicationController
+    include Pagy::Backend
+
     layout "admin"
 
     before_action :authenticate_user!

@@ -13,14 +13,15 @@ module Admin
                                 .search(search_keyword)
                                 .with_status(search_status)
                                 .ordered_for_admin
-      @payable_rows = build_rows(suppliers)
+      all_rows = build_rows(suppliers)
       @summary = {
-        count: @payable_rows.size,
-        unpaid_purchase_bill_count: @payable_rows.sum { |row| row[:unpaid_purchase_bill_count] },
-        outstanding_amount: @payable_rows.sum { |row| row[:outstanding_amount] },
-        overdue_purchase_bill_count: @payable_rows.sum { |row| row[:overdue_purchase_bill_count] },
-        overdue_amount: @payable_rows.sum { |row| row[:overdue_amount] }
+        count: all_rows.size,
+        unpaid_purchase_bill_count: all_rows.sum { |row| row[:unpaid_purchase_bill_count] },
+        outstanding_amount: all_rows.sum { |row| row[:outstanding_amount] },
+        overdue_purchase_bill_count: all_rows.sum { |row| row[:overdue_purchase_bill_count] },
+        overdue_amount: all_rows.sum { |row| row[:overdue_amount] }
       }
+      @pagy, @payable_rows = pagy_array(all_rows)
     end
 
     private

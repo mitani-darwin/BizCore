@@ -1,9 +1,7 @@
 module Admin
   class AuditLogsController < BaseController
     def index
-      logs = scope_logs.recent
-      logs = logs.page(params[:page]).per(50) if logs.respond_to?(:page)
-      @audit_logs = logs
+      @pagy, @audit_logs = pagy(scope_logs.recent)
     end
 
     def show

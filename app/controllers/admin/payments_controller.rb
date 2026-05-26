@@ -5,7 +5,7 @@ module Admin
     before_action :set_customer_options, only: [ :new, :create, :edit, :update ]
 
     def index
-      @payments = current_tenant.payments.includes(:customer, :payment_allocations).order(payment_date: :desc, id: :desc)
+      @pagy, @payments = pagy(current_tenant.payments.includes(:customer, :payment_allocations).order(payment_date: :desc, id: :desc))
     end
 
     def show

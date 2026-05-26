@@ -16,8 +16,9 @@ module Admin
                                .where(status: %w[issued partially_paid])
                                .where("invoices.balance_amount > 0")
                                .order(:due_date, :invoice_date, :id)
-      @collection_schedule_rows = build_rows(invoices)
-      @summary = build_summary(@collection_schedule_rows)
+      all_rows = build_rows(invoices)
+      @summary = build_summary(all_rows)
+      @pagy, @collection_schedule_rows = pagy_array(all_rows)
     end
 
     private

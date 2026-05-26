@@ -3,7 +3,7 @@ module Admin
     before_action :set_options, only: [ :new, :create ]
 
     def index
-      @stock_counts = current_tenant.stock_counts.includes(:warehouse, :product, :stock_item).recent
+      @pagy, @stock_counts = pagy(current_tenant.stock_counts.includes(:warehouse, :product, :stock_item).recent)
     end
 
     def new

@@ -3,7 +3,7 @@ module Admin
     before_action :set_purchase_bill_batch, only: [ :show, :cancel ]
 
     def index
-      @purchase_bill_batches = current_tenant.purchase_bill_batches.includes(:executed_by, :cancelled_by, :purchase_bills).recent
+      @pagy, @purchase_bill_batches = pagy(current_tenant.purchase_bill_batches.includes(:executed_by, :cancelled_by, :purchase_bills).recent)
     end
 
     def show

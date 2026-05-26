@@ -11,19 +11,20 @@ module Admin
         customer_id: search_customer_id
       }
       @customer_filter_options = current_tenant.customers.ordered_for_admin
-      @customer_inquiries = current_tenant.customer_inquiries
-                                         .includes(:customer, :assigned_user, :customer_opportunities)
-                                         .search(search_keyword)
-                                         .with_status(search_status)
-                                         .with_source(search_source)
-                                         .with_customer(search_customer_id)
-                                         .ordered_for_admin
+      query = current_tenant.customer_inquiries
+                            .includes(:customer, :assigned_user, :customer_opportunities)
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .with_source(search_source)
+                            .with_customer(search_customer_id)
+                            .ordered_for_admin
       @summary = {
-        count: @customer_inquiries.size,
-        open_count: @customer_inquiries.count(&:open?),
-        unlinked_count: @customer_inquiries.count { |inquiry| inquiry.customer.blank? },
-        opportunity_count: @customer_inquiries.sum { |inquiry| inquiry.customer_opportunities.size }
+        count: query.size,
+        open_count: query.count(&:open?),
+        unlinked_count: query.count { |inquiry| inquiry.customer.blank? },
+        opportunity_count: query.sum { |inquiry| inquiry.customer_opportunities.size }
       }
+      @pagy, @customer_inquiries = pagy(query)
     end
 
     def show

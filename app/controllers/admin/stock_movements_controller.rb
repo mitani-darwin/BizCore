@@ -4,7 +4,7 @@ module Admin
     before_action :set_options, only: [ :new, :create ]
 
     def index
-      @stock_movements = current_tenant.stock_movements.includes(:warehouse, :product).recent
+      @pagy, @stock_movements = pagy(current_tenant.stock_movements.includes(:warehouse, :product).recent)
     end
 
     def show; end

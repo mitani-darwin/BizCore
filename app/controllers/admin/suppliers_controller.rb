@@ -4,14 +4,15 @@ module Admin
 
     def index
       @filters = { q: search_keyword, status: search_status }
-      @suppliers = current_tenant.suppliers
-                                 .search(search_keyword)
-                                 .with_status(search_status)
-                                 .ordered_for_admin
+      query = current_tenant.suppliers
+                            .search(search_keyword)
+                            .with_status(search_status)
+                            .ordered_for_admin
       @summary = {
-        count: @suppliers.size,
-        active_count: @suppliers.count(&:active?)
+        count: query.size,
+        active_count: query.count(&:active?)
       }
+      @pagy, @suppliers = pagy(query)
     end
 
     def show

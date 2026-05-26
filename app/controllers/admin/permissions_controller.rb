@@ -4,7 +4,7 @@ module Admin
 
     def index
       @permission = Permission.new
-      @permissions = Permission.order(:resource, :action, :key)
+      @pagy, @permissions = pagy(Permission.order(:resource, :action, :key))
     end
 
     def create
@@ -12,7 +12,7 @@ module Admin
       if @permission.save
         redirect_to admin_permissions_path, notice: "権限を作成しました。"
       else
-        @permissions = Permission.order(:resource, :action, :key)
+        @pagy, @permissions = pagy(Permission.order(:resource, :action, :key))
         flash.now[:alert] = @permission.errors.full_messages.to_sentence
         render :index, status: :unprocessable_entity
       end
@@ -23,7 +23,7 @@ module Admin
         redirect_to admin_permissions_path, notice: "権限を更新しました。"
       else
         @permission = Permission.new
-        @permissions = Permission.order(:resource, :action, :key)
+        @pagy, @permissions = pagy(Permission.order(:resource, :action, :key))
         flash.now[:alert] = @permission.errors.full_messages.to_sentence
         render :index, status: :unprocessable_entity
       end

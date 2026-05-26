@@ -3,7 +3,7 @@ module Admin
     before_action :set_invoice, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 
     def index
-      @invoices = current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc)
+      @pagy, @invoices = pagy(current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc))
       @recent_billing_batches = current_tenant.billing_batches.includes(:executed_by, :invoices).recent.limit(5)
       @billing_defaults = billing_defaults
     end

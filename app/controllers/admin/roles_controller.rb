@@ -4,7 +4,7 @@ module Admin
     before_action :set_permissions, only: %i[new create edit update]
 
     def index
-      @roles = current_tenant.roles.includes(:permissions).order(:name)
+      @pagy, @roles = pagy(current_tenant.roles.includes(:permissions).order(:name))
     end
 
     def show; end
