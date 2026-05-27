@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       patch :clock_out
     end
     # 従業員セルフ画面: 日報
-    resources :my_daily_reports, only: [ :index, :new, :create, :show ], controller: "daily_reports"
+    resources :my_daily_reports, only: [ :index, :new, :create, :show, :edit, :update, :destroy ], controller: "daily_reports"
     # 従業員セルフ画面: 有給申請
     resources :my_leave_requests, only: [ :index, :new, :create, :show ], controller: "leave_requests"
   end
@@ -173,7 +173,7 @@ Rails.application.routes.draw do
         patch :update_progress
       end
     end
-    resources :daily_reports, only: [ :index, :show ]
+    resources :daily_reports
     root to: "dashboard#index"
   end
 end

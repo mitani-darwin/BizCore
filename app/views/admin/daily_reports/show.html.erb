@@ -70,5 +70,13 @@
 
   <div class="flex gap-2">
     <%= link_to "一覧へ戻る", admin_daily_reports_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    <% if can?("admin.daily_reports.update") %>
+      <%= link_to "編集", edit_admin_daily_report_path(@daily_report), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+    <% end %>
+    <% if can?("admin.daily_reports.delete") %>
+      <%= button_to "削除", admin_daily_report_path(@daily_report), method: :delete,
+          form: { data: { turbo_confirm: "この日報を削除してもよろしいですか？" } },
+          class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+    <% end %>
   </div>
 </div>

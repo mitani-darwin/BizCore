@@ -1,0 +1,16 @@
+<% content_for :page_title, "日報編集" %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">日報編集</h1>
+      <p class="text-sm text-slate-600"><%= jp_date(@daily_report.report_date) %> / <%= @daily_report.site.name %></p>
+    </div>
+    <%= link_to "詳細へ戻る", admin_daily_report_path(@daily_report),
+        class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <%= render "form", daily_report: @daily_report %>
+  </div>
+</div>
