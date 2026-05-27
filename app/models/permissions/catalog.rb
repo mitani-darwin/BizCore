@@ -43,7 +43,7 @@ module Permissions
       assignments: %i[read create delete],
       audit_logs: %i[read],
       sites: %i[read create update delete],
-      daily_reports: %i[read]
+      daily_reports: %i[read create update delete]
     }.freeze
 
     RESOURCE_LABELS = {

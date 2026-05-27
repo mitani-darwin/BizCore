@@ -1,22 +1,19 @@
-# 従業員セルフ画面: 日報登録・閲覧コントローラ
+# 従業員セルフ画面: 日報登録・閲覧・編集・削除コントローラ
 class DailyReportsController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_current_tenant!
   before_action :ensure_current_employee!
-  before_action :set_daily_report, only: [ :show ]
+  before_action :set_daily_report, only: [ :show, :edit, :update, :destroy ]
 
-  # 自分の日報一覧
   def index
     @pagy, @daily_reports = pagy(current_employee.daily_reports.includes(:site).ordered_for_admin)
   end
 
-  # 新規日報フォーム
   def new
     @daily_report = DailyReport.new(report_date: Date.current)
     @site_options = current_tenant.sites.where(status: %w[planning active on_hold]).order(:name)
   end
 
-  # 日報の保存
   def create
     @daily_report = DailyReport.new(daily_report_params)
     @daily_report.tenant = current_tenant
@@ -30,8 +27,25 @@ class DailyReportsController < ApplicationController
     end
   end
 
-  # 日報詳細
   def show; end
+
+  def edit
+    @site_options = current_tenant.sites.where(status: %w[planning active on_hold]).order(:name)
+  end
+
+  def update
+    if @daily_report.update(daily_report_params)
+      redirect_to my_daily_report_path(@daily_report), notice: "日報を更新しました。"
+    else
+      @site_options = current_tenant.sites.where(status: %w[planning active on_hold]).order(:name)
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @daily_report.destroy
+    redirect_to my_daily_reports_path, notice: "日報を削除しました。"
+  end
 
   private
 

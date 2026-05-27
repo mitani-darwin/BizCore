@@ -60,6 +60,10 @@
 
     <div class="flex gap-2">
       <%= link_to "一覧へ戻る", my_daily_reports_path, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+      <%= link_to "編集", edit_my_daily_report_path(@daily_report), class: "rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <%= button_to "削除", my_daily_report_path(@daily_report), method: :delete,
+          form: { data: { turbo_confirm: "この日報を削除してもよろしいですか？" } },
+          class: "rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
     </div>
   </div>
 </div>

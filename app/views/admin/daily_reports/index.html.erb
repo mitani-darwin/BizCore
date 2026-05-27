@@ -6,6 +6,9 @@
       <h1 class="text-xl font-semibold text-slate-900">日報一覧</h1>
       <p class="text-sm text-slate-600">従業員が登録した日報の一覧です。</p>
     </div>
+    <% if can?("admin.daily_reports.create") %>
+      <%= link_to "新規登録", new_admin_daily_report_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+    <% end %>
   </div>
 
   <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -64,7 +67,17 @@
               <td class="px-4 py-2 text-slate-700"><%= report.work_content.truncate(60) %></td>
               <td class="px-4 py-2 text-right text-slate-700"><%= report.photos.count %>枚</td>
               <td class="px-4 py-2 text-right">
-                <%= link_to "詳細", admin_daily_report_path(report), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                <div class="flex justify-end gap-1">
+                  <%= link_to "詳細", admin_daily_report_path(report), class: "rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50" %>
+                  <% if can?("admin.daily_reports.update") %>
+                    <%= link_to "編集", edit_admin_daily_report_path(report), class: "rounded border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100" %>
+                  <% end %>
+                  <% if can?("admin.daily_reports.delete") %>
+                    <%= button_to "削除", admin_daily_report_path(report), method: :delete,
+                        form: { data: { turbo_confirm: "この日報を削除してもよろしいですか？" } },
+                        class: "rounded border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100" %>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>

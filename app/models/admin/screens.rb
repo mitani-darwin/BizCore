@@ -275,7 +275,7 @@ module Admin
       },
       daily_reports: {
         index_path: :admin_daily_reports_path,
-        actions: %i[index show]
+        actions: %i[index show new create edit update destroy]
       }
     }.freeze
 

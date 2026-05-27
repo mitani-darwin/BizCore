@@ -1,0 +1,86 @@
+<% content_for :title, "日報編集" %>
+
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.10),_transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef6ff_100%)]">
+  <div class="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-6">
+    <header class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">Edit Daily Report</p>
+          <h1 class="mt-2 text-2xl font-semibold text-slate-900">日報編集</h1>
+          <p class="mt-1 text-sm text-slate-600"><%= @daily_report.report_date.strftime("%Y/%m/%d") %></p>
+        </div>
+        <%= link_to "詳細へ戻る", my_daily_report_path(@daily_report), class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+      </div>
+    </header>
+
+    <div class="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur">
+      <% if @daily_report.errors.any? %>
+        <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p class="font-semibold">入力内容にエラーがあります。</p>
+          <ul class="list-disc pl-5">
+            <% @daily_report.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @daily_report, url: my_daily_report_path(@daily_report), method: :patch, local: true, class: "space-y-5" do |f| %>
+        <div>
+          <%= f.label :site_id, "現場", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.select :site_id,
+                options_for_select([["現場を選択してください", ""]] + @site_options.map { |s| ["#{s.code}: #{s.name}", s.id] }, @daily_report.site_id),
+                {},
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                required: true %>
+        </div>
+
+        <div>
+          <%= f.label :report_date, "作業日", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.date_field :report_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+        </div>
+
+        <div>
+          <%= f.label :work_content, "作業内容", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :work_content, rows: 5,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                required: true %>
+        </div>
+
+        <div>
+          <%= f.label :work_hours, "作業時間（時間）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.number_field :work_hours, step: 0.5, min: 0.5, max: 24,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+                required: true %>
+        </div>
+
+        <div>
+          <%= f.label :notes, "備考（任意）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :notes, rows: 3,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+
+        <div>
+          <%= f.label :photos, "写真添付（任意）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.file_field :photos, multiple: true, accept: "image/*",
+                class: "mt-1 block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-sky-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-sky-700 hover:file:bg-sky-100" %>
+          <% if @daily_report.photos.attached? %>
+            <div class="mt-2 grid grid-cols-3 gap-2">
+              <% @daily_report.photos.each do |photo| %>
+                <div class="overflow-hidden rounded-lg border border-slate-200">
+                  <%= image_tag photo, class: "h-24 w-full object-cover" %>
+                </div>
+              <% end %>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">新たにファイルを選択すると既存の写真は上書きされます。</p>
+          <% end %>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <%= f.submit "日報を更新する", class: "rounded-lg bg-sky-600 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+          <%= link_to "キャンセル", my_daily_report_path(@daily_report), class: "text-sm text-slate-600 hover:text-slate-800" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
