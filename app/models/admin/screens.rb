@@ -249,6 +249,15 @@ module Admin
           update: { label: "更新", page_title: "権限管理", breadcrumb_label: "権限管理" }
         }
       },
+      assignments: {
+        label: "ロール付与",
+        index_path: :admin_assignments_path,
+        actions: %i[index create],
+        action_overrides: {
+          index:  { label: "一覧",   page_title: "ロール付与",  breadcrumb_label: "ロール付与" },
+          create: { permission_action: :create, label: "更新", page_title: "ロール付与", breadcrumb_label: "ロール付与" }
+        }
+      },
       document_templates: {
         index_path: :admin_document_templates_path,
         actions: %i[index edit update],

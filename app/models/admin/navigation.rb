@@ -329,6 +329,13 @@ module Admin
               path: :admin_authorization_path,
               required_keys: %w[admin.authorizations.read],
               children: []
+            ),
+            Item.new(
+              id: :assignments,
+              label: "ロール付与",
+              path: :admin_assignments_path,
+              required_keys: %w[admin.assignments.read],
+              children: []
             )
           ]
         ),
