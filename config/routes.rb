@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resource :authorization, only: [ :show, :update ], controller: "authorizations"
+    resources :assignments, only: [ :index, :create ]
     resources :permissions, only: [ :index, :create, :update, :destroy ]
     resources :audit_logs, only: [ :index, :show ]
     resources :tenants, only: [ :index, :show, :edit, :update ]
