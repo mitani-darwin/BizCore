@@ -177,6 +177,8 @@ Rails.application.routes.draw do
       end
     end
     resources :daily_reports
+    # 契約管理
+    resources :contracts, only: [ :index, :show, :new, :create, :edit, :update ]
     # 経費精算
     resources :expense_reports, only: [ :index, :show, :new, :create, :edit, :update ] do
       member do

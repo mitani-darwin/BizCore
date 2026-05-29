@@ -286,6 +286,10 @@ module Admin
         index_path: :admin_daily_reports_path,
         actions: %i[index show new create edit update destroy]
       },
+      contracts: {
+        index_path: :admin_contracts_path,
+        actions: %i[index show new create edit update]
+      },
       expense_reports: {
         index_path: :admin_expense_reports_path,
         actions: %i[index show new create edit update approve reject],

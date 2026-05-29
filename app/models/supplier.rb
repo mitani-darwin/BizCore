@@ -6,6 +6,7 @@ class Supplier < ApplicationRecord
 
   belongs_to :tenant
 
+  has_many :contracts, dependent: :restrict_with_exception
   has_many :purchase_orders, dependent: :restrict_with_exception
   has_many :purchase_receipts, dependent: :restrict_with_exception
   has_many :purchase_adjustments, dependent: :restrict_with_exception

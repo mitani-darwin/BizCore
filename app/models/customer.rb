@@ -8,6 +8,7 @@ class Customer < ApplicationRecord
 
   has_many :customer_inquiries, dependent: :restrict_with_exception
   has_many :customer_opportunities, dependent: :restrict_with_exception
+  has_many :contracts, dependent: :restrict_with_exception
   has_many :quotations, dependent: :restrict_with_exception
   has_many :orders, dependent: :restrict_with_exception
   has_many :deliveries, dependent: :restrict_with_exception
