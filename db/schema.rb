@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_130830) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_29_091930) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -126,6 +126,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_130830) do
     t.index ["tenant_id", "billing_period_from", "billing_period_to"], name: "idx_on_tenant_id_billing_period_from_billing_period_ccd1591ff1"
     t.index ["tenant_id", "closing_date"], name: "index_billing_batches_on_tenant_id_and_closing_date"
     t.index ["tenant_id"], name: "index_billing_batches_on_tenant_id"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2
+    t.boolean "auto_renewal", default: false, null: false
+    t.string "contract_number", null: false
+    t.string "counterparty_type", default: "other", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id"
+    t.text "description"
+    t.date "ended_on"
+    t.text "note"
+    t.date "started_on", null: false
+    t.string "status", default: "draft", null: false
+    t.bigint "supplier_id"
+    t.bigint "tenant_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_contracts_on_customer_id"
+    t.index ["supplier_id"], name: "index_contracts_on_supplier_id"
+    t.index ["tenant_id", "contract_number"], name: "index_contracts_on_tenant_id_and_contract_number", unique: true
+    t.index ["tenant_id", "ended_on"], name: "index_contracts_on_tenant_id_and_ended_on"
+    t.index ["tenant_id", "status"], name: "index_contracts_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_contracts_on_tenant_id"
   end
 
   create_table "customer_inquiries", force: :cascade do |t|
@@ -1045,6 +1069,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_130830) do
   add_foreign_key "billing_batches", "tenants"
   add_foreign_key "billing_batches", "users", column: "cancelled_by_id"
   add_foreign_key "billing_batches", "users", column: "executed_by_id"
+  add_foreign_key "contracts", "customers"
+  add_foreign_key "contracts", "suppliers"
+  add_foreign_key "contracts", "tenants"
   add_foreign_key "customer_inquiries", "customers"
   add_foreign_key "customer_inquiries", "tenants"
   add_foreign_key "customer_inquiries", "users", column: "assigned_user_id"

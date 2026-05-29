@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   include AuthorizationHelper
   helper Admin::SidebarHelper
   helper Admin::WorkforceHelper
+  helper Admin::ContractsHelper
 
   helper_method :current_user, :current_tenant, :current_employee, :current_ability
 

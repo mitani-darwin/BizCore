@@ -41,6 +41,7 @@ ja:
         record_invalid: "バリデーションに失敗しました: %{errors}"
     models:
       attendance_record: "勤怠"
+      contract: "契約"
       customer: "得意先"
       employee: "従業員"
       invoice: "請求書"
@@ -157,6 +158,19 @@ ja:
         password: "パスワード"
         password_confirmation: "パスワード確認"
         roles: "ロール"
+      contract:
+        amount: "契約金額"
+        auto_renewal: "自動更新"
+        contract_number: "契約番号"
+        counterparty_type: "契約区分"
+        customer: "得意先"
+        description: "内容"
+        ended_on: "契約終了日"
+        note: "備考"
+        started_on: "契約開始日"
+        status: "状態"
+        supplier: "仕入先"
+        title: "件名"
       work_shift:
         break_minutes: "休憩時間"
         end_time: "終了時刻"

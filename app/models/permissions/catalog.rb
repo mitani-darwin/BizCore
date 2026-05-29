@@ -44,7 +44,8 @@ module Permissions
       audit_logs: %i[read],
       sites: %i[read create update delete],
       daily_reports: %i[read create update delete],
-      expense_reports: %i[read create update delete]
+      expense_reports: %i[read create update delete],
+      contracts: %i[read create update delete]
     }.freeze
 
     RESOURCE_LABELS = {
@@ -91,7 +92,8 @@ module Permissions
       audit_logs: "監査ログ",
       sites: "現場",
       daily_reports: "日報",
-      expense_reports: "経費精算"
+      expense_reports: "経費精算",
+      contracts: "契約管理"
     }.freeze
 
     ACTION_LABELS = {
