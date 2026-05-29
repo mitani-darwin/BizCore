@@ -62,9 +62,10 @@ class SelfAttendanceControllerTest < ActionDispatch::IntegrationTest
     sign_in @employee_user
 
     get root_path
-    assert_redirected_to my_attendance_path
+    assert_response :success
+    assert_select "h1", text: "マイページ"
 
-    follow_redirect!
+    get my_attendance_path
     assert_response :success
     assert_select "h1", text: "マイ打刻"
     assert_select "p", text: /従業員打刻/

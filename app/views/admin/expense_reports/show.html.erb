@@ -1,0 +1,64 @@
+<% content_for :page_title, "経費精算詳細" %>
+
+<div class="space-y-4">
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-semibold text-slate-900"><%= @expense_report.employee.name %> / <%= jp_date(@expense_report.expensed_on) %></h1>
+        <%= expense_status_badge(@expense_report) %>
+      </div>
+      <p class="text-sm text-slate-600"><%= expense_category_label(@expense_report.category) %> / ¥<%= number_with_delimiter(@expense_report.amount.to_i) %></p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% if @expense_report.status_pending? && can?("admin.expense_reports.update") %>
+        <%= button_to "承認", approve_admin_expense_report_path(@expense_report), method: :patch, class: "rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" %>
+        <%= button_to "却下", reject_admin_expense_report_path(@expense_report), method: :patch, class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100" %>
+      <% end %>
+      <% if can?("admin.expense_reports.update") %>
+        <%= link_to "編集", edit_admin_expense_report_path(@expense_report), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+      <% end %>
+      <%= link_to "一覧へ戻る", admin_expense_reports_path(month: @expense_report.expensed_on.strftime("%Y-%m")), class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">申請金額</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900">¥<%= number_with_delimiter(@expense_report.amount.to_i) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">経費区分</div>
+      <div class="mt-2 text-xl font-bold text-slate-900"><%= expense_category_label(@expense_report.category) %></div>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="text-xs text-slate-500">支出日</div>
+      <div class="mt-2 text-xl font-bold text-slate-900"><%= jp_date(@expense_report.expensed_on) %></div>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">申請情報</h2>
+    <dl class="mt-3 grid gap-4 text-sm text-slate-800 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs text-slate-500">従業員</dt>
+        <dd><%= link_to @expense_report.employee.title, admin_employee_path(@expense_report.employee), class: "text-sky-700 hover:underline" %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-slate-500">状態</dt>
+        <dd><%= expense_status_badge(@expense_report) %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">内容</dt>
+        <dd><%= @expense_report.description %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">目的</dt>
+        <dd><%= @expense_report.purpose.presence || "-" %></dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs text-slate-500">備考</dt>
+        <dd><%= @expense_report.note.presence || "-" %></dd>
+      </div>
+    </dl>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<% content_for :title, "経費申請" %>
+
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.10),_transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef6ff_100%)]">
+  <div class="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-6">
+    <header class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">New Expense Report</p>
+          <h1 class="mt-2 text-2xl font-semibold text-slate-900">経費申請</h1>
+          <p class="mt-1 text-sm text-slate-600"><%= current_employee.name %></p>
+        </div>
+        <%= link_to "一覧へ戻る", my_expense_reports_path, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+      </div>
+    </header>
+
+    <div class="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur">
+      <% if @expense_report.errors.any? %>
+        <div class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p class="font-semibold">入力内容にエラーがあります。</p>
+          <ul class="mt-1 list-disc pl-5">
+            <% @expense_report.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @expense_report, url: my_expense_reports_path, local: true, class: "space-y-5" do |f| %>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <%= f.label :expensed_on, "支出日", class: "block text-sm font-medium text-slate-800" %>
+            <%= f.date_field :expensed_on, required: true,
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+          </div>
+          <div>
+            <%= f.label :category, "経費区分", class: "block text-sm font-medium text-slate-800" %>
+            <%= f.select :category, options_for_select(expense_category_options, @expense_report.category), {},
+                class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :amount, "金額（円）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.number_field :amount, min: 1, step: 1, required: true,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+              placeholder: "例: 1500" %>
+        </div>
+
+        <div>
+          <%= f.label :description, "内容", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :description, rows: 3, required: true,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+              placeholder: "例: 東京駅〜新宿駅 往復" %>
+        </div>
+
+        <div>
+          <%= f.label :purpose, "目的（任意）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :purpose, rows: 2,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+              placeholder: "例: 〇〇社訪問" %>
+        </div>
+
+        <div>
+          <%= f.label :note, "備考（任意）", class: "block text-sm font-medium text-slate-800" %>
+          <%= f.text_area :note, rows: 2,
+              class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <%= f.submit "申請する", class: "rounded-lg bg-sky-600 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-700 cursor-pointer" %>
+          <%= link_to "キャンセル", my_expense_reports_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

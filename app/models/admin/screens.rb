@@ -285,6 +285,14 @@ module Admin
       daily_reports: {
         index_path: :admin_daily_reports_path,
         actions: %i[index show new create edit update destroy]
+      },
+      expense_reports: {
+        index_path: :admin_expense_reports_path,
+        actions: %i[index show new create edit update approve reject],
+        action_overrides: {
+          approve: { permission_action: :update, label: "承認", breadcrumb_label: "承認", page_title: "%{resource}詳細" },
+          reject:  { permission_action: :update, label: "却下", breadcrumb_label: "却下", page_title: "%{resource}詳細" }
+        }
       }
     }.freeze
 

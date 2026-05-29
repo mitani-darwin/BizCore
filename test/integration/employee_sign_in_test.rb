@@ -48,11 +48,7 @@ class EmployeeSignInTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
 
     follow_redirect!
-    assert_redirected_to my_attendance_path
-
-    follow_redirect!
     assert_response :success
-    assert_select "h1", text: "マイ打刻"
-    assert_select "p", text: /従業員ログイン確認/
+    assert_select "h1", text: "マイページ"
   end
 end

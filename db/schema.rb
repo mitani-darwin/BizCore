@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_25_223120) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_130830) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -294,6 +294,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_223120) do
     t.index ["tenant_id", "employee_code"], name: "index_employees_on_tenant_id_and_employee_code", unique: true
     t.index ["tenant_id", "status"], name: "index_employees_on_tenant_id_and_status"
     t.index ["tenant_id"], name: "index_employees_on_tenant_id"
+  end
+
+  create_table "expense_reports", force: :cascade do |t|
+    t.decimal "amount", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "category", default: "other", null: false
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.bigint "employee_id", null: false
+    t.date "expensed_on", null: false
+    t.text "note"
+    t.text "purpose"
+    t.string "status", default: "pending", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_expense_reports_on_employee_id"
+    t.index ["tenant_id", "employee_id", "expensed_on"], name: "idx_expense_reports_on_tenant_employee_date"
+    t.index ["tenant_id", "status"], name: "index_expense_reports_on_tenant_id_and_status"
+    t.index ["tenant_id"], name: "index_expense_reports_on_tenant_id"
   end
 
   create_table "invoice_items", force: :cascade do |t|
@@ -1047,6 +1065,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_223120) do
   add_foreign_key "delivery_items", "tenants"
   add_foreign_key "document_templates", "tenants"
   add_foreign_key "employees", "tenants"
+  add_foreign_key "expense_reports", "employees"
+  add_foreign_key "expense_reports", "tenants"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "tenants"
   add_foreign_key "invoices", "billing_batches"

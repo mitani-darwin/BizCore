@@ -1,0 +1,12 @@
+<% content_for :page_title, "経費精算編集" %>
+
+<div class="space-y-4">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">経費精算編集</h1>
+    <p class="text-sm text-slate-600"><%= @expense_report.employee.name %> / <%= jp_date(@expense_report.expensed_on) %></p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <%= render "form", expense_report: @expense_report %>
+  </div>
+</div>

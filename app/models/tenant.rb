@@ -32,6 +32,7 @@ class Tenant < ApplicationRecord
   has_many :document_templates, dependent: :destroy
   has_many :sites, dependent: :destroy
   has_many :daily_reports, dependent: :destroy
+  has_many :expense_reports, dependent: :destroy
 
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true

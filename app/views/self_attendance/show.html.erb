@@ -10,7 +10,7 @@
           <p class="mt-2 text-sm text-slate-600"><%= current_employee.title %> / <%= current_tenant.name %></p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <%= link_to "有給申請", my_leave_requests_path, class: "rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+          <%= link_to "マイページ", authenticated_root_path, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
           <% if @admin_entry_path.present? %>
             <%= link_to "管理画面へ", @admin_entry_path, class: "rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
           <% end %>
