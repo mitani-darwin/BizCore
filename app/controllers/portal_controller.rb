@@ -10,7 +10,8 @@ class PortalController < ApplicationController
     end
 
     if current_employee.present?
-      redirect_to my_attendance_path
+      @admin_entry_path = first_admin_path
+      render :index
       return
     end
 

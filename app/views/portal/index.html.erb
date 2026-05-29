@@ -1,0 +1,86 @@
+<% content_for :title, "マイページ" %>
+
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.10),_transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef6ff_100%)]">
+  <div class="mx-auto flex min-h-screen max-w-4xl flex-col gap-6 px-4 py-6">
+
+    <header class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">Employee Portal</p>
+          <h1 class="mt-2 text-3xl font-semibold text-slate-900">マイページ</h1>
+          <p class="mt-2 text-sm text-slate-600"><%= current_employee.title %> / <%= current_tenant.name %></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <% if @admin_entry_path.present? %>
+            <%= link_to "管理画面へ", @admin_entry_path, class: "rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
+          <% end %>
+          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, form: { data: { turbo: true } }, class: "rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+
+      <%= link_to my_attendance_path, class: "group rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur hover:border-sky-200 hover:bg-sky-50/60 transition" do %>
+        <div class="flex items-start gap-4">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 group-hover:bg-sky-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-sky-600">Attendance</p>
+            <h2 class="mt-1 text-lg font-semibold text-slate-900">打刻</h2>
+            <p class="mt-1 text-sm text-slate-600">出勤・退勤の打刻を行います。</p>
+          </div>
+        </div>
+      <% end %>
+
+      <%= link_to my_leave_requests_path, class: "group rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur hover:border-emerald-200 hover:bg-emerald-50/60 transition" do %>
+        <div class="flex items-start gap-4">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 group-hover:bg-emerald-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600">Leave Request</p>
+            <h2 class="mt-1 text-lg font-semibold text-slate-900">有給申請</h2>
+            <p class="mt-1 text-sm text-slate-600">有給休暇・特別休暇の申請を行います。</p>
+          </div>
+        </div>
+      <% end %>
+
+      <%= link_to my_expense_reports_path, class: "group rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur hover:border-amber-200 hover:bg-amber-50/60 transition" do %>
+        <div class="flex items-start gap-4">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 group-hover:bg-amber-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-amber-600">Expense Report</p>
+            <h2 class="mt-1 text-lg font-semibold text-slate-900">経費申請</h2>
+            <p class="mt-1 text-sm text-slate-600">交通費・接待費などの経費精算を申請します。</p>
+          </div>
+        </div>
+      <% end %>
+
+      <%= link_to my_daily_reports_path, class: "group rounded-3xl border border-white/70 bg-white/80 p-6 shadow-sm backdrop-blur hover:border-violet-200 hover:bg-violet-50/60 transition" do %>
+        <div class="flex items-start gap-4">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 group-hover:bg-violet-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-violet-600">Daily Report</p>
+            <h2 class="mt-1 text-lg font-semibold text-slate-900">日報</h2>
+            <p class="mt-1 text-sm text-slate-600">現場の作業内容・進捗を報告します。</p>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

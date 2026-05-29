@@ -21,6 +21,24 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50:  "#e6f9fb",
+                100: "#caf5f7",
+                500: "#00bcd4",
+                600: "#0097a7",
+              },
+            },
+          },
+        },
+      };
+    </script>
   </head>
 
   <body class="bg-slate-50">

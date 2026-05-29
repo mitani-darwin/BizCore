@@ -27,6 +27,8 @@ Rails.application.routes.draw do
     resources :my_daily_reports, only: [ :index, :new, :create, :show, :edit, :update, :destroy ], controller: "daily_reports"
     # 従業員セルフ画面: 有給申請
     resources :my_leave_requests, only: [ :index, :new, :create, :show ], controller: "leave_requests"
+    # 従業員セルフ画面: 経費精算
+    resources :my_expense_reports, only: [ :index, :new, :create, :show ], controller: "expense_reports"
   end
 
 
@@ -175,6 +177,13 @@ Rails.application.routes.draw do
       end
     end
     resources :daily_reports
+    # 経費精算
+    resources :expense_reports, only: [ :index, :show, :new, :create, :edit, :update ] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
     root to: "dashboard#index"
   end
 end

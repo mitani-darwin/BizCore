@@ -1,6 +1,7 @@
 module Admin
   module WorkforceHelper
     include Admin::OrderingHelper
+    include ExpenseReportsHelper
 
     EMPLOYEE_STATUS_OPTIONS = [
       [ "在籍", "active" ],
@@ -152,6 +153,27 @@ module Admin
       when "pending" then [ "申請中", "amber" ]
       when "approved" then [ "承認済み", "emerald" ]
       when "rejected" then [ "却下", "rose" ]
+      else [ "不明", "slate" ]
+      end
+
+      status_badge(label, tone)
+    end
+
+    EXPENSE_STATUS_OPTIONS = [
+      [ "申請中",   "pending" ],
+      [ "承認済み", "approved" ],
+      [ "却下",     "rejected" ]
+    ].freeze
+
+    def expense_status_options
+      EXPENSE_STATUS_OPTIONS
+    end
+
+    def expense_status_badge(expense_report)
+      label, tone = case expense_report.status
+      when "pending"  then [ "申請中",   "amber" ]
+      when "approved" then [ "承認済み", "emerald" ]
+      when "rejected" then [ "却下",     "rose" ]
       else [ "不明", "slate" ]
       end
 

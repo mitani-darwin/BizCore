@@ -360,6 +360,19 @@ module Admin
           ]
         ),
         Section.new(
+          id: :expenses,
+          label: "経費管理",
+          items: [
+            Item.new(
+              id: :expense_reports,
+              label: "経費精算",
+              path: :admin_expense_reports_path,
+              required_keys: %w[admin.expense_reports.read],
+              children: []
+            )
+          ]
+        ),
+        Section.new(
           id: :audit,
           label: "監査",
           items: [
