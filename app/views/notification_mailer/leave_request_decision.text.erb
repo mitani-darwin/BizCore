@@ -1,0 +1,11 @@
+<%= @recipient.name %> さん
+
+<% if @leave_request.status_approved? %>
+申請された有給が承認されました。
+<% else %>
+申請された有給が却下されました。
+<% end %>
+
+休暇種別: <%= @leave_request.leave_type_paid_leave? ? "有給" : "特別休暇" %>
+期間: <%= @leave_request.start_date.strftime("%Y/%m/%d") %> 〜 <%= @leave_request.end_date.strftime("%Y/%m/%d") %>（<%= @leave_request.days_count %>日）
+ステータス: <%= @leave_request.status_approved? ? "承認済み" : "却下" %>

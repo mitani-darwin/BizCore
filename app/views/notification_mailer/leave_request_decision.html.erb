@@ -1,0 +1,25 @@
+<p><%= @recipient.name %> さん</p>
+
+<% if @leave_request.status_approved? %>
+<p>申請された有給が<strong>承認</strong>されました。</p>
+<% else %>
+<p>申請された有給が<strong>却下</strong>されました。</p>
+<% end %>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 140px;">休暇種別</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @leave_request.leave_type_paid_leave? ? "有給" : "特別休暇" %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">期間</th>
+    <td style="padding: 8px; border: 1px solid #ddd;">
+      <%= @leave_request.start_date.strftime("%Y/%m/%d") %> 〜 <%= @leave_request.end_date.strftime("%Y/%m/%d") %>
+      （<%= @leave_request.days_count %>日）
+    </td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">ステータス</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @leave_request.status_approved? ? "✅ 承認済み" : "❌ 却下" %></td>
+  </tr>
+</table>

@@ -37,6 +37,7 @@ module Admin
       @expense_report = current_tenant.expense_reports.build(expense_report_params)
 
       if @expense_report.save
+        notify_expense_report_submitted(@expense_report)
         redirect_to admin_expense_report_path(@expense_report), notice: "経費申請を作成しました。"
       else
         render :new, status: :unprocessable_entity
@@ -56,6 +57,7 @@ module Admin
     def approve
       @expense_report.approve!
       audit!(action_key: required_permission_key, auditable: @expense_report, metadata: { status: "approved" })
+      notify_expense_report_decision(@expense_report)
       redirect_to admin_expense_report_path(@expense_report), notice: "経費申請を承認しました。"
     rescue StandardError => e
       redirect_to admin_expense_report_path(@expense_report), alert: "承認に失敗しました: #{e.message}"
@@ -64,6 +66,7 @@ module Admin
     def reject
       @expense_report.reject!
       audit!(action_key: required_permission_key, auditable: @expense_report, metadata: { status: "rejected" })
+      notify_expense_report_decision(@expense_report)
       redirect_to admin_expense_report_path(@expense_report), notice: "経費申請を却下しました。"
     rescue StandardError => e
       redirect_to admin_expense_report_path(@expense_report), alert: "却下に失敗しました: #{e.message}"
@@ -109,6 +112,22 @@ module Admin
         :purpose,
         :note
       )
+    end
+
+    def notify_expense_report_submitted(expense_report)
+      recipients = current_tenant.users
+        .with_permission("admin.expense_reports.update")
+        .where.not(email: nil)
+      recipients.each do |recipient|
+        NotificationMailer.expense_report_submitted(expense_report: expense_report, recipient: recipient).deliver_later
+      end
+    end
+
+    def notify_expense_report_decision(expense_report)
+      recipient = expense_report.employee&.user
+      return if recipient.nil? || recipient.email.blank?
+
+      NotificationMailer.expense_report_decision(expense_report: expense_report, recipient: recipient).deliver_later
     end
   end
 end

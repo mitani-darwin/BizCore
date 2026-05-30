@@ -11,6 +11,14 @@ class User < ApplicationRecord
   has_many :executed_billing_batches, class_name: "BillingBatch", foreign_key: :executed_by_id, dependent: :nullify, inverse_of: :executed_by
   has_many :cancelled_billing_batches, class_name: "BillingBatch", foreign_key: :cancelled_by_id, dependent: :nullify, inverse_of: :cancelled_by
 
+  # 指定した権限キーを持つユーザー、または is_owner? のユーザーを返す。
+  # メール通知の送信先を絞り込む際に使用する。
+  # joins を含む OR は Rails の制約で動作しないため、サブクエリ方式で記述する。
+  scope :with_permission, ->(key) {
+    permission_holder_ids = joins(:permissions).where(permissions: { key: key }).select(:id)
+    where(id: permission_holder_ids).or(where(is_owner: true)).distinct
+  }
+
   validates :tenant, presence: { message: "を選択してください" }
   validates :name, presence: { message: "を入力してください" }
   validates :email, presence: true, uniqueness: { case_sensitive: false }

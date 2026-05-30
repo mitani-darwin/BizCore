@@ -1,0 +1,32 @@
+<p><%= @recipient.name %> さん</p>
+
+<p>
+  以下の経費精算申請が提出されました。管理画面からご確認ください。
+</p>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 140px;">申請者</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @employee.name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">発生日</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense_report.expensed_on.strftime("%Y/%m/%d") %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">カテゴリ</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= t("expense_categories.#{@expense_report.category}", default: @expense_report.category) %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">金額</th>
+    <td style="padding: 8px; border: 1px solid #ddd;">¥<%= number_with_delimiter(@expense_report.amount) %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">内容</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense_report.description %></td>
+  </tr>
+</table>
+
+<p style="margin-top: 16px;">
+  申請日時: <%= @expense_report.created_at.in_time_zone.strftime("%Y/%m/%d %H:%M") %>
+</p>

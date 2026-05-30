@@ -1,0 +1,26 @@
+<p><%= @recipient.name %> さん</p>
+
+<% if @expense_report.status_approved? %>
+<p>申請された経費精算が<strong>承認</strong>されました。</p>
+<% else %>
+<p>申請された経費精算が<strong>却下</strong>されました。</p>
+<% end %>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 140px;">発生日</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense_report.expensed_on.strftime("%Y/%m/%d") %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">カテゴリ</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= t("expense_categories.#{@expense_report.category}", default: @expense_report.category) %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">金額</th>
+    <td style="padding: 8px; border: 1px solid #ddd;">¥<%= number_with_delimiter(@expense_report.amount) %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">ステータス</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense_report.status_approved? ? "✅ 承認済み" : "❌ 却下" %></td>
+  </tr>
+</table>

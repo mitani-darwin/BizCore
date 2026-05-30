@@ -78,10 +78,23 @@ module Invoicing
         batch.reload.refresh_statistics!
       end
 
+      notify_customers(batch)
       batch
     end
 
     private
+
+    # 発行した請求書を顧客にメール通知する。
+    # トランザクション外で実行し、メール失敗が DB ロールバックを引き起こさないようにする。
+    def notify_customers(batch)
+      batch.invoices.includes(:customer).reject(&:cancelled?).each do |invoice|
+        next if invoice.customer.email.blank?
+
+        InvoiceMailer.invoice_issued(invoice: invoice).deliver_later
+      rescue => e
+        Rails.logger.error("[InvoiceMailer] failed to enqueue invoice_issued for invoice##{invoice.id}: #{e.class} #{e.message}")
+      end
+    end
 
     attr_reader :tenant, :closing_date, :billing_period_from, :billing_period_to, :invoice_date, :default_due_date, :requested_by, :note
 

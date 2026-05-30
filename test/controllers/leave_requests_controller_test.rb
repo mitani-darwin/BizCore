@@ -1,6 +1,7 @@
 require "test_helper"
 
 class LeaveRequestsControllerTest < ActionDispatch::IntegrationTest
+  include ActionMailer::TestHelper
   setup do
     @tenant = Tenant.create!(
       name: "Leave Request Tenant",
@@ -70,6 +71,31 @@ class LeaveRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "paid_leave", leave_request.leave_type
     assert_equal "pending", leave_request.status
     assert_equal Date.new(2026, 6, 1), leave_request.start_date
+  end
+
+  test "creating a leave request enqueues notification emails to approvers" do
+    # is_owner: true のユーザーは with_permission スコープで常にマッチする
+    User.create!(
+      tenant: @tenant,
+      name: "承認者",
+      email: "approver@leave-request.example.com",
+      password: "Password123!",
+      password_confirmation: "Password123!",
+      is_owner: true
+    )
+
+    sign_in @employee_user
+    # deliver_later はジョブとして非同期エンキューされるため assert_enqueued_emails で確認する
+    assert_enqueued_emails 1 do
+      post my_leave_requests_path, params: {
+        leave_request: {
+          leave_type: "paid_leave",
+          start_date: "2026-07-01",
+          end_date: "2026-07-01",
+          reason: "テスト"
+        }
+      }
+    end
   end
 
   test "employee can create a half-day leave request" do

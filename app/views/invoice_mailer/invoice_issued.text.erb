@@ -1,0 +1,13 @@
+<%= @customer.name %> ご担当者様
+
+いつもお世話になっております。
+以下のとおり請求書を発行しましたのでご確認ください。
+
+請求書番号: <%= @invoice.invoice_number %>
+請求日: <%= @invoice.invoice_date.strftime("%Y/%m/%d") %>
+お支払期日: <%= @invoice.due_date.strftime("%Y/%m/%d") %>
+請求金額（税込）: ¥<%= number_with_delimiter(@invoice.total_amount) %>
+請求期間: <%= @invoice.billing_period_from.strftime("%Y/%m/%d") %> 〜 <%= @invoice.billing_period_to.strftime("%Y/%m/%d") %>
+
+ご不明な点がございましたら、ご連絡ください。
+<%= @tenant.name %>

@@ -1,0 +1,33 @@
+<p><%= @recipient.name %> さん</p>
+
+<p>
+  以下の有給申請が提出されました。管理画面からご確認ください。
+</p>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 140px;">申請者</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @employee.name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">休暇種別</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @leave_request.leave_type_paid_leave? ? "有給" : "特別休暇" %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">期間</th>
+    <td style="padding: 8px; border: 1px solid #ddd;">
+      <%= @leave_request.start_date.strftime("%Y/%m/%d") %> 〜 <%= @leave_request.end_date.strftime("%Y/%m/%d") %>
+      （<%= @leave_request.days_count %>日）
+    </td>
+  </tr>
+  <% if @leave_request.reason.present? %>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">理由</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @leave_request.reason %></td>
+  </tr>
+  <% end %>
+</table>
+
+<p style="margin-top: 16px;">
+  申請日時: <%= @leave_request.created_at.in_time_zone.strftime("%Y/%m/%d %H:%M") %>
+</p>

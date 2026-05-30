@@ -1,0 +1,12 @@
+<%= @recipient.name %> さん
+
+<% if @expense_report.status_approved? %>
+申請された経費精算が承認されました。
+<% else %>
+申請された経費精算が却下されました。
+<% end %>
+
+発生日: <%= @expense_report.expensed_on.strftime("%Y/%m/%d") %>
+カテゴリ: <%= t("expense_categories.#{@expense_report.category}", default: @expense_report.category) %>
+金額: ¥<%= number_with_delimiter(@expense_report.amount) %>
+ステータス: <%= @expense_report.status_approved? ? "承認済み" : "却下" %>

@@ -20,6 +20,7 @@ class ExpenseReportsController < ApplicationController
     @expense_report.status   = "pending"
 
     if @expense_report.save
+      notify_expense_report_submitted(@expense_report)
       redirect_to my_expense_reports_path, notice: "経費申請を送信しました。承認をお待ちください。"
     else
       render :new, status: :unprocessable_entity
@@ -45,5 +46,14 @@ class ExpenseReportsController < ApplicationController
 
   def expense_report_params
     params.require(:expense_report).permit(:expensed_on, :category, :description, :amount, :purpose, :note)
+  end
+
+  def notify_expense_report_submitted(expense_report)
+    recipients = current_tenant.users
+      .with_permission("admin.expense_reports.update")
+      .where.not(email: nil)
+    recipients.each do |recipient|
+      NotificationMailer.expense_report_submitted(expense_report: expense_report, recipient: recipient).deliver_later
+    end
   end
 end
