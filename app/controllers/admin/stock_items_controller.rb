@@ -15,10 +15,10 @@ module Admin
       @alert_filter = params[:alert].presence
 
       query = case @alert_filter
-              when "low_stock"    then base.low_stock
-              when "out_of_stock" then base.out_of_stock
-              else                     base
-              end
+      when "low_stock"    then base.low_stock
+      when "out_of_stock" then base.out_of_stock
+      else                     base
+      end
 
       @pagy, @stock_items = pagy(query)
     end
