@@ -6,10 +6,21 @@ module Admin
     before_action :set_options, only: [ :new, :create, :edit, :update ]
 
     def index
-      query = current_tenant.stock_items.includes(:warehouse, :product).joins(:warehouse, :product).order("warehouses.name ASC, products.name ASC")
-      all_items = query.to_a
-      @low_stock_items = all_items.select(&:low_stock?)
-      @pagy, @stock_items = pagy_array(all_items)
+      base = current_tenant.stock_items.includes(:warehouse, :product).ordered_for_admin
+
+      # アラート件数（バッジ表示用。タブ切替に関わらず常に算出する）
+      @low_stock_count  = current_tenant.stock_items.low_stock.count
+      @out_of_stock_count = current_tenant.stock_items.out_of_stock.count
+
+      @alert_filter = params[:alert].presence
+
+      query = case @alert_filter
+      when "low_stock"    then base.low_stock
+      when "out_of_stock" then base.out_of_stock
+      else                     base
+      end
+
+      @pagy, @stock_items = pagy(query)
     end
 
     def show

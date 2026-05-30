@@ -1,0 +1,49 @@
+<p><%= @recipient.name %> さん</p>
+
+<% if @stock_item.out_of_stock? %>
+<p style="color: #dc2626; font-weight: bold;">
+  以下の商品の在庫が切れています。至急補充をご確認ください。
+</p>
+<% else %>
+<p>
+  以下の商品の在庫が安全在庫を下回りました。補充をご検討ください。
+</p>
+<% end %>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 160px;">商品名</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @product.name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">商品コード</th>
+    <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace;"><%= @product.code %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">倉庫</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @warehouse.name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">現在の利用可能在庫</th>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; color: <%= @stock_item.out_of_stock? ? "#dc2626" : "#d97706" %>;">
+      <%= @stock_item.available_quantity %> <%= @product.unit_name %>
+    </td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">実在庫</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @stock_item.quantity_on_hand %> <%= @product.unit_name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">引当済み</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @stock_item.quantity_reserved %> <%= @product.unit_name %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">安全在庫</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @stock_item.safety_stock %> <%= @product.unit_name %></td>
+  </tr>
+</table>
+
+<p style="margin-top: 16px; color: #6b7280; font-size: 12px;">
+  通知日時: <%= Time.current.in_time_zone.strftime("%Y/%m/%d %H:%M") %><br>
+  <%= @tenant.name %>
+</p>
