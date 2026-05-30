@@ -1,3 +1,6 @@
+# 得意先（顧客）を表すモデル。
+# 問い合わせ・商談・受注・請求・入金の集計情報を提供し、売掛エイジング分析も行う。
+# AssociationProxy が読み込み済みかどうかで SQL/配列の使い分けをしてパフォーマンスを最適化する。
 class Customer < ApplicationRecord
   STATUSES = {
     active: "active",
@@ -99,6 +102,7 @@ class Customer < ApplicationRecord
     overdue_invoices(as_of: as_of).size
   end
 
+  # 未回収の売掛残高を current / overdue_1_30 / overdue_31_60 / overdue_61_over の 4 区分で集計して返す。
   def receivable_aging(as_of: Date.current)
     open_invoices_scope.each_with_object(default_aging_hash) do |invoice, aging|
       balance = invoice.balance_amount.to_d
@@ -156,6 +160,7 @@ class Customer < ApplicationRecord
     [ configured_day, date.end_of_month.day ].min
   end
 
+  # 支払サイトルール（payment_due_rule）に従い、締め日から支払期日を算出して返す。
   def due_date_for(closing_date:, default_due_date: nil)
     case payment_due_rule
     when "end_of_month"

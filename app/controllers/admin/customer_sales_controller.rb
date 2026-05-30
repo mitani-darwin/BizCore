@@ -1,4 +1,5 @@
 module Admin
+  # 得意先別の売上集計レポートを表示する読み取り専用コントローラ。
   class CustomerSalesController < BaseController
     def index
       @filters = {

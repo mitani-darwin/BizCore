@@ -1,4 +1,6 @@
 module Admin
+  # 見積書の CRUD・送信・採用・注文変換・Excel 出力を管理する。
+  # create_order は Ordering::CreateOrderFromQuotation サービスを呼んで見積から受注を生成する。
   class QuotationsController < BaseController
     MINIMUM_QUOTATION_ITEM_ROWS = 1
 

@@ -1,4 +1,5 @@
 module Deliveries
+  # 納品書を Excel 形式で出力するサービス。
   class ExportXlsx < Reports::BaseXlsx
     COLUMN_WIDTHS = [ 14, 26, 10, 12, 12, 14 ].freeze
 

@@ -1,3 +1,4 @@
+# 商品マスタを表すモデル。在庫・発注・受注・納品の各明細から参照される。
 class Product < ApplicationRecord
   belongs_to :tenant
 

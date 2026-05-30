@@ -1,4 +1,5 @@
 module Admin
+  # 管理画面ダッシュボードへのアクセス権限を定義する Pundit ポリシー。
   class DashboardPolicy < ::ApplicationPolicy
     def index?
       access?

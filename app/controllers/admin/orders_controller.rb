@@ -1,4 +1,7 @@
 module Admin
+  # 受注の CRUD・送信・受注確定・在庫確保・納品書発行・Excel 出力を管理する。
+  # reserve_stock は Ordering::ReserveStock サービスを呼んで在庫引当を行う。
+  # issue_delivery は Ordering::IssueDelivery サービスを呼んで納品書を発行し在庫を消費する。
   class OrdersController < BaseController
     MINIMUM_ORDER_ITEM_ROWS = 1
 

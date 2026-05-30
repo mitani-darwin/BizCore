@@ -1,4 +1,6 @@
 module Admin
+  # 請求締めバッチの一覧・詳細・締め解除を管理する。
+  # cancel は Invoicing::CancelBillingBatch サービスを呼び、一括でキャンセル処理を行う。
   class BillingBatchesController < BaseController
     before_action :set_billing_batch, only: [ :show, :cancel ]
 

@@ -1,3 +1,5 @@
+# 給与計算実行（PayrollRun）に紐づく従業員ごとの給与明細を表すモデル。
+# 1 つの PayrollRun に対して従業員 1 件につき 1 行のみ存在する。
 class PayrollEntry < ApplicationRecord
   belongs_to :tenant
   belongs_to :payroll_run

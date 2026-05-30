@@ -1,4 +1,5 @@
 module Admin
+  # 入荷票の閲覧と Excel 出力を管理する。入荷票は発注処理（receive_items）から自動生成される。
   class PurchaseReceiptsController < BaseController
     before_action :set_purchase_receipt, only: [ :show, :download_excel, :download_pdf ]
 

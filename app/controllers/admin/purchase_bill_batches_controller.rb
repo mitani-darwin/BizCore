@@ -1,4 +1,5 @@
 module Admin
+  # 仕入締めバッチの一覧・詳細・締め解除を管理する。BillingBatchesController の仕入側に対応する。
   class PurchaseBillBatchesController < BaseController
     before_action :set_purchase_bill_batch, only: [ :show, :cancel ]
 

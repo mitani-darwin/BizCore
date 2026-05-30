@@ -1,4 +1,5 @@
 module Purchases
+  # キャンセル済み仕入請求書を再発行するサービス。ReissueInvoice の仕入側に対応する。
   class ReissuePurchaseBill
     def self.call(purchase_bill:, bill_date: Date.current, default_due_date: nil)
       new(purchase_bill: purchase_bill, bill_date: bill_date, default_due_date: default_due_date).call

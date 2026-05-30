@@ -1,3 +1,4 @@
+# 経費精算画面の View ヘルパー。カテゴリ・ステータスの select オプションとラベル変換を提供する。
 module ExpenseReportsHelper
   EXPENSE_CATEGORY_OPTIONS = [
     [ "交通費",   "transportation" ],

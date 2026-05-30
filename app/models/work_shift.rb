@@ -1,3 +1,5 @@
+# 従業員のシフト（予定勤務スケジュール）を表すモデル。
+# 勤怠実績（AttendanceRecord）とは 1:1 で紐づき、予定と実績を比較できる。
 class WorkShift < ApplicationRecord
   STATUSES = {
     scheduled: "scheduled",
@@ -26,6 +28,7 @@ class WorkShift < ApplicationRecord
 
   before_validation :set_defaults
 
+  # 休憩を除いた予定勤務分数を返す。マイナスにはならない。
   def scheduled_minutes
     return 0 if start_time.blank? || end_time.blank?
 

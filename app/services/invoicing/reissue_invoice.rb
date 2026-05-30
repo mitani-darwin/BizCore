@@ -1,4 +1,6 @@
 module Invoicing
+  # キャンセル済み請求書を再発行するサービス。元の請求書の明細をコピーして新しい請求書を生成する。
+  # Invoice#reissuable? が false の場合は呼び出してはいけない。
   class ReissueInvoice
     def self.call(invoice:, invoice_date: Date.current, default_due_date: nil)
       new(invoice: invoice, invoice_date: invoice_date, default_due_date: default_due_date).call

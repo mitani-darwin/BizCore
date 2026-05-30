@@ -1,3 +1,6 @@
+# 帳票（請求書・発注書等）の出力レイアウト設定をテナントごとに保持するモデル。
+# 帳票種別（document_type）× テナントで一意。未作成の場合は for_tenant_and_type で自動生成する。
+# settings カラムに JSON で列幅・行表示・カラムラベルを保存する。
 class DocumentTemplate < ApplicationRecord
   belongs_to :tenant
 

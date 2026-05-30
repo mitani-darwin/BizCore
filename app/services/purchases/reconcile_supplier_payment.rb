@@ -1,5 +1,8 @@
 module Purchases
+  # 支払を仕入請求書に消し込むサービス。ReconcilePayment の仕入側に対応する。
+  # SupplierPaymentAllocation を作成し、PurchaseBill の金額を再計算する。
   class ReconcileSupplierPayment
+    # 消し込み額が支払額を超えた場合に上げる例外。
     class OverAllocationError < StandardError; end
 
     def self.call(supplier_payment:, allocations:)

@@ -1,4 +1,5 @@
 module Admin
+  # 買掛残高一覧を表示する読み取り専用コントローラ。ReceivablesController の仕入側に対応する。
   class PayablesController < BaseController
     def index
       @filters = {

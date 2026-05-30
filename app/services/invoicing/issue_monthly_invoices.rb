@@ -1,5 +1,9 @@
 module Invoicing
+  # 月次請求締め処理を実行するサービス。
+  # 納品済み（billed でない）明細を締め日ごとに集計し、得意先ごとに Invoice を一括生成する。
+  # 同じ締め日で既に BillingBatch が存在する場合は AlreadyClosedError を上げる。
   class IssueMonthlyInvoices
+    # 二重締めを防ぐカスタム例外。
     class AlreadyClosedError < StandardError; end
 
     def self.call(tenant:, closing_date:, invoice_date:, default_due_date: nil, billing_period_from: closing_date.beginning_of_month, billing_period_to: closing_date.end_of_month, requested_by: nil, note: nil)

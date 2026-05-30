@@ -1,4 +1,5 @@
 module Admin
+  # 売掛残高一覧を表示する読み取り専用コントローラ。得意先ごとに未回収請求の集計を表示する。
   class ReceivablesController < BaseController
     def index
       @filters = {

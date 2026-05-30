@@ -1,4 +1,6 @@
 module Admin
+  # 仕入返品・値引きの閲覧と新規登録を管理する。
+  # create は Procurement::RecordAdjustment サービスを呼んで在庫調整も同時に行う。
   class PurchaseAdjustmentsController < BaseController
     before_action :set_purchase_adjustment, only: [ :show ]
 

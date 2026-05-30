@@ -1,3 +1,5 @@
+# 月次給与計算のバッチ実行単位を表すモデル。
+# 1テナント・1月につき 1 件のみ作成でき、確定（confirmed）後は変更不可。
 class PayrollRun < ApplicationRecord
   include DocumentNumbering
 
@@ -30,6 +32,7 @@ class PayrollRun < ApplicationRecord
     run_number
   end
 
+  # 給与計算を確定し、以降の変更を防ぐ。二重確定は例外を上げる。
   def confirm!(confirmed_by:)
     raise "確定済みの給与計算は再確定できません" if confirmed?
 

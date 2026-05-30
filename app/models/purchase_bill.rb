@@ -1,3 +1,6 @@
+# 仕入請求書を表すモデル。Invoice の仕入側に対応する。
+# 合計がマイナスになる場合（返品等）は "credit" ステータスになる点が売掛と異なる。
+# recalculate_totals! は支払消し込み後に呼び出してステータスを更新する。
 class PurchaseBill < ApplicationRecord
   include DocumentNumbering
 

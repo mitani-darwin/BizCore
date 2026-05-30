@@ -1,4 +1,5 @@
 module Quotations
+  # 見積書を「送信済み」に更新するサービス。Quotation#mark_as_sent! を呼び出す薄いラッパー。
   class SendQuotation
     def self.call(quotation:, sent_at: Time.current)
       new(quotation:, sent_at:).call

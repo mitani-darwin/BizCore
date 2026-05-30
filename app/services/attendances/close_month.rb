@@ -1,5 +1,9 @@
 module Attendances
+  # 月次勤怠締め処理を実行するサービス。
+  # 「working」ステータスの打刻中レコードを退勤打刻なしのまま「closed」に移行する。
+  # 「draft」（打刻なし）はそのまま残し、closed_count/already_closed_count/draft_count を Result で返す。
   class CloseMonth
+    # 処理結果サマリーを保持する値オブジェクト。
     Result = Struct.new(:closed_count, :already_closed_count, :draft_count, keyword_init: true)
 
     def self.call(tenant:, month:, requested_by:)

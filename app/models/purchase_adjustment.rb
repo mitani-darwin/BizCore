@@ -1,3 +1,6 @@
+# 仕入返品・値引きを表すモデル。
+# purchase_return（返品）は入荷明細・商品・数量が必須。discount（値引き）は金額のみ必須で数量は 0 にする。
+# snapshot_product で作成時点の商品情報をスナップショットとして保存し、後からの商品変更に影響されない。
 class PurchaseAdjustment < ApplicationRecord
   include DocumentNumbering
 

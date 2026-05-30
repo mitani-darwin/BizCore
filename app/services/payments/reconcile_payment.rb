@@ -1,5 +1,8 @@
 module Payments
+  # 入金を請求書に消し込むサービス。PaymentAllocation を作成し、Invoice の金額を再計算する。
+  # 消し込み額が入金額を超える場合は OverAllocationError を上げる。
   class ReconcilePayment
+    # 消し込み額が入金額を超えた場合に上げる例外。
     class OverAllocationError < StandardError; end
 
     def self.call(payment:, allocations:)

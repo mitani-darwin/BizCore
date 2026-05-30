@@ -1,3 +1,5 @@
+# 受注（販売注文）を表すモデル。draft → sent → accepted → allocated → delivered → billed の順で進む。
+# 見積（Quotation）から変換して作成する場合と、直接作成する場合がある。
 class Order < ApplicationRecord
   include DocumentNumbering
 

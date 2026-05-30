@@ -1,3 +1,4 @@
+# 棚卸実績を表すモデル。実地棚卸で計測した数量と帳簿在庫の差分（adjustment_quantity）を記録する。
 class StockCount < ApplicationRecord
   belongs_to :tenant
   belongs_to :stock_item

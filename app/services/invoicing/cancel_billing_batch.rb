@@ -1,4 +1,6 @@
 module Invoicing
+  # 請求締めバッチをキャンセルし、配下の全請求書も一括取消するサービス。
+  # 消し込み済みの入金がある場合は取消不可（BillingBatch#cancellable? で事前確認）。
   class CancelBillingBatch
     def self.call(billing_batch:, cancelled_by: nil, cancelled_at: Time.current)
       new(billing_batch: billing_batch, cancelled_by: cancelled_by, cancelled_at: cancelled_at).call

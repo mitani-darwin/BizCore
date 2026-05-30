@@ -1,4 +1,5 @@
 module Purchases
+  # 発注書を「送信済み」に更新するサービス。PurchaseOrder#mark_as_sent! を呼び出す薄いラッパー。
   class SendPurchaseOrder
     def self.call(purchase_order:, sent_at: Time.current)
       new(purchase_order:, sent_at:).call

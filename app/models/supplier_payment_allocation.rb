@@ -1,3 +1,5 @@
+# 支払（SupplierPayment）と仕入請求書（PurchaseBill）の消し込み明細を表すモデル。
+# supplier_payment と purchase_bill の supplier_id が一致しないと弾く（クロスサプライヤー消し込み防止）。
 class SupplierPaymentAllocation < ApplicationRecord
   belongs_to :tenant
   belongs_to :supplier_payment

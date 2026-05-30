@@ -1,4 +1,5 @@
 module Admin
+  # 回収予定表（入金予定一覧）を表示する読み取り専用コントローラ。
   class CollectionSchedulesController < BaseController
     def index
       @filters = {

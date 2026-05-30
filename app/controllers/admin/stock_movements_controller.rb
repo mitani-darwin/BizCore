@@ -1,4 +1,6 @@
 module Admin
+  # 在庫移動履歴の閲覧と手動在庫調整の登録を管理する。
+  # create で Inventory::AdjustStock サービスを呼んで StockItem と StockMovement を同時に更新する。
   class StockMovementsController < BaseController
     before_action :set_movement, only: [ :show ]
     before_action :set_options, only: [ :new, :create ]

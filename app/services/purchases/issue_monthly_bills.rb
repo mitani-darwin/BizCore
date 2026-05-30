@@ -1,5 +1,8 @@
 module Purchases
+  # 月次仕入締め処理を実行するサービス。IssueMonthlyInvoices の仕入側に対応する。
+  # 入荷済み明細を締め日ごとに集計し、仕入先ごとに PurchaseBill を一括生成する。
   class IssueMonthlyBills
+    # 二重締めを防ぐカスタム例外。
     class AlreadyClosedError < StandardError; end
 
     def self.call(tenant:, closing_date:, bill_date:, default_due_date: nil, billing_period_from: closing_date.beginning_of_month, billing_period_to: closing_date.end_of_month, requested_by: nil, note: nil)

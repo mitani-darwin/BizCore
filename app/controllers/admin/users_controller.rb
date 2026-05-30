@@ -1,4 +1,5 @@
 module Admin
+  # ユーザーの CRUD を管理する。パスワードは Devise が扱うため strong parameters に含めない。
   class UsersController < BaseController
     before_action :set_user, only: [ :show, :edit, :update ]
     before_action :set_role_options, only: [ :new, :create, :edit, :update ]

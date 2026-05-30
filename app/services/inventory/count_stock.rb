@@ -1,4 +1,5 @@
 module Inventory
+  # 棚卸を実行するサービス。実地計数値と帳簿在庫の差分を StockCount に記録し、StockItem を更新する。
   class CountStock
     def self.call(stock_item:, counted_quantity:, counted_at:, note: nil)
       new(

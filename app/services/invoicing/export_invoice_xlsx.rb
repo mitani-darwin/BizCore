@@ -1,4 +1,5 @@
 module Invoicing
+  # 請求書を Excel 形式で出力するサービス。テンプレート設定を反映してレイアウトを生成する。
   class ExportInvoiceXlsx < Reports::BaseXlsx
     COLUMN_WIDTHS = [ 24, 10, 12, 12, 12, 14 ].freeze
 

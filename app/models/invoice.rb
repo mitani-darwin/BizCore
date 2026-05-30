@@ -1,3 +1,6 @@
+# 請求書を表すモデル。issued → partially_paid → paid の順でステータスが変化する。
+# 消し込み（PaymentAllocation）が追加・削除されるたびに recalculate_totals! で金額を再集計する。
+# 取消（cancelled）後は再発行（reissue）が可能だが、既に別の再発行がある場合は不可。
 class Invoice < ApplicationRecord
   include DocumentNumbering
 
@@ -27,6 +30,8 @@ class Invoice < ApplicationRecord
 
   before_validation :set_defaults
 
+  # 明細と消し込みを再集計してステータスを更新する。
+  # 入金消し込みの追加・削除後に必ず呼び出す必要がある。
   def recalculate_totals!
     line_items = invoice_items.reload
     allocations = payment_allocations.reload

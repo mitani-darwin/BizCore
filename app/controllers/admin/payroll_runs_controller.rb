@@ -1,4 +1,7 @@
 module Admin
+  # 月次給与計算の実行・確定・帳票出力を管理する。
+  # generate は Payrolls::GenerateRun サービスを呼んで勤怠データから給与を自動計算する。
+  # confirm! 後は変更不可になるため、誤確定には注意が必要。
   class PayrollRunsController < BaseController
     before_action :set_payroll_run, only: [ :show, :confirm, :download_excel, :download_pdf ]
 

@@ -1,3 +1,5 @@
+# 商談（営業案件）を表すモデル。hearing → proposal → negotiation → won/lost のステージで進捗を管理する。
+# 受注確度（probability）を掛けた加重期待金額（weighted_expected_amount）でパイプライン集計ができる。
 class CustomerOpportunity < ApplicationRecord
   include DocumentNumbering
 

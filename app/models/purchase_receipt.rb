@@ -1,3 +1,5 @@
+# 発注に対する入荷票を表すモデル。発注（PurchaseOrder）1件に対して複数の入荷票が発生しうる。
+# net_amount は入荷金額から返品・値引きを除いた実質金額を返す。
 class PurchaseReceipt < ApplicationRecord
   include DocumentNumbering
 

@@ -1,4 +1,6 @@
 module Admin
+  # 従業員マスタの CRUD を管理する。
+  # index は絞り込みとサマリー集計を行い、show は月次集計を表示する。
   class EmployeesController < BaseController
     before_action :set_employee, only: [ :show, :edit, :update ]
 

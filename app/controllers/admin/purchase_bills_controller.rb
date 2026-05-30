@@ -1,4 +1,5 @@
 module Admin
+  # 仕入請求書の閲覧・帳票出力・月次仕入請求・取消・再発行を管理する。InvoicesController の仕入側に対応する。
   class PurchaseBillsController < BaseController
     before_action :set_purchase_bill, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 

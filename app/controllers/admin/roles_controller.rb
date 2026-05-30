@@ -1,4 +1,5 @@
 module Admin
+  # ロールの CRUD を管理する。built_in ロールは編集・削除不可。
   class RolesController < BaseController
     before_action :set_role, only: %i[show edit update]
     before_action :set_permissions, only: %i[new create edit update]

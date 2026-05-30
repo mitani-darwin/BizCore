@@ -1,3 +1,6 @@
+# 月次請求締め処理のバッチを表すモデル。
+# 1 回の締め処理で複数の請求書（Invoice）を一括発行する。
+# cancellable? は消し込み済み入金がない場合のみ true を返す（締め解除の前提条件）。
 class BillingBatch < ApplicationRecord
   include DocumentNumbering
 

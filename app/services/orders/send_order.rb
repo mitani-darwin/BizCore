@@ -1,4 +1,5 @@
 module Orders
+  # 受注を「送信済み」に更新するサービス。Order#mark_as_sent! を呼び出す薄いラッパー。
   class SendOrder
     def self.call(order:, sent_at: Time.current)
       new(order:, sent_at:).call

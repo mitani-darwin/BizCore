@@ -1,5 +1,8 @@
 module Deliveries
+  # 受注から納品書を発行し、在庫の引当消費と注文ステータスを更新するサービス。
+  # 引当済み（reserved）在庫がない場合は NothingToDeliverError を上げる。
   class IssueFromOrder
+    # 引当済み在庫がない場合に上げる例外。
     class NothingToDeliverError < StandardError; end
 
     def self.call(order:, delivery_date:, issued_at: Time.current)

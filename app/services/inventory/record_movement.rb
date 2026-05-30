@@ -1,4 +1,6 @@
 module Inventory
+  # 在庫移動（入庫・出庫・調整）を StockMovement に記録し、StockItem の数量を更新するサービス。
+  # ALLOWED_TYPES 外の movement_type は ArgumentError を上げる。
   class RecordMovement
     ALLOWED_TYPES = %w[inbound outbound adjustment adjustment_increase adjustment_decrease].freeze
 

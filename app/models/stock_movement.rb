@@ -1,3 +1,4 @@
+# 在庫の入出庫・調整履歴を表すモデル。参照元（reference）は多態関連で発注入荷・棚卸等に対応する。
 class StockMovement < ApplicationRecord
   belongs_to :tenant
   belongs_to :warehouse
@@ -20,6 +21,7 @@ class StockMovement < ApplicationRecord
 
   scope :recent, -> { order(occurred_on: :desc, id: :desc) }
 
+  # 出庫・減少調整はマイナス符号を付けた数量を返す。在庫集計グラフ等で利用する。
   def signed_quantity
     outbound? || adjustment_decrease? ? -quantity : quantity
   end

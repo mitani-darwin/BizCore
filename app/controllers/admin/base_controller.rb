@@ -1,4 +1,7 @@
 module Admin
+  # 管理画面の全コントローラが継承する基底クラス。
+  # 認証・テナント確認・権限チェック・監査ログ書き込みを一括して担う。
+  # 新しい管理画面コントローラは必ずこのクラスを継承すること。
   class BaseController < ::ApplicationController
     include Pagy::Backend
 
@@ -45,10 +48,13 @@ module Admin
       current_user
     end
 
+    # required_permission_key を使って権限チェックを行う。権限がない場合は AuthorizationError を上げる。
     def require_permission!
       authorize!(required_permission_key)
     end
 
+    # アクション名と Admin::Screens の定義から対応する権限キーを算出する。
+    # 非標準アクションは Admin::Screens の action_overrides で permission_key を明示する。
     def required_permission_key
       return screen_action.permission_key if screen_action&.permission_key.present?
 
@@ -119,6 +125,8 @@ module Admin
       raise
     end
 
+    # 監査ログを明示的に書き込む。create/update/destroy で副作用を細かく記録したい場合に呼ぶ。
+    # write_automatic_audit_log より先に呼ばれた場合は重複書き込みをスキップする。
     def audit!(action_key:, auditable: nil, metadata: {}, status: "succeeded")
       return unless audit_context[:tenant_id]
 

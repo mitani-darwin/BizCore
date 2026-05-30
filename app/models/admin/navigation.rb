@@ -1,4 +1,7 @@
 module Admin
+  # 管理画面サイドバーのナビゲーション構造を定義するクラス。
+  # visible_sections はユーザーの権限に応じて表示項目をフィルタリングして返す。
+  # サイドバー項目を追加・変更する場合は sections メソッド内の Section/Item を編集する。
   class Navigation
     Item = Struct.new(:id, :label, :path, :required_keys, :children, keyword_init: true)
     Section = Struct.new(:id, :label, :items, keyword_init: true)

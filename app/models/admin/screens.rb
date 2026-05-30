@@ -1,4 +1,7 @@
 module Admin
+  # 管理画面の画面メタデータ（タイトル・パンくず・権限キー）を集中管理するクラス。
+  # Admin::BaseController からリクエストごとに呼び出され、画面タイトルとパンくずを組み立てる。
+  # 新規画面を追加する際は SCREEN_DEFS にエントリを追加する。
   class Screens
     Action = Struct.new(
       :name,

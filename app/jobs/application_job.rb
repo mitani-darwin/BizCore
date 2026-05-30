@@ -1,3 +1,4 @@
+# 全ジョブの基底クラス。Solid Queue バックエンドで実行される。
 class ApplicationJob < ActiveJob::Base
   # Automatically retry jobs that encountered a deadlock
   # retry_on ActiveRecord::Deadlocked

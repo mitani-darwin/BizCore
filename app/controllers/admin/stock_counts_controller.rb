@@ -1,4 +1,6 @@
 module Admin
+  # 棚卸処理の一覧と新規登録を管理する。
+  # create で Inventory::ConductStockCount サービスを呼んで棚卸記録と在庫調整を行う。
   class StockCountsController < BaseController
     before_action :set_options, only: [ :new, :create ]
 

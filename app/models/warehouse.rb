@@ -1,3 +1,4 @@
+# 倉庫マスタを表すモデル。在庫（StockItem）と各種在庫移動の保管場所として機能する。
 class Warehouse < ApplicationRecord
   belongs_to :tenant
 

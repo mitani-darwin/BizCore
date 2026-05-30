@@ -1,4 +1,5 @@
 module Admin
+  # ロールへの操作権限を定義する Pundit ポリシー。Scope はテナント内のロールのみを返す。
   class RolePolicy < ::ApplicationPolicy
     def index?
       manage?

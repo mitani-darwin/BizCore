@@ -1,4 +1,5 @@
 module Admin
+  # 契約管理画面の View ヘルパー。ステータス・相手方タイプの select オプション定数を提供する。
   module ContractsHelper
     include Admin::OrderingHelper
     CONTRACT_STATUS_OPTIONS = [

@@ -1,3 +1,5 @@
+# 入荷票（PurchaseReceipt）の明細行を表すモデル。
+# returned_quantity・returnable_quantity で返品済み数と返品可能数を管理する。
 class PurchaseReceiptItem < ApplicationRecord
   belongs_to :tenant
   belongs_to :purchase_receipt

@@ -1,3 +1,6 @@
+# 全コントローラの基底クラス。
+# リクエストごとに Current（user/tenant）をセットし、ロケールを設定する。
+# current_user, current_tenant, current_employee, current_ability をヘルパーメソッドとして公開する。
 class ApplicationController < ActionController::Base
   include Pagy::Backend
   include AuthorizationHelper
@@ -48,6 +51,7 @@ class ApplicationController < ActionController::Base
     @current_ability ||= Ability.new(Current.user)
   end
 
+  # テナントスコープ外のレコードアクセス等で 404 を返す際に呼ぶ共通ヘルパー。
   def render_not_found
     render file: Rails.root.join("public/404.html"), status: :not_found, layout: false
   end

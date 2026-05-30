@@ -1,4 +1,6 @@
 module Quotations
+  # 採用済み見積書から受注（Order）を生成するサービス。
+  # 見積明細をコピーして OrderItem を生成し、見積を "converted" ステータスに更新する。
   class CreateOrderFromQuotation
     def self.call(quotation:, order_date: Date.current)
       new(quotation:, order_date:).call

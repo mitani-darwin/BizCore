@@ -1,4 +1,5 @@
 module Admin
+  # 帳票テンプレートの設定編集を管理する。テナント×帳票種別で一意のレコードを管理する。
   class DocumentTemplatesController < BaseController
     before_action :set_template, only: [ :edit, :update ]
 

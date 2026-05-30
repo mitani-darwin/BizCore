@@ -1,3 +1,5 @@
+# ユーザーとロールの紐づけ（ロール付与）を表す中間テーブルモデル。
+# 同一テナント内でユーザー×ロールの組み合わせは一意とする。
 class Assignment < ApplicationRecord
   belongs_to :tenant
   belongs_to :user

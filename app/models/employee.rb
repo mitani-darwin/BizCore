@@ -1,3 +1,5 @@
+# 従業員を表すモデル。時給制（hourly）と月給制（salaried）の雇用形態を持つ。
+# 有給残日数・実効時給などの計算ロジックを内包する。
 class Employee < ApplicationRecord
   include DocumentNumbering
 
@@ -54,14 +56,17 @@ class Employee < ApplicationRecord
 
   before_validation :set_defaults
 
+  # 指定日時点の有給残日数を返す（付与日数 - 承認済み消化日数）。
   def remaining_paid_leave_days(as_of: Date.current)
     paid_leave_granted_days.to_d - approved_paid_leave_days(as_of: as_of)
   end
 
+  # 指定日以前に開始した承認済み有給の合計消化日数を返す。
   def approved_paid_leave_days(as_of: Date.current)
     leave_requests.approved_paid_leave.where("start_date <= ?", as_of).sum(:days_count).to_d
   end
 
+  # 実効時給を返す。時給が設定済みならそれを優先し、月給制の場合は月20日8時間勤務換算で算出する。
   def effective_hourly_rate
     return base_hourly_wage.to_d if base_hourly_wage.to_d.positive?
     return 0.to_d if standard_daily_minutes.to_i <= 0 || base_monthly_salary.to_d <= 0

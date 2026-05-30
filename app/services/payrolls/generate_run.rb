@@ -1,5 +1,10 @@
 module Payrolls
+  # 月次給与計算を実行するサービス。
+  # 同月の既存 PayrollRun がある場合は上書き再生成する（確定済みは例外）。
+  # insert_all! でバルクインサートして N+1 を回避する。
+  # 月給制は base_monthly_salary 固定、時給制は実労働時間 × 時給で算出する。
   class GenerateRun
+    # テナントの全従業員について当月分の PayrollRun と PayrollEntry を生成して返す。
     def self.call(tenant:, payroll_month:, requested_by:, note: nil)
       new(tenant:, payroll_month:, requested_by:, note:).call
     end

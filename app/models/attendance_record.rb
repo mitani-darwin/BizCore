@@ -1,3 +1,6 @@
+# 従業員の日次勤怠実績を表すモデル。
+# 出退勤時刻から働いた分数・残業分数を自動計算する。
+# break_minutes_manually_set が false の場合はシフト・従業員設定から休憩時間を補完する。
 class AttendanceRecord < ApplicationRecord
   attr_accessor :break_minutes_manually_set
 
@@ -34,12 +37,14 @@ class AttendanceRecord < ApplicationRecord
   before_validation :calculate_overtime_minutes
   before_validation :set_status_from_times
 
+  # 出勤打刻を記録する。既に打刻済みの場合は例外を上げる。
   def clock_in!(time: Time.current)
     raise ArgumentError, "既に出勤打刻されています" if clock_in_at.present?
 
     update!(clock_in_at: time, work_date: time.to_date)
   end
 
+  # 退勤打刻を記録する。出勤前または二重打刻は例外を上げる。
   def clock_out!(time: Time.current)
     raise ArgumentError, "出勤打刻がありません" if clock_in_at.blank?
     raise ArgumentError, "既に退勤打刻されています" if clock_out_at.present?
@@ -47,6 +52,7 @@ class AttendanceRecord < ApplicationRecord
     update!(clock_out_at: time)
   end
 
+  # 残業を除いた通常勤務分数を返す。マイナスにはならない。
   def regular_worked_minutes
     [ worked_minutes.to_i - overtime_minutes.to_i, 0 ].max
   end

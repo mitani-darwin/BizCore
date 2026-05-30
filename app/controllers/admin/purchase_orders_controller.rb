@@ -1,4 +1,6 @@
 module Admin
+  # 発注の CRUD・送信・入荷登録・Excel 出力を管理する。
+  # receive_items は Procurement::ReceiveItems サービスを呼んで入荷処理と在庫更新を行う。
   class PurchaseOrdersController < BaseController
     MINIMUM_PURCHASE_ORDER_ITEM_ROWS = 1
 

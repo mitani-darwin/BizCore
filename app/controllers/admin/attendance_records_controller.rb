@@ -1,4 +1,7 @@
 module Admin
+  # 勤怠実績の閲覧・登録・打刻・月次締めを管理する。
+  # clock_in / clock_out は日付と時刻を別フォームフィールドで受け取り assign_clock_datetime! で結合する。
+  # close_month は Attendances::CloseMonth サービスを呼んで当月の勤怠を一括確定する。
   class AttendanceRecordsController < BaseController
     before_action :set_attendance_record, only: [ :show, :edit, :update, :clock_out ]
     before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update, :clock_in ]

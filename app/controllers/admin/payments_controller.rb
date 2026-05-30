@@ -1,4 +1,6 @@
 module Admin
+  # 入金の CRUD と請求書への消し込み（reconcile）を管理する。
+  # new/create で source_invoice パラメータが来た場合は作成直後に自動消し込みを行う。
   class PaymentsController < BaseController
     before_action :set_payment, only: [ :show, :edit, :update, :reconcile ]
     before_action :set_source_invoice, only: [ :new, :create ]

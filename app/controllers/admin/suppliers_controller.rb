@@ -1,4 +1,5 @@
 module Admin
+  # 仕入先マスタの CRUD を管理する。CustomersController の仕入側に対応する。
   class SuppliersController < BaseController
     before_action :set_supplier, only: [ :show, :edit, :update ]
 

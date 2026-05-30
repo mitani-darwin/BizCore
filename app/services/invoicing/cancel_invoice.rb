@@ -1,4 +1,5 @@
 module Invoicing
+  # 個別の請求書を取消するサービス。消し込み済みの入金がある場合は取消不可。
   class CancelInvoice
     def self.call(invoice:, cancelled_by: nil, cancelled_at: Time.current)
       new(invoice: invoice, cancelled_by: cancelled_by, cancelled_at: cancelled_at).call

@@ -2,6 +2,7 @@ require "builder"
 require "zip"
 
 module Reports
+  # Excel 帳票サービスの基底クラス。各帳票サービスはこのクラスを継承して #call を実装する。
   class BaseXlsx
     MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".freeze
     DEFAULT_COLUMN_WIDTHS = [ 18, 28, 12, 14, 14, 16 ].freeze

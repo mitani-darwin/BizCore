@@ -1,4 +1,7 @@
 module Admin
+  # 管理画面サイドバーの HTML 構築ヘルパー。
+  # sidebar_sections で権限フィルタ済みのセクション・アイテム一覧を返し、View がそれをレンダリングする。
+  # 注: 新しいサイドバー設計では Admin::Navigation に構造を移しており、このヘルパーは古い仕組みとして残存している。
   module SidebarHelper
     SidebarItem = Struct.new(:label, :path, :permission_keys, :controllers, keyword_init: true)
     SidebarSection = Struct.new(:label, :items, keyword_init: true)

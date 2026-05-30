@@ -1,3 +1,5 @@
+# 契約書を表すモデル。得意先・仕入先・その他の相手方タイプを持つ。
+# counterparty_type によって customer_id / supplier_id のどちらかのみ有効になる。
 class Contract < ApplicationRecord
   COUNTERPARTY_TYPES = {
     customer: "customer",
@@ -45,12 +47,14 @@ class Contract < ApplicationRecord
     "-"
   end
 
+  # 満了まで残り何日かを返す。満了日未設定の場合は nil。マイナスは既に期限切れを意味する。
   def days_until_expiry
     return nil if ended_on.blank?
 
     (ended_on - Date.current).to_i
   end
 
+  # 満了日が過去の場合に true を返す。enum の "expired" ステータスとは独立して判定する。
   def expired?
     ended_on.present? && ended_on < Date.current
   end

@@ -1,4 +1,5 @@
 module Admin
+  # 商品マスタの CRUD を管理する。在庫・発注・受注各明細から参照される。
   class ProductsController < BaseController
     before_action :set_product, only: [ :show, :edit, :update ]
 
