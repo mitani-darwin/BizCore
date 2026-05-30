@@ -25,6 +25,9 @@ gem "addressable", ">= 2.9.0"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.22"
 
+# CSV インポート（Ruby 3.4 以降は stdlib から外れたため明示的に追加）
+gem "csv"
+
 # PDF 出力
 gem "prawn"
 gem "prawn-table"

@@ -1,0 +1,152 @@
+<% content_for :page_title, "従業員インポート" %>
+
+<div class="space-y-6">
+
+  <% if flash.now[:alert].present? %>
+    <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+      <%= flash.now[:alert] %>
+    </div>
+  <% end %>
+
+  <%# インポート結果 %>
+  <% if @import_result %>
+    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-semibold text-slate-800">インポート結果</h2>
+      <div class="mt-3 grid grid-cols-3 gap-4 text-center">
+        <div class="rounded-lg bg-slate-50 p-3">
+          <div class="text-xs text-slate-500">総行数</div>
+          <div class="text-2xl font-bold text-slate-900"><%= @import_result.total %></div>
+        </div>
+        <div class="rounded-lg bg-emerald-50 p-3">
+          <div class="text-xs text-emerald-700">成功</div>
+          <div class="text-2xl font-bold text-emerald-700"><%= @import_result.succeeded %></div>
+        </div>
+        <div class="rounded-lg bg-rose-50 p-3">
+          <div class="text-xs text-rose-700">エラー</div>
+          <div class="text-2xl font-bold text-rose-700"><%= @import_result.failed_rows.size %></div>
+        </div>
+      </div>
+
+      <% if @import_result.succeeded > 0 %>
+        <div class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          <%= @import_result.succeeded %> 件を登録/更新しました。
+          <%= link_to "従業員一覧を確認する", admin_employees_path, class: "ml-2 font-semibold underline" %>
+        </div>
+      <% end %>
+
+      <% if @import_result.failed_rows.any? %>
+        <div class="mt-4">
+          <h3 class="text-xs font-semibold text-rose-800 mb-2">エラー行の詳細</h3>
+          <div class="overflow-x-auto rounded-lg border border-rose-200">
+            <table class="min-w-full text-xs">
+              <thead>
+                <tr class="bg-rose-50">
+                  <th class="border-b border-rose-200 px-3 py-2 text-left font-semibold text-rose-800 whitespace-nowrap">行</th>
+                  <th class="border-b border-rose-200 px-3 py-2 text-left font-semibold text-rose-800 whitespace-nowrap">従業員番号</th>
+                  <th class="border-b border-rose-200 px-3 py-2 text-left font-semibold text-rose-800 whitespace-nowrap">氏名</th>
+                  <th class="border-b border-rose-200 px-3 py-2 text-left font-semibold text-rose-800">エラー内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @import_result.failed_rows.each do |row_info| %>
+                  <tr class="bg-white border-b border-rose-100">
+                    <td class="px-3 py-2 text-rose-700 font-medium whitespace-nowrap"><%= row_info[:row] %>行目</td>
+                    <td class="px-3 py-2 text-slate-700 font-mono whitespace-nowrap"><%= row_info[:data]["従業員番号"] %></td>
+                    <td class="px-3 py-2 text-slate-700 whitespace-nowrap"><%= row_info[:data]["氏名"] %></td>
+                    <td class="px-3 py-2 text-rose-700"><%= row_info[:errors].join("、") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# アップロードフォーム %>
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-800">従業員を CSV でインポート</h2>
+    <p class="mt-1 text-xs text-slate-500">
+      従業員番号が既存の場合は更新、新規の場合は追加します。
+    </p>
+    <%= form_with url: import_admin_employees_path, method: :post, multipart: true, class: "mt-4 space-y-4" do |f| %>
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">CSV ファイル（UTF-8）</label>
+        <input type="file" name="file" accept=".csv,text/csv" required
+               class="block w-full text-sm text-slate-700 file:mr-4 file:rounded-lg file:border file:border-slate-300 file:bg-slate-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-100">
+      </div>
+      <div class="flex items-center gap-4">
+        <button type="submit" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+          インポート実行
+        </button>
+        <%= link_to "テンプレートをダウンロード", import_template_admin_employees_path, class: "text-xs font-semibold text-sky-600 hover:underline" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# フォーマット説明 %>
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-800">CSV フォーマット</h2>
+    <p class="mt-1 text-xs text-slate-500">1行目はヘッダー行として必須です。列の順序は固定です。</p>
+    <div class="mt-3 overflow-x-auto rounded-lg border border-slate-200">
+      <table class="min-w-full text-xs">
+        <thead>
+          <tr class="bg-slate-50">
+            <th class="border-b border-slate-200 px-3 py-2 text-left font-semibold text-slate-700">列名</th>
+            <th class="border-b border-slate-200 px-3 py-2 text-left font-semibold text-slate-700">必須</th>
+            <th class="border-b border-slate-200 px-3 py-2 text-left font-semibold text-slate-700">説明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-white border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">従業員番号</td>
+            <td class="px-3 py-2 text-rose-600 font-semibold">必須</td>
+            <td class="px-3 py-2 text-slate-600">一意のキー。既存の場合は更新。</td>
+          </tr>
+          <tr class="bg-slate-50/50 border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">氏名</td>
+            <td class="px-3 py-2 text-rose-600 font-semibold">必須</td>
+            <td class="px-3 py-2 text-slate-600">フルネーム</td>
+          </tr>
+          <tr class="bg-white border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">雇用形態(hourly/salaried)</td>
+            <td class="px-3 py-2 text-rose-600 font-semibold">必須</td>
+            <td class="px-3 py-2 text-slate-600"><code class="bg-slate-100 px-1 rounded">hourly</code>（時給制）または <code class="bg-slate-100 px-1 rounded">salaried</code>（月給制）</td>
+          </tr>
+          <tr class="bg-slate-50/50 border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">在籍状況(active/inactive)</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">省略時は <code class="bg-slate-100 px-1 rounded">active</code></td>
+          </tr>
+          <tr class="bg-white border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">入社日(YYYY/MM/DD)</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">例: 2024/04/01</td>
+          </tr>
+          <tr class="bg-slate-50/50 border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">時給</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">hourly の場合は入力推奨</td>
+          </tr>
+          <tr class="bg-white border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">月給</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">salaried の場合は入力推奨</td>
+          </tr>
+          <tr class="bg-slate-50/50 border-b border-slate-100">
+            <td class="px-3 py-2 font-mono text-slate-800">メール</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">メールアドレス形式</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="px-3 py-2 font-mono text-slate-800">電話番号</td>
+            <td class="px-3 py-2 text-slate-400">任意</td>
+            <td class="px-3 py-2 text-slate-600">ハイフン区切り可</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
