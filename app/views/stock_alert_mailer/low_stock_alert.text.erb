@@ -1,0 +1,17 @@
+<%= @recipient.name %> さん
+
+<% if @stock_item.out_of_stock? %>
+以下の商品の在庫が切れています。至急補充をご確認ください。
+<% else %>
+以下の商品の在庫が安全在庫を下回りました。補充をご検討ください。
+<% end %>
+
+商品名: <%= @product.name %>
+商品コード: <%= @product.code %>
+倉庫: <%= @warehouse.name %>
+現在の利用可能在庫: <%= @stock_item.available_quantity %> <%= @product.unit_name %>
+  内訳: 実在庫 <%= @stock_item.quantity_on_hand %> / 引当済み <%= @stock_item.quantity_reserved %>
+安全在庫: <%= @stock_item.safety_stock %> <%= @product.unit_name %>
+
+通知日時: <%= Time.current.in_time_zone.strftime("%Y/%m/%d %H:%M") %>
+<%= @tenant.name %>
