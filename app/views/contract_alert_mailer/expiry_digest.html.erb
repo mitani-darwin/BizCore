@@ -1,0 +1,37 @@
+<p><%= @recipient.name %> さん</p>
+
+<p>
+  期限が迫っている契約が <%= @contracts.size %> 件あります。内容をご確認ください。
+</p>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 680px;">
+  <thead>
+    <tr style="background: #f5f5f5;">
+      <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">契約番号</th>
+      <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">タイトル</th>
+      <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">相手方</th>
+      <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">満了日</th>
+      <th style="text-align: right; padding: 8px; border: 1px solid #ddd;">残日数</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @contracts.each do |contract| %>
+      <% days = contract.days_until_expiry %>
+      <% row_color = days && days <= 7 ? "#fff7ed" : "#ffffff" %>
+      <tr style="background: <%= row_color %>;">
+        <td style="padding: 8px; border: 1px solid #ddd; font-family: monospace;"><%= contract.contract_number %></td>
+        <td style="padding: 8px; border: 1px solid #ddd;"><%= contract.title %></td>
+        <td style="padding: 8px; border: 1px solid #ddd;"><%= contract.counterparty_name %></td>
+        <td style="padding: 8px; border: 1px solid #ddd;"><%= contract.ended_on&.strftime("%Y/%m/%d") || "-" %></td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: <%= days && days <= 7 ? "#dc2626" : "#d97706" %>;">
+          <%= days ? "残 #{days} 日" : "-" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p style="margin-top: 16px; color: #6b7280; font-size: 12px;">
+  通知日時: <%= Date.current.strftime("%Y/%m/%d") %><br>
+  <%= @tenant.name %>
+</p>

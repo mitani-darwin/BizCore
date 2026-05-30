@@ -1,0 +1,15 @@
+<%= @recipient.name %> さん
+
+期限が迫っている契約が <%= @contracts.size %> 件あります。内容をご確認ください。
+
+<% @contracts.each do |contract| %>
+---
+契約番号: <%= contract.contract_number %>
+タイトル: <%= contract.title %>
+相手方: <%= contract.counterparty_name %>
+満了日: <%= contract.ended_on&.strftime("%Y/%m/%d") || "-" %>
+残日数: <%= contract.days_until_expiry ? "残 #{contract.days_until_expiry} 日" : "-" %>
+<% end %>
+
+通知日時: <%= Date.current.strftime("%Y/%m/%d") %>
+<%= @tenant.name %>
