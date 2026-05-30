@@ -1,4 +1,6 @@
 module Admin
+  # 人事・勤怠・給与・経費に関する View ヘルパー。
+  # select オプションの定数と表示用ユーティリティメソッドを提供する。
   module WorkforceHelper
     include Admin::OrderingHelper
     include ExpenseReportsHelper

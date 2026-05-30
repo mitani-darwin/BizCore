@@ -1,4 +1,5 @@
 module Purchases
+  # 個別の仕入請求書を取消するサービス。支払消し込み済みの場合は取消不可。
   class CancelPurchaseBill
     def self.call(purchase_bill:, cancelled_by: nil, cancelled_at: Time.current)
       new(purchase_bill: purchase_bill, cancelled_by: cancelled_by, cancelled_at: cancelled_at).call

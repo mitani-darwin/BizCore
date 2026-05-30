@@ -1,3 +1,5 @@
+# 従業員の経費精算申請を表すモデル。交通費・接待費等のカテゴリ別に管理する。
+# 承認（approved）・却下（rejected）はセルフポータルまたは管理画面から行う。
 class ExpenseReport < ApplicationRecord
   CATEGORIES = {
     transportation: "transportation",

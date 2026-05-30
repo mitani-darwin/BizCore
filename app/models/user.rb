@@ -1,3 +1,6 @@
+# 管理画面にログインするユーザーを表すモデル。
+# Devise で認証を管理し、ロール経由で権限を持つ。
+# is_owner? フラグが true のユーザーはすべての権限を通す特権ユーザー。
 class User < ApplicationRecord
   devise :database_authenticatable, :recoverable, :rememberable, :validatable, :trackable
 
@@ -17,10 +20,13 @@ class User < ApplicationRecord
   validate :roles_must_be_selected
   validate :employee_must_belong_to_same_tenant
 
+  # 指定の権限キーを持つかどうかを返す。owner は常に true。
   def can?(permission_key)
     Ability.new(self).can?(permission_key)
   end
 
+  # 指定テナントにおけるユーザーの権限一覧を返す。
+  # テナント不一致の場合は空リストを返し、クロステナントアクセスを防ぐ。
   def permissions_for(tenant)
     return Permission.none if tenant.blank?
     return Permission.none if tenant_id.present? && tenant_id != tenant.id

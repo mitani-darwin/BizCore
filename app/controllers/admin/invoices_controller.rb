@@ -1,4 +1,7 @@
 module Admin
+  # 請求書の閲覧・帳票出力・月末一括請求・取消・再発行を管理する。
+  # issue_monthly は Invoicing::IssueMonthlyInvoices サービスを呼んで月次請求処理を実行する。
+  # cancel は消し込み済みの請求書には使えないため cancellable? を確認してから呼ぶ。
   class InvoicesController < BaseController
     before_action :set_invoice, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 

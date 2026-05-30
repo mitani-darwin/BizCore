@@ -1,4 +1,5 @@
 module Admin
+  # 管理画面トップページ。テナント横断のサマリー情報を表示する。
   class DashboardController < BaseController
     def index
       @tenant = current_tenant

@@ -1,3 +1,5 @@
+# 受注明細（OrderItem）に対する在庫引当の状態を追跡するモデル。
+# reserved → consumed → released の遷移で在庫引当の消費・解放を管理する。
 class StockAllocation < ApplicationRecord
   STATUSES = {
     reserved: "reserved",

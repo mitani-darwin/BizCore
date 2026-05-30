@@ -1,4 +1,5 @@
 module Admin
+  # 支払予定表（支払予定一覧）を表示する読み取り専用コントローラ。CollectionSchedulesController の仕入側に対応する。
   class PaymentSchedulesController < BaseController
     def index
       @filters = {

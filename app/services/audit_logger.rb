@@ -1,3 +1,5 @@
+# 監査ログを記録するユーティリティクラス。BaseController 内で自動呼び出しされる。
+# パスワード等のセンシティブなカラムは SENSITIVE_KEYS で除外してから記録する。
 class AuditLogger
   SENSITIVE_KEYS = %w[
     encrypted_password

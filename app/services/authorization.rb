@@ -1,4 +1,7 @@
+# 権限チェックのサービスクラス。ApplicationController の authorize! ヘルパーから呼ばれる。
+# Ability（モデル側のキャッシュ付きチェック）とは異なり、テナントを明示的に指定して検索する。
 class Authorization
+  # 指定アクターが key の権限を持つかどうかを返す。
   def self.can?(actor:, tenant:, key:)
     return false if actor.nil? || tenant.nil?
 

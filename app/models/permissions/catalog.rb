@@ -1,4 +1,7 @@
 module Permissions
+  # 管理画面の権限カタログを定義するクラス。
+  # ADMIN_RESOURCES でリソース・アクションの組み合わせを列挙し、seed_admin! で Permission テーブルに upsert する。
+  # 権限キーの形式は "admin.<resource>.<action>"。CLAUDE.md に記載のルールを参照。
   class Catalog
     ADMIN_RESOURCES = {
       dashboard: %i[read],

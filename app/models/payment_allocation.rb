@@ -1,3 +1,5 @@
+# 入金（Payment）と請求書（Invoice）の消し込み明細を表すモデル。
+# 1 件の入金を複数の請求書に分割消し込みでき、消し込み後に Invoice#recalculate_totals! を呼ぶ。
 class PaymentAllocation < ApplicationRecord
   belongs_to :tenant
   belongs_to :payment

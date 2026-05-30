@@ -1,4 +1,6 @@
 module Admin
+  # 休暇申請の CRUD・承認・却下を管理する。
+  # approve / reject は LeaveRequest モデルのメソッドを直接呼び出す。
   class LeaveRequestsController < BaseController
     before_action :set_leave_request, only: [ :show, :edit, :update, :approve, :reject ]
     before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update ]

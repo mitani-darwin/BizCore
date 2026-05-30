@@ -1,4 +1,5 @@
 module Admin
+  # 納品書の閲覧と Excel 出力を管理する。納品書は受注処理（issue_delivery）から自動生成される。
   class DeliveriesController < BaseController
     before_action :set_delivery, only: [ :show, :download_excel, :download_pdf ]
 

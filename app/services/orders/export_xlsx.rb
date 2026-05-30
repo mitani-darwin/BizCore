@@ -1,4 +1,5 @@
 module Orders
+  # 注文書を Excel 形式で出力するサービス。
   class ExportXlsx < Reports::BaseXlsx
     COLUMN_WIDTHS = [ 14, 26, 10, 12, 14, 10, 10, 14 ].freeze
 

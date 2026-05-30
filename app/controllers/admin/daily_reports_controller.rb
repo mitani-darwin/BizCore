@@ -1,4 +1,5 @@
 module Admin
+  # 現場日報の CRUD を管理する。
   class DailyReportsController < BaseController
     before_action :set_daily_report, only: [ :show, :edit, :update, :destroy ]
 

@@ -1,3 +1,5 @@
+# 月次仕入締め処理のバッチを表すモデル。BillingBatch の仕入側に対応する。
+# cancellable? は支払消し込みがない場合のみ true を返す（締め解除の前提条件）。
 class PurchaseBillBatch < ApplicationRecord
   include DocumentNumbering
 

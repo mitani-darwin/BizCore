@@ -1,3 +1,5 @@
+# テナントリソースへの操作権限を定義する Pundit ポリシー。
+# Scope#resolve は自テナントのみを返してクロステナントアクセスを防ぐ。
 class TenantPolicy < ApplicationPolicy
   def index?
     manage?

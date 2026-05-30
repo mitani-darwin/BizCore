@@ -1,4 +1,6 @@
 module Admin
+  # ロールへの権限割当を一括更新する画面を管理する。
+  # built_in ロールは locked_role? で判定して更新不可にしている。
   class AuthorizationsController < BaseController
     helper_method :locked_role?
 

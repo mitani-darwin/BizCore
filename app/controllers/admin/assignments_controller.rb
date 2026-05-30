@@ -1,4 +1,5 @@
 module Admin
+  # ユーザーへのロール付与・剥奪を管理する。一覧表示と create/destroy のみ実装する。
   class AssignmentsController < BaseController
     before_action :load_users_and_roles
 

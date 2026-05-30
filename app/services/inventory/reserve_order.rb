@@ -1,5 +1,8 @@
 module Inventory
+  # 受注明細の在庫引当を実行するサービス。StockItem#reserve! を呼んで StockAllocation を生成する。
+  # 在庫が不足している場合は InsufficientStockError を上げる。
   class ReserveOrder
+    # 引当可能在庫が不足している場合に上げる例外。
     class InsufficientStockError < StandardError; end
 
     def self.call(order:, warehouse:, allocated_at: Time.current)

@@ -1,4 +1,5 @@
 module Admin
+  # 契約管理の CRUD を管理する。得意先・仕入先・その他の相手方タイプに対応する。
   class ContractsController < BaseController
     before_action :set_contract, only: %i[show edit update]
     before_action :set_form_options, only: %i[new create edit update]

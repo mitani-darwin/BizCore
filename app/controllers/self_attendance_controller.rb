@@ -1,3 +1,5 @@
+# 従業員セルフ画面: 打刻（出勤・退勤）と当日の勤怠状況確認コントローラ。
+# 管理画面とは独立した簡易 UI で、current_employee のレコードのみ操作できる。
 class SelfAttendanceController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_current_tenant!

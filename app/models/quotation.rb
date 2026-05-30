@@ -1,3 +1,5 @@
+# 見積書を表すモデル。draft → sent → accepted → converted の順でステータスが遷移する。
+# accepted になった見積を注文（Order）に変換する際は converted に更新する。
 class Quotation < ApplicationRecord
   include DocumentNumbering
 

@@ -1,3 +1,5 @@
+# 発注（PurchaseOrder）の明細行を表すモデル。
+# register_receipt! で入荷数を加算し、全数入荷で "received"、一部入荷で "partially_received" に遷移する。
 class PurchaseOrderItem < ApplicationRecord
   STATUSES = {
     pending: "pending",

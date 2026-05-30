@@ -1,4 +1,5 @@
 module Admin
+  # 顧客問い合わせの CRUD を管理する。問い合わせから商談（CustomerOpportunity）への昇格もここで行う。
   class CustomerInquiriesController < BaseController
     before_action :set_customer_inquiry, only: [ :show, :edit, :update ]
     before_action :set_form_options, only: [ :new, :create, :edit, :update ]

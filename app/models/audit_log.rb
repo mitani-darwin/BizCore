@@ -1,3 +1,6 @@
+# ユーザー操作の監査ログを記録するモデル。
+# actor（操作者）と auditable（操作対象）は多態関連で様々なモデルに紐づく。
+# succeeded / failed / denied の 3 種類のステータスで結果を記録する。
 class AuditLog < ApplicationRecord
   STATUSES = {
     succeeded: "succeeded",

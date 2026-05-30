@@ -1,4 +1,5 @@
 module Admin
+  # 従業員ごとの有給残日数一覧を表示する読み取り専用コントローラ。
   class LeaveBalancesController < BaseController
     def index
       @as_of = parse_date(params[:as_of]) || Date.current

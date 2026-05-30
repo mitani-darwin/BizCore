@@ -1,3 +1,6 @@
+# 請求書（Invoice）の明細行を表すモデル。
+# source（多態関連）は納品明細（DeliveryItem）等を参照し、再発行時の整合性チェックにも使う。
+# active_for_source スコープはキャンセル済み請求書の明細を除外するために使用する。
 class InvoiceItem < ApplicationRecord
   belongs_to :tenant
   belongs_to :invoice

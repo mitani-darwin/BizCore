@@ -1,3 +1,6 @@
+# 受注（Order）の明細行を表すモデル。
+# 商品情報は作成時にスナップショットとして保存し、商品マスタの変更が受注内容に影響しないようにする。
+# 引当数・納品数を個別に追跡し、pending → allocated → delivered → billed の流れで進む。
 class OrderItem < ApplicationRecord
   STATUSES = {
     pending: "pending",

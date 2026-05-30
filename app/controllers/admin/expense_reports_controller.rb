@@ -1,4 +1,6 @@
 module Admin
+  # 経費精算申請の CRUD・承認・却下を管理する。
+  # approve / reject は ExpenseReport モデルのメソッドを直接呼び出す。
   class ExpenseReportsController < BaseController
     before_action :set_expense_report, only: %i[show edit update approve reject]
     before_action :set_employee_options, only: %i[index new create edit update]

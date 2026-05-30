@@ -1,4 +1,5 @@
 module Admin
+  # 倉庫マスタの CRUD を管理する。在庫・発注・入荷の保管場所として参照される。
   class WarehousesController < BaseController
     before_action :set_warehouse, only: [ :show, :edit, :update ]
 

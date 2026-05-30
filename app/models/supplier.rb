@@ -1,3 +1,5 @@
+# 仕入先を表すモデル。
+# 買掛残高・エイジング分析の集計ロジックを持つ。Customer と対称的な設計。
 class Supplier < ApplicationRecord
   STATUSES = {
     active: "active",

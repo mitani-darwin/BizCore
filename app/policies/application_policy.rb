@@ -1,3 +1,5 @@
+# Pundit ポリシーの基底クラス。全アクションをデフォルトで拒否する。
+# 現在は Pundit より Authorization クラスが主に使われているが、将来の拡張用に存在する。
 class ApplicationPolicy
   attr_reader :user, :record
 

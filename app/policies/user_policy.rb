@@ -1,3 +1,5 @@
+# ユーザーリソースへの操作権限を定義する Pundit ポリシー。
+# 現行では Authorization クラスが主流だが、将来の Pundit 移行に向けて存在する。
 class UserPolicy < ApplicationPolicy
   def index?
     manage?

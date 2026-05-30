@@ -1,4 +1,6 @@
 module Purchases
+  # 発注に対する入荷処理を実行するサービス。
+  # PurchaseReceipt と PurchaseReceiptItem を生成し、在庫の入庫（StockMovement/StockItem）も同時に更新する。
   class ReceivePurchaseOrder
     def self.call(purchase_order:, received_on:, received_by_name:, remarks:, quantities:)
       new(

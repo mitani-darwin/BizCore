@@ -1,4 +1,5 @@
 module Purchases
+  # 仕入返品・値引きを登録し、返品の場合は在庫の出庫調整も同時に行うサービス。
   class RegisterAdjustment
     def self.call(purchase_receipt:, adjustment_type:, adjustment_date:, processed_by_name:, reason:, purchase_receipt_item_id: nil, quantity: nil, amount: nil)
       new(

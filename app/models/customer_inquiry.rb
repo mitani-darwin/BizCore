@@ -1,3 +1,6 @@
+# 顧客からの問い合わせを管理するモデル。
+# 既存顧客（customer あり）と新規見込み客（company_name のみ）の両方を扱える。
+# 問い合わせから商談（CustomerOpportunity）へ昇格するフローをサポートする。
 class CustomerInquiry < ApplicationRecord
   include DocumentNumbering
 

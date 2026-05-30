@@ -1,3 +1,5 @@
+# 従業員の休暇申請を表すモデル。有給・特別休暇の申請・承認・却下を管理する。
+# 半日指定（morning/afternoon）の場合は days_count を 0.5 に固定し、end_date を start_date に揃える。
 class LeaveRequest < ApplicationRecord
   LEAVE_TYPES = {
     paid_leave: "paid_leave",
@@ -60,6 +62,7 @@ class LeaveRequest < ApplicationRecord
     (end_date - start_date).to_i + 1
   end
 
+  # 指定期間と重複するカレンダー日数を返す。
   def overlap_days_with(range)
     return 0 if start_date.blank? || end_date.blank?
 
@@ -70,6 +73,7 @@ class LeaveRequest < ApplicationRecord
     (overlap_end - overlap_start).to_i + 1
   end
 
+  # 指定期間内に按分した消化日数を返す。半日休暇等の端数も正確に按分する。
   def days_within(range)
     overlap_days = overlap_days_with(range)
     return 0.to_d if overlap_days <= 0

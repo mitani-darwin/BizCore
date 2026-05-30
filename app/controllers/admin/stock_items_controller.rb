@@ -1,4 +1,6 @@
 module Admin
+  # 倉庫ごとの在庫の閲覧・調整を管理する。
+  # update で adjust_on_hand! を呼ぶことで在庫数を調整できる。
   class StockItemsController < BaseController
     before_action :set_stock_item, only: [ :show, :edit, :update ]
     before_action :set_options, only: [ :new, :create, :edit, :update ]

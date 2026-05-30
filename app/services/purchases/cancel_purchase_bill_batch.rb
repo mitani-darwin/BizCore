@@ -1,4 +1,5 @@
 module Purchases
+  # 仕入締めバッチをキャンセルし、配下の全仕入請求書も一括取消するサービス。CancelBillingBatch の仕入側に対応する。
   class CancelPurchaseBillBatch
     def self.call(purchase_bill_batch:, cancelled_by: nil, cancelled_at: Time.current)
       new(purchase_bill_batch: purchase_bill_batch, cancelled_by: cancelled_by, cancelled_at: cancelled_at).call

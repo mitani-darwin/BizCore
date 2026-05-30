@@ -1,4 +1,5 @@
 module Admin
+  # 商談（営業案件）の CRUD を管理する。ステージ更新・確度変更・受注転換をここから行う。
   class CustomerOpportunitiesController < BaseController
     before_action :set_customer_opportunity, only: [ :show, :edit, :update ]
     before_action :set_form_options, only: [ :new, :create, :edit, :update ]

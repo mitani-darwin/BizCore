@@ -1,4 +1,6 @@
 module Admin
+  # シフトの CRUD とグリッド入力画面を管理する。
+  # grid アクションは月×従業員のマトリクスで一括入力できる専用レイアウトを提供する。
   class WorkShiftsController < BaseController
     before_action :set_work_shift, only: [ :show, :edit, :update, :destroy ]
     before_action :set_employee_options, only: [ :index, :new, :create, :edit, :update ]

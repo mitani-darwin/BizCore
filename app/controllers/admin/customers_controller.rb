@@ -1,4 +1,5 @@
 module Admin
+  # 得意先マスタの CRUD を管理する。show は売掛残高・エイジング等の財務サマリーも表示する。
   class CustomersController < BaseController
     before_action :set_customer, only: [ :show, :edit, :update ]
 

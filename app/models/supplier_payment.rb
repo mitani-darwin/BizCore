@@ -1,3 +1,5 @@
+# 仕入先への支払を表すモデル。Payment の仕入側に対応する。
+# SupplierPaymentAllocation 経由で複数の仕入請求書（PurchaseBill）に分割消し込みできる。
 class SupplierPayment < ApplicationRecord
   include DocumentNumbering
 

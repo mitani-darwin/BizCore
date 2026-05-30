@@ -1,3 +1,6 @@
+# 見積書（Quotation）の明細行を表すモデル。
+# 商品マスタの情報をスナップショットとして保存し、後からの商品変更に影響されない。
+# 税額は TaxSupport を使って tax_category_snapshot ベースで算出する。
 class QuotationItem < ApplicationRecord
   belongs_to :tenant
   belongs_to :quotation

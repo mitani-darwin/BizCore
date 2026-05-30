@@ -1,4 +1,5 @@
 module Admin
+  # 受注・仕入・請求に関する共通 View ヘルパー。税区分・支払方法などの select オプション定数を提供する。
   module OrderingHelper
     TAX_CATEGORY_OPTIONS = [
       [ "課税 10%", "taxable_10" ],

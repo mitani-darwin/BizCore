@@ -1,4 +1,5 @@
 module Admin
+  # 権限定義の管理（主に seed 管理）を行う。通常は Permissions::Catalog.seed_admin! で自動生成される。
   class PermissionsController < BaseController
     before_action :set_permission, only: [ :update, :destroy ]
 

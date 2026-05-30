@@ -1,4 +1,5 @@
 module Admin
+  # 権限割当画面への操作権限を定義する Pundit ポリシー。
   class AuthorizationPolicy < ::ApplicationPolicy
     def show?
       manage?

@@ -1,3 +1,5 @@
+# 仕入請求書（PurchaseBill）の明細行を表すモデル。InvoiceItem の仕入側に対応する。
+# source は PurchaseReceiptItem または PurchaseAdjustment で、税区分はその連鎖から遡及して決定する。
 class PurchaseBillItem < ApplicationRecord
   belongs_to :tenant
   belongs_to :purchase_bill

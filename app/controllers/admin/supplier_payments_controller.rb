@@ -1,4 +1,5 @@
 module Admin
+  # 仕入先への支払の CRUD と仕入請求書への消し込み（reconcile）を管理する。PaymentsController の仕入側に対応する。
   class SupplierPaymentsController < BaseController
     before_action :set_supplier_payment, only: [ :show, :edit, :update, :reconcile ]
     before_action :set_source_purchase_bill, only: [ :new, :create ]

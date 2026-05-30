@@ -1,3 +1,6 @@
+# 顧客からの入金を表すモデル。
+# 1 件の入金を複数の請求書（Invoice）に分割消し込みできる（PaymentAllocation 経由）。
+# ステータスは消し込み額に応じて pending / partially_applied / applied に自動判定する。
 class Payment < ApplicationRecord
   include DocumentNumbering
 

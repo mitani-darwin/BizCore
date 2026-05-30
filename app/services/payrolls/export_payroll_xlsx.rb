@@ -1,4 +1,5 @@
 module Payrolls
+  # 給与計算結果を Excel 形式で出力するサービス。従業員ごとの給与明細を一覧表示する。
   class ExportPayrollXlsx < Reports::BaseXlsx
     COLUMN_WIDTHS = [ 14, 18, 12, 12, 10, 14, 14, 14, 16 ].freeze
 

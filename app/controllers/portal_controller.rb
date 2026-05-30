@@ -1,3 +1,5 @@
+# ログイン後のエントリポイント。管理画面へのアクセス権がある場合はリダイレクト、
+# 従業員のみの場合はセルフポータル画面を表示する。いずれも権限がない場合はログイン画面に戻す。
 class PortalController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_current_tenant!

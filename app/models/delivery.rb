@@ -1,3 +1,5 @@
+# 納品書を表すモデル。受注（Order）に対して発行し、請求（Invoice）に紐づける。
+# issued → billed の遷移で請求済み状態になる。
 class Delivery < ApplicationRecord
   include DocumentNumbering
 

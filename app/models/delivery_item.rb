@@ -1,3 +1,6 @@
+# 納品書（Delivery）の明細行を表すモデル。
+# 受注明細（OrderItem）から商品情報をスナップショットとして引き継ぐ。
+# invoice_items の source として参照されるため、請求生成後は restrict_with_exception で削除を防ぐ。
 class DeliveryItem < ApplicationRecord
   belongs_to :tenant
   belongs_to :delivery

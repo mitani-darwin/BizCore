@@ -1,4 +1,5 @@
 module Admin
+  # 権限定義レコードへの操作権限を定義する Pundit ポリシー。
   class PermissionPolicy < ::ApplicationPolicy
     def index?
       manage?

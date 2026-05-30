@@ -1,3 +1,5 @@
+# 発注書を表すモデル。draft → sent → partially_received → received の順で入荷状況が更新される。
+# refresh_receipt_status! は入荷処理後に呼び出してステータスを自動更新する。
 class PurchaseOrder < ApplicationRecord
   include DocumentNumbering
 

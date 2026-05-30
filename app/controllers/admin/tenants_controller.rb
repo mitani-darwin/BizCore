@@ -1,4 +1,5 @@
 module Admin
+  # テナント設定の閲覧・更新を管理する。テナントの削除は UI から行えない設計。
   class TenantsController < BaseController
     before_action :set_tenant, only: %i[show edit update]
 
