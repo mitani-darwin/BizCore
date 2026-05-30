@@ -135,6 +135,10 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
       filename: "#{purchase_order.purchase_order_number}.xlsx",
       includes: [ purchase_order.purchase_order_number, purchase_order.supplier.name ]
     )
+    assert_pdf_download(
+      download_pdf_admin_purchase_order_path(purchase_order),
+      filename: "#{purchase_order.purchase_order_number}.pdf"
+    )
 
     patch send_purchase_order_admin_purchase_order_path(purchase_order)
     assert_redirected_to admin_purchase_order_path(purchase_order)
@@ -294,6 +298,14 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def assert_pdf_download(path, filename:)
+    get path
+    assert_response :success
+    assert_equal Reports::BasePdf::MIME_TYPE, response.media_type
+    assert_includes response.headers["Content-Disposition"], filename
+    assert response.body.start_with?("%PDF"), "PDF ヘッダーで始まっているべき"
+  end
 
   def assert_xlsx_download(path, filename:, includes:)
     get path
