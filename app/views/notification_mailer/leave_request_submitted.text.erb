@@ -1,0 +1,11 @@
+<%= @recipient.name %> さん
+
+以下の有給申請が提出されました。管理画面からご確認ください。
+
+申請者: <%= @employee.name %>
+休暇種別: <%= @leave_request.leave_type_paid_leave? ? "有給" : "特別休暇" %>
+期間: <%= @leave_request.start_date.strftime("%Y/%m/%d") %> 〜 <%= @leave_request.end_date.strftime("%Y/%m/%d") %>（<%= @leave_request.days_count %>日）
+<% if @leave_request.reason.present? %>
+理由: <%= @leave_request.reason %>
+<% end %>
+申請日時: <%= @leave_request.created_at.in_time_zone.strftime("%Y/%m/%d %H:%M") %>

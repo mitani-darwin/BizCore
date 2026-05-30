@@ -1,0 +1,36 @@
+<p><%= @customer.name %> ご担当者様</p>
+
+<p>
+  いつもお世話になっております。<br>
+  以下のとおり請求書を発行しましたのでご確認ください。
+</p>
+
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; width: 160px;">請求書番号</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @invoice.invoice_number %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">請求日</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @invoice.invoice_date.strftime("%Y/%m/%d") %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">お支払期日</th>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @invoice.due_date.strftime("%Y/%m/%d") %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">請求金額（税込）</th>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">¥<%= number_with_delimiter(@invoice.total_amount) %></td>
+  </tr>
+  <tr>
+    <th style="text-align: left; padding: 8px; background: #f5f5f5; border: 1px solid #ddd;">請求期間</th>
+    <td style="padding: 8px; border: 1px solid #ddd;">
+      <%= @invoice.billing_period_from.strftime("%Y/%m/%d") %> 〜 <%= @invoice.billing_period_to.strftime("%Y/%m/%d") %>
+    </td>
+  </tr>
+</table>
+
+<p style="margin-top: 24px;">
+  ご不明な点がございましたら、下記までお問い合わせください。<br>
+  <%= @tenant.name %>
+</p>

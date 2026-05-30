@@ -36,6 +36,7 @@ module Admin
       @leave_request = current_tenant.leave_requests.build(leave_request_params)
 
       if @leave_request.save
+        notify_leave_request_submitted(@leave_request)
         redirect_to admin_leave_request_path(@leave_request), notice: "有給申請を作成しました。"
       else
         render :new, status: :unprocessable_entity
@@ -55,6 +56,7 @@ module Admin
     def approve
       @leave_request.approve!
       audit!(action_key: required_permission_key, auditable: @leave_request, metadata: { status: "approved" })
+      notify_leave_request_decision(@leave_request)
       redirect_to admin_leave_request_path(@leave_request), notice: "有給申請を承認しました。"
     rescue StandardError => e
       redirect_to admin_leave_request_path(@leave_request), alert: "承認に失敗しました: #{e.message}"
@@ -63,6 +65,7 @@ module Admin
     def reject
       @leave_request.reject!
       audit!(action_key: required_permission_key, auditable: @leave_request, metadata: { status: "rejected" })
+      notify_leave_request_decision(@leave_request)
       redirect_to admin_leave_request_path(@leave_request), notice: "有給申請を却下しました。"
     rescue StandardError => e
       redirect_to admin_leave_request_path(@leave_request), alert: "却下に失敗しました: #{e.message}"
@@ -119,6 +122,24 @@ module Admin
         :reason,
         :note
       )
+    end
+
+    # 有給申請提出を承認権限保有者全員に通知する。
+    def notify_leave_request_submitted(leave_request)
+      recipients = current_tenant.users
+        .with_permission("admin.leave_requests.update")
+        .where.not(email: nil)
+      recipients.each do |recipient|
+        NotificationMailer.leave_request_submitted(leave_request: leave_request, recipient: recipient).deliver_later
+      end
+    end
+
+    # 有給申請の決定結果を申請した従業員のユーザーに通知する。
+    def notify_leave_request_decision(leave_request)
+      recipient = leave_request.employee&.user
+      return if recipient.nil? || recipient.email.blank?
+
+      NotificationMailer.leave_request_decision(leave_request: leave_request, recipient: recipient).deliver_later
     end
   end
 end

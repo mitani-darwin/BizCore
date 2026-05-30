@@ -1,0 +1,10 @@
+<%= @recipient.name %> さん
+
+以下の経費精算申請が提出されました。管理画面からご確認ください。
+
+申請者: <%= @employee.name %>
+発生日: <%= @expense_report.expensed_on.strftime("%Y/%m/%d") %>
+カテゴリ: <%= t("expense_categories.#{@expense_report.category}", default: @expense_report.category) %>
+金額: ¥<%= number_with_delimiter(@expense_report.amount) %>
+内容: <%= @expense_report.description %>
+申請日時: <%= @expense_report.created_at.in_time_zone.strftime("%Y/%m/%d %H:%M") %>

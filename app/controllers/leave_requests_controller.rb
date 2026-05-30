@@ -26,6 +26,7 @@ class LeaveRequestsController < ApplicationController
     @leave_request.status   = "pending"
 
     if @leave_request.save
+      notify_leave_request_submitted(@leave_request)
       redirect_to my_leave_requests_path, notice: "有給申請を送信しました。承認をお待ちください。"
     else
       @remaining_days = current_employee.remaining_paid_leave_days
@@ -52,5 +53,14 @@ class LeaveRequestsController < ApplicationController
 
   def leave_request_params
     params.require(:leave_request).permit(:leave_type, :half_day_type, :start_date, :end_date, :days_count, :reason, :note)
+  end
+
+  def notify_leave_request_submitted(leave_request)
+    recipients = current_tenant.users
+      .with_permission("admin.leave_requests.update")
+      .where.not(email: nil)
+    recipients.each do |recipient|
+      NotificationMailer.leave_request_submitted(leave_request: leave_request, recipient: recipient).deliver_later
+    end
   end
 end
