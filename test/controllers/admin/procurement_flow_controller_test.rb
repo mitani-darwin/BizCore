@@ -300,11 +300,22 @@ class Admin::ProcurementFlowControllerTest < ActionDispatch::IntegrationTest
   private
 
   def assert_pdf_download(path, filename:)
+    unless japanese_font_available?
+      skip "日本語フォントが見つからないためスキップします（PRAWN_JAPANESE_FONT_PATH を設定してください）"
+    end
+
     get path
     assert_response :success
     assert_equal Reports::BasePdf::MIME_TYPE, response.media_type
     assert_includes response.headers["Content-Disposition"], filename
     assert response.body.start_with?("%PDF"), "PDF ヘッダーで始まっているべき"
+  end
+
+  def japanese_font_available?
+    Reports::PdfFont.font_path
+    true
+  rescue RuntimeError
+    false
   end
 
   def assert_xlsx_download(path, filename:, includes:)

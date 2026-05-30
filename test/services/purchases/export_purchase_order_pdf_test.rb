@@ -2,6 +2,13 @@ require "test_helper"
 
 class Purchases::ExportPurchaseOrderPdfTest < ActiveSupport::TestCase
   setup do
+    # 日本語フォントがない環境（CI 等）ではスキップする。
+    # フォントを用意する場合は PRAWN_JAPANESE_FONT_PATH 環境変数を設定してください。
+    begin
+      Reports::PdfFont.font_path
+    rescue RuntimeError
+      skip "日本語フォントが見つからないためスキップします"
+    end
     @tenant = Tenant.create!(
       name: "PDF テストテナント",
       code: "pdf-test",
