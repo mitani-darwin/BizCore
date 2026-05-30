@@ -37,6 +37,29 @@ module Admin
       end
     end
 
+    # GET / POST /admin/products/import
+    def import
+      return unless request.post?
+
+      file = params[:file]
+      unless file.present?
+        flash.now[:alert] = "ファイルを選択してください。"
+        render :import, status: :unprocessable_entity and return
+      end
+
+      csv_string = file.read.force_encoding("UTF-8")
+      @import_result = Imports::ProductImport.call(tenant: current_tenant, csv_string: csv_string)
+      audit!(action_key: required_permission_key, metadata: { total: @import_result.total, succeeded: @import_result.succeeded })
+    rescue ArgumentError => e
+      flash.now[:alert] = e.message
+    end
+
+    # GET /admin/products/import_template
+    def import_template
+      csv = Imports::ProductImport.template_csv
+      send_data(csv.encode("UTF-8"), filename: "商品インポートテンプレート.csv", type: "text/csv; charset=UTF-8", disposition: :attachment)
+    end
+
     private
 
     def set_product

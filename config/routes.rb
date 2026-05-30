@@ -41,7 +41,13 @@ Rails.application.routes.draw do
     resources :tenants, only: [ :index, :show, :edit, :update ]
     resources :roles, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :users, only: [ :index, :show, :new, :create, :edit, :update ]
-    resources :employees, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :employees, only: [ :index, :show, :new, :create, :edit, :update ] do
+      collection do
+        get  :import
+        post :import
+        get  :import_template
+      end
+    end
     resources :work_shifts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
       collection do
         get :grid
@@ -73,7 +79,13 @@ Rails.application.routes.draw do
         get :download_pdf
       end
     end
-    resources :customers, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :customers, only: [ :index, :show, :new, :create, :edit, :update ] do
+      collection do
+        get  :import
+        post :import
+        get  :import_template
+      end
+    end
     resources :customer_inquiries, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :customer_opportunities, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :customer_sales, only: [ :index ]
@@ -82,7 +94,13 @@ Rails.application.routes.draw do
     resources :payables, only: [ :index ]
     resources :collection_schedules, only: [ :index ]
     resources :payment_schedules, only: [ :index ]
-    resources :products, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :products, only: [ :index, :show, :new, :create, :edit, :update ] do
+      collection do
+        get  :import
+        post :import
+        get  :import_template
+      end
+    end
     resources :warehouses, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :stock_items, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :stock_movements, only: [ :index, :show, :new, :create ]
