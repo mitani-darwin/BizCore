@@ -27,9 +27,13 @@ class Contract < ApplicationRecord
     pattern = "%#{sanitize_sql_like(keyword.strip)}%"
     where("contract_number LIKE :p OR title LIKE :p", p: pattern)
   }
-  scope :with_status,           ->(s)    { s.present? ? where(status: s) : all }
+  # アラート通知の閾値（日数）。この日数以内に期限を迎える有効な契約が通知対象になる。
+  ALERT_THRESHOLDS = [ 30, 14, 7, 3 ].freeze
+
+  scope :with_status,            ->(s)    { s.present? ? where(status: s) : all }
   scope :with_counterparty_type, ->(t)   { t.present? ? where(counterparty_type: t) : all }
-  scope :expiring_within,       ->(days) { where(ended_on: Date.current..days.days.from_now.to_date) }
+  scope :expiring_within,        ->(days) { where(ended_on: Date.current..days.days.from_now.to_date) }
+  scope :already_expired,        -> { where(status: "active").where("ended_on < ?", Date.current) }
   scope :ordered_for_admin, -> { order(started_on: :desc, id: :desc) }
 
   validates :contract_number, :title, :counterparty_type, :status, :started_on, presence: true
@@ -57,6 +61,23 @@ class Contract < ApplicationRecord
   # 満了日が過去の場合に true を返す。enum の "expired" ステータスとは独立して判定する。
   def expired?
     ended_on.present? && ended_on < Date.current
+  end
+
+  # 残り日数がアラート閾値のいずれかに該当するか返す。
+  # 日次バッチで「今日が閾値の境界日」かどうかを判定するために使う。
+  def alert_threshold_reached?
+    days = days_until_expiry
+    return false if days.nil?
+
+    ALERT_THRESHOLDS.any? { |threshold| days <= threshold }
+  end
+
+  # ステータスが active で満了日が過去の場合に expired へ更新する。
+  # ContractExpiryAlertJob の日次実行時に自動遷移させる。
+  def auto_expire!
+    return unless status_active? && expired?
+
+    update!(status: "expired")
   end
 
   def title

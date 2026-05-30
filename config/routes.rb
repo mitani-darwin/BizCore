@@ -196,7 +196,11 @@ Rails.application.routes.draw do
     end
     resources :daily_reports
     # 契約管理
-    resources :contracts, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :contracts, only: [ :index, :show, :new, :create, :edit, :update ] do
+      collection do
+        post :expire_alert
+      end
+    end
     # 経費精算
     resources :expense_reports, only: [ :index, :show, :new, :create, :edit, :update ] do
       member do

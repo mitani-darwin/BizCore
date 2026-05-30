@@ -13,3 +13,9 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+
+  # 契約期限アラート: 毎朝9時に全テナントの契約を確認し、期限切れへの自動遷移とアラートメールを送信
+  contract_expiry_alert:
+    class: ContractExpiryAlertJob
+    queue: default
+    schedule: at 9am every day

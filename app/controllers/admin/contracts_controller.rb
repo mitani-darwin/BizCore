@@ -1,27 +1,46 @@
 module Admin
   # 契約管理の CRUD を管理する。得意先・仕入先・その他の相手方タイプに対応する。
+  # expire_alert アクションで契約期限アラートジョブを手動実行できる。
   class ContractsController < BaseController
     before_action :set_contract, only: %i[show edit update]
     before_action :set_form_options, only: %i[new create edit update]
 
     def index
+      @alert_filter = params[:alert].presence
       @filters = {
         q:                  search_keyword,
         status:             search_status,
-        counterparty_type:  search_counterparty_type
+        counterparty_type:  search_counterparty_type,
+        alert:              @alert_filter
       }
-      query = current_tenant.contracts
-                            .includes(:customer, :supplier)
-                            .search(search_keyword)
-                            .with_status(search_status)
-                            .with_counterparty_type(search_counterparty_type)
-                            .ordered_for_admin
+
+      base_query = current_tenant.contracts
+                                 .includes(:customer, :supplier)
+                                 .search(search_keyword)
+                                 .with_status(search_status)
+                                 .with_counterparty_type(search_counterparty_type)
+
+      # アラートフィルター
+      filtered_query = case @alert_filter
+      when "expiring_soon" then base_query.where(status: "active").expiring_within(Contract::ALERT_THRESHOLDS.max)
+      when "expired"       then base_query.already_expired
+      else                      base_query
+      end
+
       @summary = {
-        count:         query.size,
-        active_count:  query.count(&:status_active?),
-        expiring_soon: current_tenant.contracts.expiring_within(30).count
+        count:          base_query.size,
+        active_count:   base_query.count(&:status_active?),
+        expiring_soon:  current_tenant.contracts.where(status: "active").expiring_within(Contract::ALERT_THRESHOLDS.max).count,
+        already_expired: current_tenant.contracts.already_expired.count
       }
-      @pagy, @contracts = pagy(query)
+      @pagy, @contracts = pagy(filtered_query.ordered_for_admin)
+    end
+
+    # POST /admin/contracts/expire_alert — 管理者が手動でアラートジョブを起動する。
+    def expire_alert
+      authorize!("admin.contracts.read")
+      ContractExpiryAlertJob.perform_later
+      redirect_to admin_contracts_path, notice: "契約期限チェックをキューに追加しました。"
     end
 
     def show; end
