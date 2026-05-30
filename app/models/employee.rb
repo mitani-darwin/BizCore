@@ -56,6 +56,27 @@ class Employee < ApplicationRecord
 
   before_validation :set_defaults
 
+  # 関連する業務データがすべてない場合に true を返す。
+  # restrict_with_exception 関連が 1 件でもあれば削除不可とする。
+  # daily_reports と expense_reports は dependent: :destroy のため削除可能（チェック対象外）。
+  def deletable?
+    deletion_blocked_reason.nil?
+  end
+
+  # 削除できない理由を日本語文字列で返す。削除可能な場合は nil。
+  def deletion_blocked_reason
+    checks = {
+      "シフト"     => work_shifts,
+      "勤怠実績"   => attendance_records,
+      "有給申請"   => leave_requests,
+      "給与明細"   => payroll_entries
+    }
+    blocking = checks.select { |_label, assoc| assoc.exists? }.keys
+    return nil if blocking.empty?
+
+    "#{blocking.join('・')}のデータが存在するため削除できません"
+  end
+
   # 指定日時点の有給残日数を返す（付与日数 - 承認済み消化日数）。
   def remaining_paid_leave_days(as_of: Date.current)
     paid_leave_granted_days.to_d - approved_paid_leave_days(as_of: as_of)

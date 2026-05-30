@@ -1,7 +1,7 @@
 module Admin
   # 得意先マスタの CRUD を管理する。show は売掛残高・エイジング等の財務サマリーも表示する。
   class CustomersController < BaseController
-    before_action :set_customer, only: [ :show, :edit, :update ]
+    before_action :set_customer, only: [ :show, :edit, :update, :destroy ]
 
     def index
       @filters = { q: search_keyword, status: search_status }
@@ -49,6 +49,18 @@ module Admin
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def destroy
+      unless @customer.deletable?
+        redirect_to admin_customer_path(@customer), alert: @customer.deletion_blocked_reason and return
+      end
+
+      @customer.destroy!
+      audit!(action_key: required_permission_key, metadata: { code: @customer.code, name: @customer.name })
+      redirect_to admin_customers_path, notice: "得意先「#{@customer.name}」を削除しました。"
+    rescue ActiveRecord::DeleteRestrictionError => e
+      redirect_to admin_customer_path(@customer), alert: "削除できませんでした: #{e.message}"
     end
 
     # GET / POST /admin/customers/import

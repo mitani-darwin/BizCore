@@ -41,7 +41,7 @@ Rails.application.routes.draw do
     resources :tenants, only: [ :index, :show, :edit, :update ]
     resources :roles, only: [ :index, :show, :new, :create, :edit, :update ]
     resources :users, only: [ :index, :show, :new, :create, :edit, :update ]
-    resources :employees, only: [ :index, :show, :new, :create, :edit, :update ] do
+    resources :employees, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
       collection do
         get  :import
         post :import
@@ -79,7 +79,7 @@ Rails.application.routes.draw do
         get :download_pdf
       end
     end
-    resources :customers, only: [ :index, :show, :new, :create, :edit, :update ] do
+    resources :customers, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
       collection do
         get  :import
         post :import

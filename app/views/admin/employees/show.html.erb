@@ -23,6 +23,17 @@
       <% if can?("admin.employees.update") %>
         <%= link_to "編集", edit_admin_employee_path(@employee), class: "rounded border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-100" %>
       <% end %>
+      <% if can?("admin.employees.delete") %>
+        <% if @employee.deletable? %>
+          <%= button_to "削除", admin_employee_path(@employee),
+                method: :delete,
+                class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100",
+                data: { turbo_confirm: "従業員「#{@employee.name}」を削除します。この操作は取り消せません。\n\nよろしいですか？" } %>
+        <% else %>
+          <span class="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400 cursor-not-allowed"
+                title="<%= @employee.deletion_blocked_reason %>">削除不可</span>
+        <% end %>
+      <% end %>
       <%= link_to "一覧へ戻る", admin_employees_path, class: "rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50" %>
     </div>
   </div>
