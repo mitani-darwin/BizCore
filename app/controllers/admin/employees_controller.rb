@@ -2,7 +2,7 @@ module Admin
   # 従業員マスタの CRUD を管理する。
   # index は絞り込みとサマリー集計を行い、show は月次集計を表示する。
   class EmployeesController < BaseController
-    before_action :set_employee, only: [ :show, :edit, :update ]
+    before_action :set_employee, only: [ :show, :edit, :update, :destroy ]
 
     def index
       @filters = {
@@ -61,6 +61,18 @@ module Admin
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    def destroy
+      unless @employee.deletable?
+        redirect_to admin_employee_path(@employee), alert: @employee.deletion_blocked_reason and return
+      end
+
+      @employee.destroy!
+      audit!(action_key: required_permission_key, metadata: { employee_code: @employee.employee_code, name: @employee.name })
+      redirect_to admin_employees_path, notice: "従業員「#{@employee.name}」を削除しました。"
+    rescue ActiveRecord::DeleteRestrictionError => e
+      redirect_to admin_employee_path(@employee), alert: "削除できませんでした: #{e.message}"
     end
 
     # GET / POST /admin/employees/import

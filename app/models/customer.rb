@@ -46,6 +46,30 @@ class Customer < ApplicationRecord
 
   before_validation :set_defaults
 
+  # 関連データがすべてない場合に true を返す。
+  # restrict_with_exception 関連が 1 件でもあれば削除不可とする。
+  def deletable?
+    deletion_blocked_reason.nil?
+  end
+
+  # 削除できない理由を日本語文字列で返す。削除可能な場合は nil。
+  def deletion_blocked_reason
+    checks = {
+      "問い合わせ"   => customer_inquiries,
+      "商談"         => customer_opportunities,
+      "契約"         => contracts,
+      "見積"         => quotations,
+      "注文"         => orders,
+      "納品"         => deliveries,
+      "請求"         => invoices,
+      "入金"         => payments
+    }
+    blocking = checks.select { |_label, assoc| assoc.exists? }.keys
+    return nil if blocking.empty?
+
+    "#{blocking.join('・')}のデータが存在するため削除できません"
+  end
+
   def full_address
     [ postal_code, address1, address2 ].compact_blank.join(" ")
   end

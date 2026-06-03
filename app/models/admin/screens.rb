@@ -42,7 +42,10 @@ module Admin
       },
       employees: {
         index_path: :admin_employees_path,
-        actions: %i[index show new create edit update]
+        actions: %i[index show new create edit update destroy],
+        action_overrides: {
+          destroy: { permission_action: :delete, label: "削除", breadcrumb_label: "削除" }
+        }
       },
       work_shifts: {
         index_path: :admin_work_shifts_path,
@@ -105,7 +108,10 @@ module Admin
       },
       customers: {
         index_path: :admin_customers_path,
-        actions: %i[index show new create edit update]
+        actions: %i[index show new create edit update destroy],
+        action_overrides: {
+          destroy: { permission_action: :delete, label: "削除", breadcrumb_label: "削除" }
+        }
       },
       receivables: {
         index_path: :admin_receivables_path,

@@ -22,6 +22,17 @@
       <% if can?("admin.customers.update") %>
         <%= link_to "編集", edit_admin_customer_path(@customer), class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
       <% end %>
+      <% if can?("admin.customers.delete") %>
+        <% if @customer.deletable? %>
+          <%= button_to "削除", admin_customer_path(@customer),
+                method: :delete,
+                class: "rounded border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100",
+                data: { turbo_confirm: "得意先「#{@customer.name}」を削除します。この操作は取り消せません。\n\nよろしいですか？" } %>
+        <% else %>
+          <span class="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400 cursor-not-allowed"
+                title="<%= @customer.deletion_blocked_reason %>">削除不可</span>
+        <% end %>
+      <% end %>
     </div>
   </div>
 
