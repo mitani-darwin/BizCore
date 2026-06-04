@@ -25,6 +25,7 @@ class User < ApplicationRecord
   validates :tenant, presence: { message: "を選択してください" }
   validates :name, presence: { message: "を入力してください" }
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+  validate :password_complexity, if: -> { password.present? }
   validate :roles_must_be_selected
   validate :employee_must_belong_to_same_tenant
 
@@ -66,5 +67,11 @@ class User < ApplicationRecord
     return if employee.blank? || tenant_id.blank?
 
     errors.add(:employee, "は同じテナントの従業員を選択してください") if employee.tenant_id != tenant_id
+  end
+
+  def password_complexity
+    return if password.match?(/[a-zA-Z]/) && password.match?(/[0-9]/) && password.match?(/[^a-zA-Z0-9]/)
+
+    errors.add(:password, "は半角英字・数字・記号をそれぞれ1文字以上含めてください")
   end
 end
