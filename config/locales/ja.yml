@@ -152,6 +152,7 @@ ja:
         purchase_closing_day: "仕入締め日"
         subdomain: "サブドメイン"
       user:
+        current_password: "現在のパスワード"
         email: "メールアドレス"
         employee: "従業員"
         name: "氏名"
