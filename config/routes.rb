@@ -209,7 +209,7 @@ Rails.application.routes.draw do
       end
     end
     resource :profile, only: [], controller: "profile" do
-      get  :edit_password, path: "password/edit"
+      get :edit_password, path: "password/edit"
       patch :update_password, path: "password"
     end
     root to: "dashboard#index"
