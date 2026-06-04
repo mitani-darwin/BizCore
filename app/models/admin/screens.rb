@@ -300,6 +300,15 @@ module Admin
           approve: { permission_action: :update, label: "承認", breadcrumb_label: "承認", page_title: "%{resource}詳細" },
           reject:  { permission_action: :update, label: "却下", breadcrumb_label: "却下", page_title: "%{resource}詳細" }
         }
+      },
+      profile: {
+        label: "プロフィール",
+        index_path: :edit_password_admin_profile_path,
+        actions: %i[edit_password update_password],
+        action_overrides: {
+          edit_password:   { permission_action: nil, label: "パスワード変更", breadcrumb_label: "パスワード変更", page_title: "パスワード変更" },
+          update_password: { permission_action: nil, label: "パスワード変更", breadcrumb_label: "パスワード変更", page_title: "パスワード変更" }
+        }
       }
     }.freeze
 
