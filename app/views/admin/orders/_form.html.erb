@@ -19,27 +19,27 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :customer_id, "得意先", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.collection_select :customer_id, @customer_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
     <div>
       <%= f.label :ordered_by_name, "先方担当者", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :ordered_by_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :ordered_by_name, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :order_date, "注文日", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.date_field :order_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.date_field :order_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
     <div>
       <%= f.label :requested_delivery_date, "希望納期", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.date_field :requested_delivery_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.date_field :requested_delivery_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div class="sm:col-span-2">
       <%= f.label :delivery_address, "納品先住所", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :delivery_address, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :delivery_address, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div class="sm:col-span-2">
       <%= f.label :remarks, "備考", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_area :remarks, rows: 3, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_area :remarks, rows: 3, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
   </div>
 

@@ -21,34 +21,34 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :supplier_id, "仕入先", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.collection_select :supplier_id, @supplier_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, disabled: @source_purchase_bill.present? %>
+      <%= f.collection_select :supplier_id, @supplier_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true, disabled: @source_purchase_bill.present? %>
       <% if @source_purchase_bill.present? %>
         <%= f.hidden_field :supplier_id %>
       <% end %>
     </div>
     <div>
       <%= f.label :payment_date, "支払日", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.date_field :payment_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.date_field :payment_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
     <div>
       <%= f.label :amount, "支払額", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.number_field :amount, min: 1, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.number_field :amount, min: 1, step: 1, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
     <div>
       <%= f.label :payment_method, "支払方法", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.select :payment_method, options_for_select(payment_method_options, supplier_payment.payment_method), { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.select :payment_method, options_for_select(payment_method_options, supplier_payment.payment_method), { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :bank_name, "銀行名", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :bank_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :bank_name, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :account_name, "口座名義", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :account_name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :account_name, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div class="sm:col-span-2">
       <%= f.label :reference_note, "参照メモ", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :reference_note, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :reference_note, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
   </div>
 

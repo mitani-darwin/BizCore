@@ -15,15 +15,15 @@
     <%= form_with url: admin_employees_path, method: :get, local: true, class: "grid gap-3 md:grid-cols-[minmax(0,2fr)_180px_180px_auto_auto]" do |f| %>
       <div>
         <%= f.label :q, "検索", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
-        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・氏名・メール・電話で検索", class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        <%= f.text_field :q, value: @filters[:q], placeholder: "コード・氏名・メール・電話で検索", class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       </div>
       <div>
         <%= f.label :status, "在籍状態", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
-        <%= f.select :status, options_for_select([["すべて", ""]] + employee_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        <%= f.select :status, options_for_select([["すべて", ""]] + employee_status_options, @filters[:status]), {}, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       </div>
       <div>
         <%= f.label :employment_type, "雇用区分", class: "block text-xs font-semibold tracking-wide text-slate-500" %>
-        <%= f.select :employment_type, options_for_select([["すべて", ""]] + employment_type_options, @filters[:employment_type]), {}, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        <%= f.select :employment_type, options_for_select([["すべて", ""]] + employment_type_options, @filters[:employment_type]), {}, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       </div>
       <div class="flex items-end">
         <%= f.submit "絞り込む", class: "w-full rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>

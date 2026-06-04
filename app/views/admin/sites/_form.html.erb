@@ -13,47 +13,47 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :code, "現場コード", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true, placeholder: "SITE-001" %>
+      <%= f.text_field :code, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true, placeholder: "SITE-001" %>
     </div>
     <div>
       <%= f.label :name, "現場名", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
     <div>
       <%= f.label :category, "カテゴリ", class: "block text-sm font-medium text-slate-800" %>
       <%= f.select :category,
             options_for_select(Site::CATEGORY_LABELS.map { |k, v| [v, k] }, site.category),
             {},
-            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+            class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :status, "ステータス", class: "block text-sm font-medium text-slate-800" %>
       <%= f.select :status,
             options_for_select(Site::STATUS_LABELS.map { |k, v| [v, k] }, site.status),
             {},
-            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+            class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :progress_percentage, "進捗率 (%)", class: "block text-sm font-medium text-slate-800" %>
       <%= f.number_field :progress_percentage,
-            class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500",
+            class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100",
             min: 0, max: 100, step: 1 %>
     </div>
     <div>
       <%= f.label :address, "住所", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :address, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :address, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :start_date, "開始日", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.date_field :start_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.date_field :start_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div>
       <%= f.label :end_date, "終了日", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.date_field :end_date, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.date_field :end_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
     <div class="sm:col-span-2">
       <%= f.label :description, "説明", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_area :description, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_area :description, rows: 4, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
   </div>
 
