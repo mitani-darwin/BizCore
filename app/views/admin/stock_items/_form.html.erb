@@ -29,11 +29,11 @@
     <% else %>
       <div>
         <%= f.label :warehouse_id, "倉庫", class: "block text-sm font-medium text-slate-800" %>
-        <%= f.collection_select :warehouse_id, @warehouse_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        <%= f.collection_select :warehouse_id, @warehouse_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       </div>
       <div>
         <%= f.label :product_id, "商品", class: "block text-sm font-medium text-slate-800" %>
-        <%= f.collection_select :product_id, @product_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+        <%= f.collection_select :product_id, @product_options, :id, :name, { include_blank: "選択してください" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       </div>
     <% end %>
 
@@ -49,13 +49,13 @@
     <% else %>
       <div>
         <%= f.label :quantity_on_hand, "初期在庫数量", class: "block text-sm font-medium text-slate-800" %>
-        <%= f.number_field :quantity_on_hand, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+        <%= f.number_field :quantity_on_hand, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
       </div>
     <% end %>
 
     <div>
       <%= f.label :safety_stock, "安全在庫", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.number_field :safety_stock, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.number_field :safety_stock, min: 0, step: 1, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
   </div>
 

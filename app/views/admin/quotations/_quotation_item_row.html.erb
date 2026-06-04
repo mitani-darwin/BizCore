@@ -2,13 +2,13 @@
   <td class="px-3 py-2">
     <%= item_form.hidden_field :id if item_form.object.persisted? %>
     <%= item_form.hidden_field :_destroy, value: item_form.object.marked_for_destruction? ? "1" : "0" %>
-    <%= item_form.collection_select :product_id, product_options, :id, :name, { include_blank: "選択してください" }, class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    <%= item_form.collection_select :product_id, product_options, :id, :name, { include_blank: "選択してください" }, class: "w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
   </td>
   <td class="px-3 py-2">
-    <%= item_form.number_field :quantity, min: 1, step: 1, class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    <%= item_form.number_field :quantity, min: 1, step: 1, class: "w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
   </td>
   <td class="px-3 py-2">
-    <%= item_form.number_field :unit_price, min: 0, step: 1, class: "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+    <%= item_form.number_field :unit_price, min: 0, step: 1, class: "w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
   </td>
   <td class="px-3 py-2 text-slate-700">
     <%= item_form.object.amount.to_d.positive? ? money(item_form.object.amount) : "-" %>

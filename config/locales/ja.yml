@@ -39,6 +39,12 @@ ja:
     errors:
       messages:
         record_invalid: "バリデーションに失敗しました: %{errors}"
+      models:
+        user:
+          attributes:
+            current_password:
+              blank: "を入力してください"
+              invalid: "が違います"
     models:
       attendance_record: "勤怠"
       contract: "契約"

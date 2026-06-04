@@ -13,38 +13,39 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :name, "氏名", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.text_field :name, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
 
     <div>
       <%= f.label :email, "メールアドレス", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.email_field :email, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", required: true %>
+      <%= f.email_field :email, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
 
     <div>
       <%= f.label :employee_id, "紐付け従業員", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.collection_select :employee_id, @employee_options, :id, :title, { include_blank: "従業員ログインにしない" }, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.collection_select :employee_id, @employee_options, :id, :title, { include_blank: "従業員ログインにしない" }, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
       <p class="mt-1 text-xs text-slate-500">従業員を紐付けると、そのユーザーは自分の出退勤を入力できます。</p>
     </div>
 
     <div>
       <%= f.label :password, "パスワード", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.password_field :password, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", autocomplete: "new-password", placeholder: user.persisted? ? "変更する場合のみ入力" : "" %>
+      <%= f.password_field :password, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", autocomplete: "new-password", placeholder: user.persisted? ? "変更する場合のみ入力" : "" %>
+      <p class="mt-1 text-xs text-slate-500">6〜128文字、半角英字・数字・記号をそれぞれ含めてください。</p>
     </div>
 
     <div>
       <%= f.label :password_confirmation, "パスワード確認", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.password_field :password_confirmation, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500", autocomplete: "new-password" %>
+      <%= f.password_field :password_confirmation, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", autocomplete: "new-password" %>
     </div>
 
     <div>
       <%= f.label :locale, "言語", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :locale, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :locale, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
 
     <div>
       <%= f.label :time_zone, "タイムゾーン", class: "block text-sm font-medium text-slate-800" %>
-      <%= f.text_field :time_zone, class: "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500" %>
+      <%= f.text_field :time_zone, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
     </div>
   </div>
 
