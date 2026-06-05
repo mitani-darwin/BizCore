@@ -6,9 +6,35 @@ module Admin
     before_action :set_invoice, only: [ :show, :download_excel, :download_pdf, :cancel, :reissue ]
 
     def index
-      @pagy, @invoices = pagy(current_tenant.invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc))
+      @pagy, @invoices = pagy(filtered_invoices.includes(:customer, :payment_allocations, :billing_batch).order(invoice_date: :desc, id: :desc))
       @recent_billing_batches = current_tenant.billing_batches.includes(:executed_by, :invoices).recent.limit(5)
       @billing_defaults = billing_defaults
+    end
+
+    def export_csv
+      invoices = filtered_invoices.includes(:customer).order(invoice_date: :desc, id: :desc)
+      csv = CSV.generate(encoding: "UTF-8", force_quotes: true) do |row|
+        row << [ "請求番号", "請求日", "支払期日", "得意先名", "小計", "消費税", "合計（税込）", "入金済", "残高", "状態", "保存期限" ]
+        invoices.each do |inv|
+          row << [
+            inv.invoice_number,
+            inv.invoice_date&.strftime("%Y/%m/%d"),
+            inv.due_date&.strftime("%Y/%m/%d"),
+            inv.customer.name,
+            inv.subtotal_amount.to_i,
+            inv.tax_amount.to_i,
+            inv.total_amount.to_i,
+            inv.paid_amount.to_i,
+            inv.balance_amount.to_i,
+            invoice_status_label(inv.status),
+            inv.invoice_date ? (inv.invoice_date + 7.years).strftime("%Y/%m/%d") : ""
+          ]
+        end
+      end
+      send_data "﻿#{csv}",
+                filename: "invoices_#{Date.current.strftime('%Y%m%d')}.csv",
+                type: "text/csv; charset=UTF-8",
+                disposition: :attachment
     end
 
     def show; end
@@ -101,6 +127,19 @@ module Admin
       return if @invoice
 
       render_not_found and return false
+    end
+
+    def filtered_invoices
+      scope = current_tenant.invoices
+      scope = scope.where("invoice_date >= ?", params[:date_from]) if params[:date_from].present?
+      scope = scope.where("invoice_date <= ?", params[:date_to]) if params[:date_to].present?
+      scope = scope.where("total_amount >= ?", params[:amount_min]) if params[:amount_min].present?
+      scope = scope.where("total_amount <= ?", params[:amount_max]) if params[:amount_max].present?
+      if params[:customer_name].present?
+        customer_ids = current_tenant.customers.where("name LIKE ?", "%#{params[:customer_name]}%").pluck(:id)
+        scope = scope.where(customer_id: customer_ids)
+      end
+      scope
     end
 
     def billing_defaults

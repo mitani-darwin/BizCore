@@ -11,6 +11,7 @@ class InvoiceItem < ApplicationRecord
   }
 
   validates :description, :quantity, :unit_price, :amount, :tax_category, presence: true
+  validate :invoice_must_not_be_locked, on: [ :update, :destroy ]
   validates :quantity, numericality: { greater_than: 0, only_integer: true }
   validates :unit_price, :amount, numericality: { greater_than_or_equal_to: 0 }
   validate :tenant_consistency
@@ -32,6 +33,14 @@ class InvoiceItem < ApplicationRecord
     return if quantity.blank? || unit_price.blank?
 
     self.amount = BigDecimal(quantity.to_s) * BigDecimal(unit_price.to_s)
+  end
+
+  # 電子帳簿保存法: 発行済み・一部入金済み・入金済みの請求書明細は変更・削除不可
+  def invoice_must_not_be_locked
+    return if invoice.blank?
+    return if invoice.cancelled?
+
+    errors.add(:base, "発行済みの請求書明細は変更できません（電子帳簿保存法）")
   end
 
   def tenant_consistency

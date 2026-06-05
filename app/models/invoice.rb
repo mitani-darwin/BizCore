@@ -52,6 +52,10 @@ class Invoice < ApplicationRecord
     )
   end
 
+  def retention_deadline
+    invoice_date + 7.years
+  end
+
   def outstanding_amount
     return 0.to_d if cancelled?
 

@@ -38,7 +38,7 @@ module Permissions
       orders: %i[read create update delete download_excel download_pdf],
       deliveries: %i[read create update delete download_excel download_pdf],
       billing_batches: %i[read create update delete],
-      invoices: %i[read create update delete download_excel download_pdf],
+      invoices: %i[read create update delete download_excel download_pdf export_csv],
       payments: %i[read create update delete],
       document_templates: %i[read update],
       permissions: %i[read create update delete],
