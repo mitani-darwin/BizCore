@@ -20,6 +20,10 @@ class Invoice < ApplicationRecord
   has_many :payment_allocations, dependent: :destroy
   has_many :reissues, class_name: "Invoice", foreign_key: :reissued_from_id, dependent: :nullify, inverse_of: :reissued_from
 
+  has_one_attached :stored_pdf
+
+  after_create_commit :schedule_pdf_storage
+
   enum :status, STATUSES
 
   generates_document_number :invoice_number, prefix: "INV"
@@ -100,6 +104,10 @@ class Invoice < ApplicationRecord
 
   def invoice_status_for(balance, paid)
     balance <= 0 ? "paid" : (paid.positive? ? "partially_paid" : "issued")
+  end
+
+  def schedule_pdf_storage
+    StoreInvoicePdfJob.perform_later(id)
   end
 
   def tenant_consistency
