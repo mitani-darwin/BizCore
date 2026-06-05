@@ -38,18 +38,18 @@
   <%# アラートフィルタータブ %>
   <div class="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 w-fit">
     <%= link_to admin_stock_items_path,
-          class: "rounded-md px-3 py-1.5 text-xs font-semibold #{@alert_filter.nil? ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}" do %>
+          class: "rounded-md border px-3 py-1.5 text-xs font-semibold #{@alert_filter.nil? ? "border-slate-200 bg-white shadow text-slate-900" : "border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-700"}" do %>
       全件
     <% end %>
     <%= link_to admin_stock_items_path(alert: "low_stock"),
-          class: "rounded-md px-3 py-1.5 text-xs font-semibold flex items-center gap-1 #{@alert_filter == "low_stock" ? "bg-white shadow text-amber-700" : "text-slate-500 hover:text-slate-700"}" do %>
+          class: "rounded-md border px-3 py-1.5 text-xs font-semibold flex items-center gap-1 #{@alert_filter == "low_stock" ? "border-slate-200 bg-white shadow text-amber-700" : "border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-700"}" do %>
       在庫不足
       <% if @low_stock_count > 0 %>
         <span class="rounded-full bg-amber-100 px-1.5 text-[10px] font-bold text-amber-700"><%= @low_stock_count %></span>
       <% end %>
     <% end %>
     <%= link_to admin_stock_items_path(alert: "out_of_stock"),
-          class: "rounded-md px-3 py-1.5 text-xs font-semibold flex items-center gap-1 #{@alert_filter == "out_of_stock" ? "bg-white shadow text-rose-700" : "text-slate-500 hover:text-slate-700"}" do %>
+          class: "rounded-md border px-3 py-1.5 text-xs font-semibold flex items-center gap-1 #{@alert_filter == "out_of_stock" ? "border-slate-200 bg-white shadow text-rose-700" : "border-transparent text-slate-500 hover:border-slate-200 hover:text-slate-700"}" do %>
       在庫切れ
       <% if @out_of_stock_count > 0 %>
         <span class="rounded-full bg-rose-100 px-1.5 text-[10px] font-bold text-rose-700"><%= @out_of_stock_count %></span>
