@@ -180,6 +180,7 @@ Rails.application.routes.draw do
       end
       collection do
         post :issue_monthly
+        get :export_csv
       end
     end
     resources :payments, only: [ :index, :show, :new, :create, :edit, :update ] do

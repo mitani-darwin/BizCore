@@ -69,6 +69,6 @@
         class: "rounded-lg bg-sky-600 px-6 py-2 text-sm font-semibold text-white hover:bg-sky-700 cursor-pointer" %>
     <%= link_to "キャンセル",
         daily_report.persisted? ? admin_daily_report_path(daily_report) : admin_daily_reports_path,
-        class: "text-sm text-slate-600 hover:text-slate-800" %>
+        class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-600 hover:bg-slate-50" %>
   </div>
 <% end %>

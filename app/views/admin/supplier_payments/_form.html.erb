@@ -54,6 +54,6 @@
 
   <div class="flex items-center gap-3">
     <%= f.submit "保存する", class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
-    <%= link_to "キャンセル", supplier_payment.persisted? ? admin_supplier_payment_path(supplier_payment) : admin_supplier_payments_path, class: "text-sm text-slate-600 hover:text-slate-800" %>
+    <%= link_to "キャンセル", supplier_payment.persisted? ? admin_supplier_payment_path(supplier_payment) : admin_supplier_payments_path, class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-600 hover:bg-slate-50" %>
   </div>
 <% end %>

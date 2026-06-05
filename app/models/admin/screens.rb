@@ -230,12 +230,13 @@ module Admin
       },
       invoices: {
         index_path: :admin_invoices_path,
-        actions: %i[index show download_excel issue_monthly cancel reissue],
+        actions: %i[index show download_excel issue_monthly cancel reissue export_csv],
         action_overrides: {
           download_excel: { permission_action: :read, label: "Excel出力", breadcrumb_label: "Excel出力", page_title: "%{resource}詳細" },
           issue_monthly: { permission_action: :create, label: "月末請求", breadcrumb_label: "月末請求", page_title: "%{resource}一覧" },
           cancel: { permission_action: :update, label: "請求取消", breadcrumb_label: "請求取消", page_title: "%{resource}詳細" },
-          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" }
+          reissue: { permission_action: :create, label: "再発行", breadcrumb_label: "再発行", page_title: "%{resource}詳細" },
+          export_csv: { permission_action: :read, label: "CSV出力", breadcrumb_label: "CSV出力", page_title: "%{resource}一覧" }
         }
       },
       payments: {
