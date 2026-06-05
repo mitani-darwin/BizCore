@@ -153,6 +153,7 @@ ja:
         billing_closing_day: "請求締め日"
         billing_email: "請求先メールアドレス"
         code: "コード"
+        invoice_registration_number: "適格請求書発行事業者 登録番号"
         name: "テナント名"
         payroll_closing_day: "給与締め日"
         purchase_closing_day: "仕入締め日"
