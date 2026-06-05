@@ -43,6 +43,13 @@ class Tenant < ApplicationRecord
   validates :billing_closing_day, :payroll_closing_day, :purchase_closing_day,
             numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 31 },
             allow_nil: true
+  validates :invoice_registration_number,
+            format: { with: /\AT\d{13}\z/, message: "は「T」＋13桁の数字で入力してください（例: T1234567890123）" },
+            allow_blank: true
+
+  def qualified_invoice_issuer?
+    invoice_registration_number.present?
+  end
 
   # 仮想属性: 画面用に補完する値
   attribute :primary_domain, :string

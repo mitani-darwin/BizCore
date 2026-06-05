@@ -58,6 +58,18 @@ class Invoice < ApplicationRecord
     total_amount.to_d - paid_amount.to_d
   end
 
+  # 税率ごとの小計・税額を返す。
+  # 例: { "taxable_10" => { subtotal: 10000, tax: 1000 }, "taxable_8" => { subtotal: 5000, tax: 400 } }
+  def tax_breakdown
+    invoice_items.group_by(&:tax_category).filter_map do |category, items|
+      next if category == "non_taxable"
+
+      subtotal = items.sum { |i| i.amount.to_d }
+      tax = items.sum(&:tax_amount)
+      [ category, { subtotal: subtotal, tax: tax } ]
+    end.to_h
+  end
+
   def cancellable?
     !cancelled? && payment_allocations.empty?
   end

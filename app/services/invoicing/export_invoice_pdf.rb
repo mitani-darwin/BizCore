@@ -24,6 +24,7 @@ module Invoicing
 
     def build_pdf(pdf)
       render_company_header(pdf)
+      render_registration_number(pdf)
       render_title(pdf)
 
       # 固定行（常に表示）
@@ -92,10 +93,21 @@ module Invoicing
       render_item_table(pdf, headers, item_rows, col_ws)
 
       render_total_row(pdf, "小計", invoice.subtotal_amount.to_i, col_count: col_count)
-      render_total_row(pdf, "税額", invoice.tax_amount.to_i, col_count: col_count)
-      render_total_row(pdf, "合計", invoice.total_amount.to_i, col_count: col_count)
+      invoice.tax_breakdown.each do |category, amounts|
+        render_total_row(pdf, "#{tax_category_label(category)}対象 小計", amounts[:subtotal].to_i, col_count: col_count)
+        render_total_row(pdf, "うち消費税（#{tax_category_label(category)}）", amounts[:tax].to_i, col_count: col_count)
+      end
+      render_total_row(pdf, "合計（税込）", invoice.total_amount.to_i, col_count: col_count)
       render_total_row(pdf, "入金済", invoice.paid_amount.to_i, col_count: col_count)
       render_total_row(pdf, "残高", invoice.balance_amount.to_i, col_count: col_count)
+    end
+
+    def render_registration_number(pdf)
+      return unless invoice.tenant.qualified_invoice_issuer?
+
+      pdf.text "適格請求書発行事業者　登録番号: #{invoice.tenant.invoice_registration_number}",
+               size: 9, align: :right
+      pdf.move_down 4
     end
   end
 end

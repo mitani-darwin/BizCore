@@ -25,6 +25,12 @@
     </div>
   </div>
 
+  <% if current_tenant.qualified_invoice_issuer? %>
+    <div class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-2 text-sm text-sky-800">
+      適格請求書発行事業者　登録番号: <span class="font-mono font-semibold"><%= current_tenant.invoice_registration_number %></span>
+    </div>
+  <% end %>
+
   <div class="grid gap-4 md:grid-cols-3">
     <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div class="text-xs text-slate-500">請求額</div>
@@ -113,6 +119,30 @@
               <% end %>
             </dd>
           </div>
+          <div>
+            <dt class="text-xs text-slate-500">金額内訳</dt>
+            <dd class="mt-1 space-y-1 rounded-lg bg-slate-50 p-3 text-sm">
+              <div class="flex justify-between">
+                <span>小計</span>
+                <span><%= money(@invoice.subtotal_amount) %></span>
+              </div>
+              <% @invoice.tax_breakdown.each do |category, amounts| %>
+                <div class="flex justify-between text-slate-500 text-xs">
+                  <span><%= tax_category_label(category) %>対象 小計</span>
+                  <span><%= money(amounts[:subtotal]) %></span>
+                </div>
+                <div class="flex justify-between text-slate-500 text-xs">
+                  <span>うち消費税（<%= tax_category_label(category) %>）</span>
+                  <span><%= money(amounts[:tax]) %></span>
+                </div>
+              <% end %>
+              <div class="flex justify-between border-t border-slate-200 pt-1 font-semibold">
+                <span>合計（税込）</span>
+                <span><%= money(@invoice.total_amount) %></span>
+              </div>
+            </dd>
+          </div>
+
           <div>
             <dt class="text-xs text-slate-500">備考</dt>
             <dd><%= simple_format(@invoice.remarks.presence || "-") %></dd>
