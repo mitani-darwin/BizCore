@@ -59,6 +59,16 @@ class PurchaseBill < ApplicationRecord
     [ balance_amount.to_d, 0.to_d ].max
   end
 
+  def tax_breakdown
+    purchase_bill_items.group_by(&:tax_category).filter_map do |category, items|
+      next if category == "non_taxable"
+
+      subtotal = items.sum { |i| i.amount.to_d }
+      tax = items.sum(&:tax_amount)
+      [ category, { subtotal: subtotal, tax: tax } ]
+    end.to_h
+  end
+
   def cancellable?
     !cancelled? && supplier_payment_allocations.empty?
   end

@@ -209,6 +209,11 @@ Rails.application.routes.draw do
         patch :reject
       end
     end
+    resources :accounting_exports, only: [:index] do
+      collection do
+        get :export_csv
+      end
+    end
     resource :profile, only: [], controller: "profile" do
       get :edit_password, path: "password/edit"
       patch :update_password, path: "password"

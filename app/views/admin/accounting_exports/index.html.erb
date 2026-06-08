@@ -1,0 +1,72 @@
+<% content_for :page_title, "会計ソフト連携" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">会計ソフト連携</h1>
+    <p class="mt-1 text-sm text-slate-600">マネーフォワード クラウド会計の仕訳インポート用 CSV を出力します。</p>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-5">
+    <div>
+      <h2 class="text-sm font-semibold text-slate-900">出力内容</h2>
+      <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div class="rounded-lg bg-slate-50 px-4 py-3 text-sm">
+          <p class="font-semibold text-slate-800">売上側</p>
+          <ul class="mt-1 space-y-0.5 text-xs text-slate-600 list-disc pl-4">
+            <li>請求書 → 売掛金 ／ 売上高</li>
+            <li>入金 → 普通預金 ／ 売掛金</li>
+          </ul>
+        </div>
+        <div class="rounded-lg bg-slate-50 px-4 py-3 text-sm">
+          <p class="font-semibold text-slate-800">仕入側</p>
+          <ul class="mt-1 space-y-0.5 text-xs text-slate-600 list-disc pl-4">
+            <li>仕入請求書 → 仕入高 ／ 買掛金</li>
+            <li>支払 → 買掛金 ／ 普通預金</li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-3 text-xs text-slate-500">
+        消費税区分は税率ごとに自動分類されます（課税売上10% / 課税売上8%(軽) / 課税仕入10% / 課税仕入8%(軽)）。<br>
+        出力後、マネーフォワード クラウド会計の「仕訳帳 → 仕訳インポート」からアップロードしてください。
+      </p>
+    </div>
+
+    <hr class="border-slate-100">
+
+    <%= form_with url: export_csv_admin_accounting_exports_path, method: :get, local: true, class: "space-y-4" do %>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="block text-sm font-medium text-slate-800">対象期間（開始）</label>
+          <%= date_field_tag :from_date, @from_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-800">対象期間（終了）</label>
+          <%= date_field_tag :to_date, @to_date, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
+        </div>
+      </div>
+      <div>
+        <%= submit_tag "仕訳 CSV をダウンロード", class: "rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-semibold text-slate-900">デフォルト勘定科目</h2>
+    <p class="mt-1 text-xs text-slate-500">出力される勘定科目名です。マネーフォワード側の科目名と一致させてください。</p>
+    <table class="mt-3 w-full text-sm">
+      <thead class="bg-slate-50 text-xs text-slate-500">
+        <tr>
+          <th class="px-3 py-2 text-left">用途</th>
+          <th class="px-3 py-2 text-left">勘定科目名</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr><td class="px-3 py-2 text-slate-600">売掛金</td><td class="px-3 py-2 font-mono text-slate-800">売掛金</td></tr>
+        <tr><td class="px-3 py-2 text-slate-600">売上高</td><td class="px-3 py-2 font-mono text-slate-800">売上高</td></tr>
+        <tr><td class="px-3 py-2 text-slate-600">入金・支払</td><td class="px-3 py-2 font-mono text-slate-800">普通預金</td></tr>
+        <tr><td class="px-3 py-2 text-slate-600">買掛金</td><td class="px-3 py-2 font-mono text-slate-800">買掛金</td></tr>
+        <tr><td class="px-3 py-2 text-slate-600">仕入高</td><td class="px-3 py-2 font-mono text-slate-800">仕入高</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
