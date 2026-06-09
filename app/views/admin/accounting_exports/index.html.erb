@@ -33,7 +33,7 @@
 
     <hr class="border-slate-100">
 
-    <%= form_with url: export_csv_admin_accounting_exports_path, method: :get, local: true, class: "space-y-4" do %>
+    <%= form_with url: export_csv_admin_accounting_exports_path, method: :get, local: true, data: { turbo: false }, class: "space-y-4" do %>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label class="block text-sm font-medium text-slate-800">対象期間（開始）</label>
