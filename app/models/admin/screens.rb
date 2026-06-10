@@ -300,6 +300,14 @@ module Admin
         index_path: :admin_contracts_path,
         actions: %i[index show new create edit update]
       },
+      accounting_exports: {
+        label: "会計ソフト連携",
+        index_path: :admin_accounting_exports_path,
+        actions: %i[index export_csv],
+        action_overrides: {
+          export_csv: { permission_action: :read, label: "CSV出力", breadcrumb_label: "CSV出力", page_title: "会計ソフト連携" }
+        }
+      },
       expense_reports: {
         index_path: :admin_expense_reports_path,
         actions: %i[index show new create edit update approve reject],

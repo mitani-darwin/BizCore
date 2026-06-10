@@ -98,6 +98,14 @@ module Admin
             Item.new(id: :daily_reports, label: "日報", path: :admin_daily_reports_path, required_keys: %w[admin.daily_reports.read], children: [])
           ]
         ),
+        # ── 会計連携 ────────────────────────────────────────────
+        Section.new(
+          id: :accounting,
+          label: "会計連携",
+          items: [
+            Item.new(id: :accounting_exports, label: "会計ソフト連携", path: :admin_accounting_exports_path, required_keys: %w[admin.accounting_exports.read], children: [])
+          ]
+        ),
         # ── 権限・システム ──────────────────────────────────────
         Section.new(
           id: :system,
