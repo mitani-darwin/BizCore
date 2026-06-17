@@ -56,7 +56,7 @@ class Tenant < ApplicationRecord
   attribute :started_on, :date
   attribute :last_access_at, :datetime
 
-  after_create :create_default_admin_role
+  after_create :setup_default_roles
 
   # 仮想属性が未設定の場合はサブドメインからデフォルトドメインを補完する。
   def primary_domain
@@ -101,14 +101,8 @@ class Tenant < ApplicationRecord
     [ configured_day.to_i, date.end_of_month.day ].min
   end
 
-  # テナント作成直後に組み込みの管理者ロールを自動生成する。
-  # built_in: true のロールは編集・削除不可として扱う。
-  def create_default_admin_role
-    roles.create!(
-      name: "管理者",
-      key: "admin",
-      description: "管理者",
-      built_in: true
-    )
+  # テナント作成直後にデフォルトロール4種を生成し、権限を割り当てる。
+  def setup_default_roles
+    Tenants::SetupDefaultRoles.call(self)
   end
 end

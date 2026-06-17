@@ -21,13 +21,12 @@ class AuthorizationTest < ActiveSupport::TestCase
       billing_email: "auth@example.com"
     )
 
-    @permission = Permission.create!(
-      key: "admin.tenants.read",
-      resource: "tenants",
-      action: "read",
-      name: "テナント閲覧",
-      description: "テナントを閲覧できる"
-    )
+    @permission = Permission.find_or_create_by!(key: "admin.tenants.read") do |p|
+      p.resource    = "tenants"
+      p.action      = "read"
+      p.name        = "テナント閲覧"
+      p.description = "テナントを閲覧できる"
+    end
   end
 
   test "can? returns true when actor has permission" do

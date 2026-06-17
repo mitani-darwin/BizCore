@@ -7,7 +7,10 @@
       <p class="text-sm text-slate-600">注文・請求・入金に使う得意先マスタです。</p>
     </div>
     <% if can?("admin.customers.create") %>
-      <%= link_to "新規得意先", new_admin_customer_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <div class="flex items-center gap-2">
+        <%= link_to "CSVインポート", import_admin_customers_path, class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+        <%= link_to "新規得意先", new_admin_customer_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
     <% end %>
   </div>
 
