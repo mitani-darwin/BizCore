@@ -7,7 +7,10 @@
       <p class="text-sm text-slate-600">注文・納品・請求で使用する商品マスタです。</p>
     </div>
     <% if can?("admin.products.create") %>
-      <%= link_to "新規商品", new_admin_product_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      <div class="flex items-center gap-2">
+        <%= link_to "CSVインポート", import_admin_products_path, class: "rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" %>
+        <%= link_to "新規商品", new_admin_product_path, class: "rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" %>
+      </div>
     <% end %>
   </div>
 

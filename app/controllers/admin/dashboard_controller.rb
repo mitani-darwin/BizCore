@@ -117,30 +117,37 @@ module Admin
     def build_onboarding_steps
       [
         {
+          id: :employees,
+          label: "従業員を登録する",
+          done: @tenant.employees.exists?,
+          path: can?("admin.employees.create") ? import_admin_employees_path : admin_employees_path,
+          permission_key: "admin.employees.read"
+        },
+        {
+          id: :customers,
+          label: "得意先を登録する",
+          done: @tenant.customers.exists?,
+          path: can?("admin.customers.create") ? import_admin_customers_path : admin_customers_path,
+          permission_key: "admin.customers.read"
+        },
+        {
+          id: :products,
+          label: "商品マスタを登録する",
+          done: @tenant.products.exists?,
+          path: can?("admin.products.create") ? import_admin_products_path : admin_products_path,
+          permission_key: "admin.products.read"
+        },
+        {
           id: :users,
           label: "ユーザーを追加する",
-          done: @user_count.positive?,
+          done: @tenant.users.where(is_owner: false).exists?,
           path: new_admin_user_path,
           permission_key: "admin.users.create"
         },
         {
           id: :roles,
-          label: "ロールを整備する",
-          done: @role_count.positive?,
-          path: new_admin_role_path,
-          permission_key: "admin.roles.create"
-        },
-        {
-          id: :permissions,
-          label: "権限定義を確認する",
-          done: Permission.exists?,
-          path: admin_permissions_path,
-          permission_key: "admin.permissions.read"
-        },
-        {
-          id: :authorizations,
-          label: "権限割当を更新する",
-          done: RolePermission.exists?,
+          label: "ロール・権限を整備する",
+          done: @tenant.roles.count > 1,
           path: admin_authorization_path,
           permission_key: "admin.authorizations.update"
         }

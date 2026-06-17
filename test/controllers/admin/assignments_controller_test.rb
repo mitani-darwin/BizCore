@@ -59,7 +59,7 @@ class Admin::AssignmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create で新しいロールを追加できる" do
-    new_role = @tenant.roles.create!(name: "マネージャー", key: "manager", built_in: false)
+    new_role = @tenant.roles.create!(name: "追加ロール", key: "extra-role", built_in: false)
 
     assert_difference("Assignment.count", 1) do
       post admin_assignments_path, params: {
