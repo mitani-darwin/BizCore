@@ -46,7 +46,8 @@ module Admin
         :billing_closing_day,
         :payroll_closing_day,
         :purchase_closing_day,
-        :invoice_registration_number
+        :invoice_registration_number,
+        :industry
       )
     end
   end

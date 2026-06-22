@@ -37,6 +37,15 @@ class Tenant < ApplicationRecord
   has_many :expense_reports, dependent: :destroy
   has_many :contracts, dependent: :destroy
 
+  INDUSTRIES = {
+    general:      "汎用（すべての機能）",
+    construction: "建設・工事業",
+    retail:       "物販・小売業",
+    service:      "サービス業"
+  }.freeze
+
+  enum :industry, INDUSTRIES.keys.index_with(&:to_s), default: "general"
+
   validates :name, :code, :subdomain, :plan, :status, :billing_email, presence: true
   validates :code, :subdomain, uniqueness: true
   validates :billing_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
