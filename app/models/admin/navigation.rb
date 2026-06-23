@@ -121,7 +121,11 @@ module Admin
     end
 
     def self.visible_sections(context)
-      sections.map { |section| filter_section(section, context) }.compact
+      tenant = context.respond_to?(:current_tenant) ? context.current_tenant : nil
+      sections
+        .select { |section| FeatureFlags.section_enabled?(section.id, tenant: tenant) }
+        .map { |section| filter_section(section, context) }
+        .compact
     end
 
     def self.resolve_path(item, context)

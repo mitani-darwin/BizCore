@@ -10,6 +10,7 @@ def ensure_tenant(attrs)
     t.plan = attrs[:plan] || "standard"
     t.status = attrs[:status] || "active"
     t.billing_email = attrs[:billing_email] || "owner@#{attrs[:code]}.example.com"
+    t.industry = attrs[:industry] || "general"
   end
 end
 
@@ -124,8 +125,8 @@ end
 permissions = Seeds::Permissions::Admin.call
 
 tenants = [
-  { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", billing_email: "owner@darwin.example.com" },
-  { code: "acme", name: "Acme Corp", subdomain: "acme", plan: "standard", billing_email: "owner@acme.example.com" }
+  { code: "darwin", name: "Darwin HQ", subdomain: "darwin", plan: "enterprise", billing_email: "owner@darwin.example.com", industry: "construction" },
+  { code: "acme", name: "Acme Corp", subdomain: "acme", plan: "standard", billing_email: "owner@acme.example.com", industry: "retail" }
 ]
 
 tenants.each do |attrs|

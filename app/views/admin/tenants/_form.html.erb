@@ -38,6 +38,15 @@
     </div>
 
     <div>
+      <%= f.label :industry, "業種", class: "block text-sm font-medium text-slate-800" %>
+      <%= f.select :industry,
+            Tenant::INDUSTRIES.map { |key, label| [label, key] },
+            {},
+            class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100" %>
+      <p class="mt-1 text-xs text-slate-500">業種に応じて管理画面の表示機能が切り替わります。</p>
+    </div>
+
+    <div>
       <%= f.label :status, "ステータス", class: "block text-sm font-medium text-slate-800" %>
       <%= f.text_field :status, class: "mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-100", required: true %>
     </div>
