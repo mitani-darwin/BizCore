@@ -22,7 +22,7 @@ module Admin
         overdue_invoice_count: all_rows.sum { |row| row[:overdue_invoice_count] },
         overdue_amount: all_rows.sum { |row| row[:overdue_amount] }
       }
-      @pagy, @receivable_rows = pagy_array(all_rows)
+      @pagy, @receivable_rows = pagy(all_rows)
     end
 
     private

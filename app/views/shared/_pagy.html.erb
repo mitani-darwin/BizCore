@@ -4,8 +4,8 @@
       <%= pagy.count %> 件中 <%= pagy.from %>〜<%= pagy.to %> 件を表示
     </p>
     <div class="flex items-center gap-1">
-      <% if pagy.prev %>
-        <%= link_to pagy_url_for(pagy, pagy.prev), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "前のページ" } do %>
+      <% if pagy.previous %>
+        <%= link_to pagy.page_url(pagy.previous), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "前のページ" } do %>
           ‹
         <% end %>
       <% else %>
@@ -15,15 +15,15 @@
       <% pagy.series.each do |item| %>
         <% if item == :gap %>
           <span class="flex h-8 w-8 items-center justify-center text-sm text-slate-400">…</span>
-        <% elsif item == pagy.page %>
+        <% elsif item.to_s == pagy.page.to_s %>
           <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-600 text-sm font-semibold text-white"><%= item %></span>
         <% else %>
-          <%= link_to item.to_s, pagy_url_for(pagy, item), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50" %>
+          <%= link_to item.to_s, pagy.page_url(item), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50" %>
         <% end %>
       <% end %>
 
       <% if pagy.next %>
-        <%= link_to pagy_url_for(pagy, pagy.next), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "次のページ" } do %>
+        <%= link_to pagy.page_url(pagy.next), class: "flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50", aria: { label: "次のページ" } do %>
           ›
         <% end %>
       <% else %>

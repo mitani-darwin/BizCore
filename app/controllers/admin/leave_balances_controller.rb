@@ -25,7 +25,7 @@ module Admin
         total_used:     @balance_rows.sum { |r| r[:used_days] },
         total_remaining: @balance_rows.sum { |r| r[:remaining_days] }
       }
-      @pagy, @balance_rows = pagy_array(@balance_rows)
+      @pagy, @balance_rows = pagy(@balance_rows)
     end
 
     private

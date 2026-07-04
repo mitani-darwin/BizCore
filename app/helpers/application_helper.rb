@@ -1,4 +1,3 @@
-# 全 View から利用できるグローバルヘルパー。Pagy のページネーション UI を提供する。
+# 全 View から利用できるグローバルヘルパー。
 module ApplicationHelper
-  include Pagy::Frontend
 end

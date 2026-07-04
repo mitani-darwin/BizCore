@@ -7,7 +7,7 @@ module Admin
       all_templates = DocumentTemplate::DOCUMENT_TYPES.map do |doc_type|
         DocumentTemplate.for_tenant_and_type(current_tenant, doc_type)
       end
-      @pagy, @templates = pagy_array(all_templates)
+      @pagy, @templates = pagy(all_templates)
     end
 
     def edit; end

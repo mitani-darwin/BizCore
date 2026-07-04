@@ -3,8 +3,6 @@ module Admin
   # 認証・テナント確認・権限チェック・監査ログ書き込みを一括して担う。
   # 新しい管理画面コントローラは必ずこのクラスを継承すること。
   class BaseController < ::ApplicationController
-    include Pagy::Backend
-
     layout "admin"
 
     before_action :authenticate_user!

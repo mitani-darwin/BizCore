@@ -5,7 +5,7 @@ module Admin
 
     def index
       @tenant = current_tenant
-      @pagy, @tenants = pagy_array([ @tenant ].compact)
+      @pagy, @tenants = pagy([ @tenant ].compact)
     end
 
     def show; end
