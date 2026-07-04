@@ -1,4 +1,9 @@
-# 全 View から利用できるグローバルヘルパー。Pagy のページネーション UI を提供する。
+# 全 View から利用できるグローバルヘルパー。
 module ApplicationHelper
-  include Pagy::Frontend
+  def minutes_to_hm(minutes)
+    total = minutes.to_i
+    h = total / 60
+    m = total % 60
+    "#{h}時間#{m}分"
+  end
 end

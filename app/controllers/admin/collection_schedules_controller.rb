@@ -19,7 +19,7 @@ module Admin
                                .order(:due_date, :invoice_date, :id)
       all_rows = build_rows(invoices)
       @summary = build_summary(all_rows)
-      @pagy, @collection_schedule_rows = pagy_array(all_rows)
+      @pagy, @collection_schedule_rows = pagy(all_rows)
     end
 
     private

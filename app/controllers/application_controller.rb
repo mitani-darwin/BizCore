@@ -2,7 +2,7 @@
 # リクエストごとに Current（user/tenant）をセットし、ロケールを設定する。
 # current_user, current_tenant, current_employee, current_ability をヘルパーメソッドとして公開する。
 class ApplicationController < ActionController::Base
-  include Pagy::Backend
+  include Pagy::Method
   include AuthorizationHelper
   helper Admin::SidebarHelper
   helper Admin::WorkforceHelper

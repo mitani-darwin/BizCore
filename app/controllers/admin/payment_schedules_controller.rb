@@ -19,7 +19,7 @@ module Admin
                                      .order(:due_date, :bill_date, :id)
       all_rows = build_rows(purchase_bills)
       @summary = build_summary(all_rows)
-      @pagy, @payment_schedule_rows = pagy_array(all_rows)
+      @pagy, @payment_schedule_rows = pagy(all_rows)
     end
 
     private
