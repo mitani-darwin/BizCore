@@ -133,11 +133,11 @@
               </div>
               <div>
                 <dt class="text-xs text-slate-500">実働</dt>
-                <dd><%= @target_attendance_record.worked_minutes %> 分</dd>
+                <dd><%= minutes_to_hm(@target_attendance_record.worked_minutes) %></dd>
               </div>
               <div>
                 <dt class="text-xs text-slate-500">残業</dt>
-                <dd><%= @target_attendance_record.overtime_minutes %> 分</dd>
+                <dd><%= minutes_to_hm(@target_attendance_record.overtime_minutes) %></dd>
               </div>
             </dl>
           <% else %>
@@ -158,7 +158,7 @@
                     </div>
                     <div class="text-right">
                       <div><%= attendance_status_badge(attendance_record) %></div>
-                      <div class="mt-1 text-xs text-slate-500">実働 <%= attendance_record.worked_minutes %> 分</div>
+                      <div class="mt-1 text-xs text-slate-500">実働 <%= minutes_to_hm(attendance_record.worked_minutes) %></div>
                     </div>
                   </div>
                 </div>
