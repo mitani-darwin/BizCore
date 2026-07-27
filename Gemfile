@@ -18,7 +18,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "pundit"
 gem "devise"
-gem "pagy", "~> 43.5"
+gem "pagy", "~> 43.6"
 gem "net-imap", ">= 0.6.4"
 gem "addressable", ">= 2.9.0"
 
